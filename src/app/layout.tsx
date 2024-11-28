@@ -3,7 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import NextTopLoader from "nextjs-toploader";
-import LoginForm from "@/components/layout/LoginForm";
+import LoginForm from "./login/page";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -34,6 +35,7 @@ export default function RootLayout({
               {children}
             </div>
           </main>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

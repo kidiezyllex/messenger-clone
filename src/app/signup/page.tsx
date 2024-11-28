@@ -4,18 +4,46 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { GithubIcon, LogIn, MessageCircleHeart } from "lucide-react";
-import { Avatar, AvatarImage } from "../ui/avatar";
+import { GithubIcon, Loader2, UserPlus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-
-export default function LoginForm() {
+import axios from "axios";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
+export default function SignUpForm() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Login attempted with:", { email, password });
+    try {
+      setIsLoading(true);
+      const response = await axios.post("/api/register", {
+        name,
+        email,
+        password,
+      });
+      if (response.status === 200) {
+        toast({
+          variant: "default",
+          title: "Thành công!",
+          description: "Đăng ký thành công tài khoản!",
+        });
+      }
+      setIsLoading(false);
+      router.push("/");
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Thất bại!",
+        description: "Tài khoản này đã tồn tại!",
+      });
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -30,8 +58,19 @@ export default function LoginForm() {
           className="object-contain rounded-md"
         />
       </div>
-      <h1 className="text-2xl font-bold">Đăng nhập tài khoản</h1>
+      <h1 className="text-2xl font-bold">Đăng ký tài khoản</h1>
       <form onSubmit={handleSubmit} className="space-y-4 w-full">
+        <div className="space-y-2">
+          <Label htmlFor="name">Tên</Label>
+          <Input
+            id="name"
+            type="text"
+            placeholder="Họ và tên"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+        </div>
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <Input
@@ -44,7 +83,7 @@ export default function LoginForm() {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password">Mật khẩu</Label>
           <Input
             id="password"
             type="password"
@@ -53,14 +92,23 @@ export default function LoginForm() {
             required
           />
         </div>
+
         <Button
           type="submit"
           className="w-full flex gap-2 items-center self-center space-x-2 bg-blue-500 hover:bg-blue-600 dark:text-white text-white dark:bg-blue-500 dark:hover:bg-blue-600"
-          // disabled={isLoading}
           variant={"default"}
         >
-          Đăng nhập
-          <LogIn className="h-4 w-4" />
+          {isLoading ? (
+            <>
+              Đang đăng ký
+              <Loader2 className="h-4 w-4 animate-spin" />
+            </>
+          ) : (
+            <>
+              Đăng ký
+              <UserPlus className="h-4 w-4" />
+            </>
+          )}
         </Button>
       </form>
       <div className="grid grid-cols-3 items-center gap-2 justify-between mt-4 mb-2 w-full">
@@ -100,10 +148,10 @@ export default function LoginForm() {
       </div>
       <div className="flex flex-row gap-2 mt-2">
         <span className="text-zinc-300 dark:text-zinc-500 text-base self-center text-center">
-          Bạn chưa có tài khoản?
+          Bạn đã có tài khoản?
         </span>
-        <Link href="" className="text-base text-zinc-300 underline">
-          Tạo tài khoản
+        <Link href="/" className="text-base text-zinc-300 underline">
+          Đăng nhập
         </Link>
       </div>
     </div>
