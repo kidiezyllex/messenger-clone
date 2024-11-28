@@ -1,90 +1,67 @@
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  relationMode = "prisma"
 }
+
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearch", "fullTextIndex"]
 }
 
-model Hotel {
-  id                  Int      @id @default(autoincrement()) // Tự động tăng
-  userId              String
-  title               String   @db.Text
-  description         String  
-  image               String
-  provinces           String
-  districts           String
-  locationDescription String  
-  gym                 Boolean  @default(false)
-  spa                 Boolean  @default(false)
-  bar                 Boolean  @default(false)
-  laundry             Boolean  @default(false)
-  restaurant          Boolean  @default(false)
-  shopping            Boolean  @default(false)
-  freeParking         Boolean  @default(false)
-  bikeRental          Boolean  @default(false)
-  freeWifi            Boolean  @default(false)
-  movieNights         Boolean  @default(false)
-  swimmingPool        Boolean  @default(false)
-  coffeeShop          Boolean  @default(false)
-  addedAt             DateTime @default(now())
-  updatedAt           DateTime @default(now())
-  rooms               Room[]
-  bookings            Booking[]
+model User {
+  id             String         @id @default(uuid())
+  name           String?
+  email          String?        @unique
+  emailVerified  DateTime?
+  image          String?
+  hashedPassword String?
+  createAt       DateTime       @default(now())
+  updateAt       DateTime       @updatedAt
+  conversations  Conversation[] @relation("UserConversations")
+  seenMessages   Message[]      @relation("UserSeenMessages")
+  accounts       Account[]
+  messages       Message[]
+  sentMessages   Message[]      @relation("MessageSender")
 }
 
-model Room {
-  id            Int     @id @default(autoincrement()) // Tự động tăng
-  title         String
-  description   String  
-  bedCount      Int     @default(0)
-  guestCount    Int     @default(0)
-  bathroomCount Int     @default(0)
-  kingBed       Int     @default(0)
-  queenBed      Int     @default(0)
-  image         String
-  breakFastPrice Int
-  roomPrice     Int
-  roomService   Boolean @default(false)
-  tv            Boolean @default(false)
-  balcony       Boolean @default(false)
-  freeWifi      Boolean @default(false)
-  cityView      Boolean @default(false)
-  oceanView     Boolean @default(false)
-  forestView    Boolean @default(false)
-  mountainView  Boolean @default(false)
-  airCondition  Boolean @default(false)
-  soundProofed  Boolean @default(false)
-  hotelId       Int
-  Hotel         Hotel?  @relation(fields: [hotelId], references: [id], onDelete: Cascade)
-  Booking       Booking[]
+model Account {
+  id                String  @id @default(uuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([hotelId])
+  @@unique([provider, providerAccountId])
 }
 
-model Booking {
-  id                  Int      @id @default(autoincrement()) // Tự động tăng
-  userName            String 
-  userEmail           String 
-  userId              String 
-  roomId              Int 
-  hotelId             Int 
-  hotelOwnerId        String
-  startDate           DateTime 
-  endDate             DateTime
-  breakFastIncluded   Boolean 
-  currency            String 
-  totalPrice          Int 
-  paymentStatus       Boolean @default(false) 
-  paymentIntentId     String  @unique 
-  bookedAt            DateTime @default(now()) 
-  Hotel               Hotel?  @relation(fields: [hotelId], references: [id])
-  Room                Room?   @relation(fields: [roomId], references: [id]) 
-
-  @@index([hotelId])
-  @@index([roomId])
+model Conversation {
+  id            String    @id @default(uuid())
+  createdAt     DateTime  @default(now())
+  lastMessageAt DateTime  @default(now())
+  name          String?
+  isGroup       Boolean?
+  messages      Message[]
+  users         User[]    @relation("UserConversations")
 }
 
-
+model Message {
+  id             String       @id @default(uuid())
+  body           String?
+  image          String?
+  createdAt      DateTime     @default(now())
+  seen           User[]       @relation("UserSeenMessages")
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  conversationId String
+  user           User?        @relation(fields: [userId], references: [id])
+  userId         String?
+  sender         User         @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  senderId       String
+}

@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { GithubIcon, LogIn, MessageCircleHeart } from "lucide-react";
 import { Avatar, AvatarImage } from "../ui/avatar";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -63,11 +64,11 @@ export default function LoginForm() {
         </Button>
       </form>
       <div className="grid grid-cols-3 items-center gap-2 justify-between mt-4 mb-2 w-full">
-        <Separator className="dark:bg-slate-600" />
-        <span className="text-slate-300 dark:text-slate-500 text-sm self-center text-center">
+        <Separator className="dark:bg-zinc-600" />
+        <span className="text-zinc-300 dark:text-zinc-500 text-sm self-center text-center">
           Hoặc tiếp tục với
         </span>
-        <Separator className="dark:bg-slate-600" />
+        <Separator className="dark:bg-zinc-600" />
       </div>
       <div className="grid grid-cols-2 gap-4 w-full">
         <Button variant="outline">
@@ -96,6 +97,14 @@ export default function LoginForm() {
           </svg>
           Google
         </Button>
+      </div>
+      <div className="flex flex-row gap-2 mt-2">
+        <span className="text-zinc-300 dark:text-zinc-500 text-base self-center text-center">
+          Bạn chưa có tài khoản?
+        </span>
+        <Link href="" className="text-base text-zinc-300 underline">
+          Tạo tài khoản
+        </Link>
       </div>
     </div>
   );
