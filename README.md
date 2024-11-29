@@ -49,6 +49,14 @@ DATABASE_URL=
 <!-- Upload Image with Uploadthing -->
 UPLOADTHING_SECRET=
 UPLOADTHING_APP_ID=
+
+NEXTAUTH_SECRET="NEXTAUTH_SECRET"
+<!-- Get Github Key: https://github.com/settings/developers -->
+GITHUB_ID=
+GITHUB_SECRET=
+<!-- Get Google Key: https://console.cloud.google.com/ -->
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
 ```
 
 5. Run application

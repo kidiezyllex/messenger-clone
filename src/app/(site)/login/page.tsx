@@ -1,22 +1,65 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { GithubIcon, LogIn } from "lucide-react";
+import { Github, GithubIcon, Loader2, LogIn } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signIn, useSession } from "next-auth/react";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export default function LoginForm() {
+  const session = useSession();
+  const { toast } = useToast();
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const isHomePage = usePathname() === "/";
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Login attempted with:", { email, password });
+    try {
+      setIsLoading(true);
+      const response = await axios.post("/api/login", {
+        email,
+        password,
+      });
+      if (response.status === 200) {
+        toast({
+          variant: "default",
+          title: "Thành công!",
+          description: "Đăng nhập thành công!",
+        });
+      }
+      setIsLoading(false);
+      router.push("/t");
+    } catch (err: any) {
+      if (err?.status === 400) {
+        toast({
+          variant: "destructive",
+          title: "Thất bại!",
+          description: "Thiếu email hoặc mật khẩu!",
+        });
+      } else if (err?.status === 401) {
+        toast({
+          variant: "destructive",
+          title: "Thất bại!",
+          description: "Email hoặc mật khẩu không hợp lệ!",
+        });
+      }
+      setIsLoading(false);
+    }
   };
+  useEffect(() => {
+    if (session?.status === "authenticated") {
+      console.log("Authenticated");
+    }
+  }, [session?.status]);
 
   return isHomePage ? (
     <div className="w-full max-w-md mx-auto bg-primary-foreground border p-4 rounded-md h-fit flex flex-col gap-3 items-center">
@@ -27,7 +70,7 @@ export default function LoginForm() {
             "https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Facebook_Messenger_logo_2020.svg/800px-Facebook_Messenger_logo_2020.svg.png"
           }
           alt="messenger-icon"
-          className="object-contain rounded-md"
+          className="object-contain rounded-md pointer-events-none"
         />
       </div>
       <h1 className="text-2xl font-bold">Đăng nhập tài khoản</h1>
@@ -56,11 +99,19 @@ export default function LoginForm() {
         <Button
           type="submit"
           className="w-full flex gap-2 items-center self-center space-x-2 bg-blue-500 hover:bg-blue-600 dark:text-white text-white dark:bg-blue-500 dark:hover:bg-blue-600"
-          // disabled={isLoading}
           variant={"default"}
         >
-          Đăng nhập
-          <LogIn className="h-4 w-4" />
+          {isLoading ? (
+            <>
+              Đang đăng nhập
+              <Loader2 className="h-4 w-4 animate-spin" />
+            </>
+          ) : (
+            <>
+              Đăng nhập
+              <LogIn className="h-4 w-4" />
+            </>
+          )}
         </Button>
       </form>
       <div className="grid grid-cols-3 items-center gap-2 justify-between mt-4 mb-2 w-full">
@@ -71,11 +122,17 @@ export default function LoginForm() {
         <Separator className="dark:bg-zinc-600" />
       </div>
       <div className="grid grid-cols-2 gap-4 w-full">
-        <Button variant="outline">
-          <GithubIcon className="mr-2 h-4 w-4" />
+        <Button
+          variant="outline"
+          onClick={() => signIn("github", { callbackUrl: "/" })}
+        >
+          <Github className="mr-2 h-4 w-4" />
           Github
         </Button>
-        <Button variant="outline">
+        <Button
+          variant="outline"
+          onClick={() => signIn("google", { callbackUrl: "/" })}
+        >
           <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
             <path
               d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
