@@ -1,17 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ChevronLeft,
   ChevronRight,
   MessageCircle,
   Archive,
-  Settings,
   Store,
-  Users,
   MessageCircleMore,
 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -20,6 +17,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { useSession } from "next-auth/react";
+import { User } from "../../lib/entity-types";
+import axios from "axios";
+import Image from "next/image";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 const navItems = [
   { icon: MessageCircle, label: "Đoạn chat" },
@@ -30,7 +32,8 @@ const navItems = [
 
 export function Sidebar() {
   const [expanded, setExpanded] = useState(false);
-
+  const [user, setUser] = useState<User>();
+  const { data: session } = useSession();
   return (
     <div
       className={cn(
@@ -63,14 +66,16 @@ export function Sidebar() {
       </div>
       <div className="space-y-3">
         <div className={cn("flex items-center", expanded)}>
-          <Button
-            size="icon"
-            className="rounded-full bg-secondary border border-blue-500"
-          ></Button>
+          <Avatar className="w-10 h-10 bg-background">
+            <AvatarImage src={session?.user?.image} />
+            <AvatarFallback>{session?.user?.name[0]}</AvatarFallback>
+          </Avatar>
           {expanded && (
             <div className="ml-2">
-              <p className="text-sm font-medium">User Name</p>
-              <p className="text-xs text-muted-foreground">user@example.com</p>
+              <p className="text-sm font-medium">{session?.user?.name}</p>
+              <p className="text-xs text-muted-foreground">
+                {session?.user?.email}
+              </p>
             </div>
           )}
         </div>

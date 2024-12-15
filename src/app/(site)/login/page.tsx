@@ -11,7 +11,6 @@ import { usePathname } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 
 export default function LoginForm() {
   const session = useSession();
@@ -25,17 +24,16 @@ export default function LoginForm() {
     e.preventDefault();
     try {
       setIsLoading(true);
-      const response = await axios.post("/api/login", {
+      const result = await signIn("credentials", {
         email,
         password,
+        redirect: false,
       });
-      if (response.status === 200) {
-        toast({
-          variant: "default",
-          title: "Thành công!",
-          description: "Đăng nhập thành công!",
-        });
-      }
+      toast({
+        variant: "default",
+        title: "Thành công!",
+        description: "Đăng nhập thành công!",
+      });
       setIsLoading(false);
       router.push("/t");
     } catch (err: any) {
