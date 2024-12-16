@@ -38,6 +38,8 @@ export interface Conversation {
   isGroup?: boolean;
   messages: Message[];
   users: User[];
+  messagesIds: String[];
+  usersIds: String[];
 }
 
 export interface Message {

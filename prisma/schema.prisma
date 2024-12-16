@@ -49,6 +49,8 @@ model Conversation {
   name          String?
   isGroup       Boolean?
   messages      Message[]
+  messagesIds   String[]
+  usersIds      String[]
   users         User[]    @relation("UserConversations")
 }
 
