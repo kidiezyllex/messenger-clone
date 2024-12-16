@@ -14,11 +14,13 @@ https://www.messenger.com/t
 
 ### Teck Stack
 
+<div style={{display:"inline"}}>
 <img src="https://camo.githubusercontent.com/c3635f27439ecdbf20e3cbf969c156f4040f10a0c8c836cf307d916dd8f806d4/68747470733a2f2f6173736574732e76657263656c2e636f6d2f696d6167652f75706c6f61642f76313636323133303535392f6e6578746a732f49636f6e5f6461726b5f6261636b67726f756e642e706e67" alt="Logo" height="30" >
 <img src="https://camo.githubusercontent.com/02d9778d04c0ec14c520fd512e0033ab2413cbd17eee64bdff91da51b832628d/68747470733a2f2f617574686a732e6465762f696d672f6c6f676f2d736d2e706e67" alt="Logo" height="30" >
 <img src="https://i.pinimg.com/originals/39/b2/e4/39b2e4ad77c23a2c11e5950a7dfa2aec.png" alt="Logo" height="30" >
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Antu_mongodb.svg/1024px-Antu_mongodb.svg.png" alt="Logo" height="30" >
 <img src="https://files.raycast.com/83afy69l6wjib1zd62gya59tpc76" alt="Logo" height="30" >
+</div>
 
 ### Database Diagram
 

@@ -6,7 +6,10 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { User } from "../../lib/entity-types";
+import { Conversation, User } from "../../lib/entity-types";
+import { useSession } from "next-auth/react";
+import { formatDate2 } from "../../lib/utils";
+import { ConversationItem } from "./conversation/ConversationItem";
 
 const conversations = [
   {
@@ -27,16 +30,20 @@ const conversations = [
 ];
 
 export function ConversationList() {
-  const [users, setUsers] = useState<User[]>([]);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const { data: session } = useSession();
+  const userId = (session?.user as any)?.id;
+
   useEffect(() => {
     const fecthData = async () => {
-      const res = await axios.get("/api/user");
-      setUsers(res.data);
+      const res = await axios.get(`/api/conversations/user/${userId}`);
+      setConversations(res.data);
+      console.log(res.data);
     };
     fecthData();
-  }, []);
+  }, [userId]);
   return (
-    <div className="flex flex-col h-full w-96 p-2 py-4 bg-secondary rounded-xl gap-3">
+    <div className="flex flex-col h-full w-80 p-2 py-4 bg-secondary rounded-xl gap-3">
       <div className="flex flex-col mx-2 gap-2">
         <h1 className="text-2xl font-bold">Đoạn chat</h1>
         <div className="flex flex-row gap-2 justify-center items-center">
@@ -61,27 +68,8 @@ export function ConversationList() {
         </div>
       </div>
       <ScrollArea className="flex-1 overflow-auto space-y-2">
-        {users.map((conversation) => (
-          <div
-            key={conversation.id}
-            className="flex items-center gap-3 p-4 hover:bg-zinc-700 rounded-md pointer-events-auto"
-          >
-            <Avatar className="w-12 h-12 bg-background">
-              <AvatarImage src={conversation.image} />
-              <AvatarFallback>{conversation.name[0]}</AvatarFallback>
-            </Avatar>
-            <div className="flex-1 overflow-hidden">
-              <div className="flex items-center justify-between">
-                <p className="font-medium">{conversation.name}</p>
-                <span className="text-xs text-muted-foreground">
-                  {/* {conversation.seenMessages} */}
-                </span>
-              </div>
-              <p className="truncate text-sm text-muted-foreground">
-                {/* {conversation.lastMessage} */}
-              </p>
-            </div>
-          </div>
+        {conversations.map((conversation) => (
+          <ConversationItem conversation={conversation} />
         ))}
         <ScrollBar orientation="vertical" />
       </ScrollArea>

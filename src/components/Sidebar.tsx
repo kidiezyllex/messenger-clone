@@ -50,11 +50,14 @@ export function Sidebar() {
                   size="icon"
                   className={cn(
                     "flex flex-row items-center justify-start gap-3 px-4 dark:bg-secondary dark:text-slate-300 w-full",
-                    !expanded && "justify-center items-center dark:bg-secondary"
+                    !expanded &&
+                      "px-0 justify-center items-center dark:bg-secondary"
                   )}
                 >
                   <item.icon className="h-5 w-5 dark:text-slate-300" />
-                  {expanded && <span>{item.label}</span>}
+                  {expanded && (
+                    <span className="font-semibold text-sm">{item.label}</span>
+                  )}
                 </Button>
               </TooltipTrigger>
               {!expanded && (
