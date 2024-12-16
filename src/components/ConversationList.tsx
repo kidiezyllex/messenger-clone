@@ -38,7 +38,6 @@ export function ConversationList() {
     const fecthData = async () => {
       const res = await axios.get(`/api/conversations/user/${userId}`);
       setConversations(res.data);
-      console.log(res.data);
     };
     fecthData();
   }, [userId]);

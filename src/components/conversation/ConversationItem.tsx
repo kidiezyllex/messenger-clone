@@ -19,15 +19,24 @@ import {
   PhoneCall,
   Video,
 } from "lucide-react";
+import axios from "axios";
+import { usePathname, useRouter } from "next/navigation";
 export function ConversationItem({
   conversation,
 }: {
   conversation: Conversation;
 }) {
+  const router = useRouter();
+  const pathName = usePathname().split("/")[2];
   return (
     <div
+      onClick={() => router.push(`/t/${conversation.id}`)}
       key={conversation.id}
-      className="flex items-center gap-3 p-4 hover:bg-zinc-700 rounded-md pointer-events-auto"
+      className={
+        pathName === conversation.id
+          ? "bg-zinc-700  flex items-center gap-3 p-3 hover:bg-zinc-700 rounded-md cursor-pointer"
+          : "flex items-center gap-3 p-3 hover:bg-zinc-700 rounded-md cursor-pointer"
+      }
     >
       <Avatar className="w-12 h-12 bg-background">
         <AvatarImage src={conversation?.users[1]?.image} />
