@@ -69,8 +69,8 @@ export function ConversationList() {
         </div>
       </div>
       <ScrollArea className="flex-1 overflow-auto space-y-2">
-        {conversations.map((conversation) => (
-          <ConversationItem conversation={conversation} />
+        {conversations.map((conversation, index) => (
+          <ConversationItem conversation={conversation} key={index} />
         ))}
         <ScrollBar orientation="vertical" />
       </ScrollArea>

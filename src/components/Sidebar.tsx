@@ -19,8 +19,6 @@ import {
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import { User } from "../../lib/entity-types";
-import axios from "axios";
-import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 const navItems = [

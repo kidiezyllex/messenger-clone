@@ -55,3 +55,14 @@ export interface Message {
   sender: User;
   senderId: string;
 }
+
+export interface StickerImage {
+  id: string;
+  url?: string;
+}
+
+export interface Sticker {
+  id: string;
+  name?: string;
+  value: StickerImage[];
+}

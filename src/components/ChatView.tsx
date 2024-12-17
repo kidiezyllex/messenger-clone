@@ -23,6 +23,14 @@ import Image from "next/image";
 import { useUploadThing } from "@/utils/uploadthing";
 import { formatDate3 } from "../../lib/utils";
 import { pusherClient } from "@/lib/pusher";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import StickerBoard from "./chat/StickerBoard";
 
 export function ChatView({ conversationId }: { conversationId: string }) {
   const [conversation, setConversation] = useState<Conversation>();
@@ -218,13 +226,19 @@ export function ChatView({ conversationId }: { conversationId: string }) {
               accept="image/*"
               className="hidden"
             />
-            <Button
-              size="icon"
-              variant="secondary"
-              className="hover:bg-primary-foreground rounded-full"
-            >
-              <Sticker className="h-5 w-5 text-violet-500 " />
-            </Button>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  size="icon"
+                  variant="secondary"
+                  className="hover:bg-primary-foreground rounded-full"
+                >
+                  <Sticker className="h-5 w-5 text-violet-500 " />
+                </Button>
+              </DropdownMenuTrigger>
+              <StickerBoard></StickerBoard>
+            </DropdownMenu>
           </div>
           <div className="flex gap-2 flex-grow relative px-1">
             <Input

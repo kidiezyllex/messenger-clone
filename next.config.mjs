@@ -7,6 +7,7 @@ const nextConfig = {
       "res.cloudinary.com",
       "benhvienjw.vn",
       "upload.wikimedia.org",
+      "https://zalo-api.zadn.vn",
     ],
   },
   eslint: {
