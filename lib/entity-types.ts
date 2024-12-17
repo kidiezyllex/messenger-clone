@@ -44,7 +44,8 @@ export interface Conversation {
 
 export interface Message {
   id: string;
-  body?: string;
+  text?: string;
+  type?: string;
   image?: string;
   createdAt: Date;
   seen: User[];

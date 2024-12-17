@@ -14,13 +14,13 @@ import { stickers } from "../../../lib/stickers";
 export default function StickerBoard() {
   const [search, setSearch] = useState("");
   return (
-    <DropdownMenuContent className="w-80 bg-zinc-900 p-0">
+    <DropdownMenuContent className="w-80 bg-background dark:bg-zinc-900 p-0">
       <div className="p-2 border-b">
         <div className="relative">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Tìm kiếm sticker"
-            className="pl-8 bg-zinc-800 border-0"
+            className="pl-8 bg-background border"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />

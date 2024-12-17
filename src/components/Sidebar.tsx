@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import { User } from "../../lib/entity-types";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { ModeToggle } from "./ModeToggle";
 
 const navItems = [
   { icon: MessageCircle, label: "Đoạn chat" },
@@ -65,7 +66,19 @@ export function Sidebar() {
           </TooltipProvider>
         ))}
       </div>
-      <div className="space-y-3">
+      <div className="flex flex-col gap-2">
+        <ModeToggle></ModeToggle>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => setExpanded(!expanded)}
+        >
+          {expanded ? (
+            <ChevronLeft className="h-4 w-4" />
+          ) : (
+            <ChevronRight className="h-4 w-4" />
+          )}
+        </Button>
         <div className={cn("flex items-center", expanded)}>
           <Avatar className="w-10 h-10 bg-background">
             <AvatarImage src={session?.user?.image} />
@@ -80,18 +93,6 @@ export function Sidebar() {
             </div>
           )}
         </div>
-        <Button
-          size="icon"
-          variant="secondary"
-          onClick={() => setExpanded(!expanded)}
-          className="bg-purple-600 hover:bg-purple-700 text-white dark:bg-secondary"
-        >
-          {expanded ? (
-            <ChevronLeft className="h-4 w-4" />
-          ) : (
-            <ChevronRight className="h-4 w-4" />
-          )}
-        </Button>
       </div>
     </div>
   );

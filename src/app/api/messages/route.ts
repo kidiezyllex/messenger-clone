@@ -4,7 +4,7 @@ import { pusherServer } from "@/lib/pusher";
 
 export async function POST(req: Request) {
   const body = await req.json();
-  const { conversationId, image, content, senderId } = body;
+  const { conversationId, image, content, senderId, type } = body;
 
   if (!conversationId || !content) {
     return NextResponse.json(
@@ -16,7 +16,8 @@ export async function POST(req: Request) {
   try {
     const message = await prismadb.message.create({
       data: {
-        body: content,
+        type: type,
+        text: content,
         image: image,
         conversation: {
           connect: { id: conversationId },

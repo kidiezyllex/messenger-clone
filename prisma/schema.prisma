@@ -56,7 +56,8 @@ model Conversation {
 
 model Message {
   id             String       @id @default(uuid())
-  body           String?
+  text           String
+  type           String
   image          String?
   createdAt      DateTime     @default(now())
   seen           User[]       @relation("UserSeenMessages")
