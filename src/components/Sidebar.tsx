@@ -42,8 +42,8 @@ export function Sidebar() {
       )}
     >
       <div className="space-y-3 mr-4">
-        {navItems.map((item) => (
-          <TooltipProvider>
+        {navItems.map((item, index) => (
+          <TooltipProvider key={index}>
             <Tooltip key={item.label} delayDuration={0}>
               <TooltipTrigger asChild>
                 <Button

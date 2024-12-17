@@ -5,29 +5,35 @@ import {
   MoreVertical,
   Send,
   CirclePlus,
-  Image,
+  ImageIcon,
   Sticker,
   SmilePlus,
   ThumbsUp,
+  X,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea, ScrollBar } from "./ui/scroll-area";
 import { Conversation } from "../../lib/entity-types";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-
+import Image from "next/image";
+import { useUploadThing } from "@/utils/uploadthing";
+import imageLoader from "../../image-loader";
 export function ChatView({ conversationId }: { conversationId: string }) {
   const [conversation, setConversation] = useState<Conversation>();
   const [inputMessage, setInputMessage] = useState("");
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const { data: session } = useSession();
   const userId = (session?.user as any)?.id;
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { startUpload } = useUploadThing("imageUploader");
+
   const fetchData = async () => {
     const res = await axios.get(`/api/conversations/${conversationId}`);
     setConversation(res.data);
-    console.log(res.data);
   };
   useEffect(() => {
     fetchData();
@@ -38,20 +44,39 @@ export function ChatView({ conversationId }: { conversationId: string }) {
   ) => {
     if (e.key === "Enter" && inputMessage.trim() !== "") {
       try {
+        // Upload ảnh lên trước
+        const res = await startUpload([selectedImage]);
+
+        // POST message
         await axios.post(`/api/messages`, {
           conversationId,
-          image: "",
+          image: res[0].url || "",
           content: inputMessage,
           senderId: userId,
         });
         setInputMessage("");
+        setSelectedImage(null);
         fetchData();
       } catch (error) {
-        console.error("Error sending message:", error);
+        console.error(error);
       }
     }
   };
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedImage(file);
+    }
+  };
+
+  const handleImageButtonClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const removeSelectedImage = () => {
+    setSelectedImage(null);
+  };
   return (
     <div className="flex h-full flex-1 flex-col flex-grow bg-secondary rounded-xl ml-4 border">
       <div className="flex items-center justify-between p-3 border-b dark:border-b-zinc-600 border-b-zinc-300">
@@ -95,6 +120,7 @@ export function ChatView({ conversationId }: { conversationId: string }) {
         <div className="space-y-4">
           {conversation?.messages?.map((message) => (
             <div
+              key={message.id}
               className={
                 message?.senderId === userId
                   ? "flex gap-3 flex-row-reverse"
@@ -105,7 +131,21 @@ export function ChatView({ conversationId }: { conversationId: string }) {
                 <AvatarImage src={message?.sender?.image} />
                 <AvatarFallback>{message?.sender?.name}</AvatarFallback>
               </Avatar>
-              <div className="rounded-full bg-background dark:bg-zinc-700 py-2 px-4">
+              <div className="rounded-2xl bg-background dark:bg-zinc-700 py-2 px-4 max-w-[70%] gap-2">
+                {message.image && (
+                  <div className="w-full h-52 flex items-center justify-center py-4 relative">
+                    <Image
+                      src={message?.image}
+                      alt="Hotel Image"
+                      layout="fill"
+                      objectFit="cover"
+                      quality={75}
+                    />
+                  </div>
+                )}
+                <p className="text-sm text-zinc-600 dark:text-zinc-300">
+                  {message?.image}
+                </p>
                 <p className="text-sm text-zinc-600 dark:text-zinc-300">
                   {message?.body}
                 </p>
@@ -115,47 +155,81 @@ export function ChatView({ conversationId }: { conversationId: string }) {
         </div>
         <ScrollBar orientation="vertical" />
       </ScrollArea>
-      <div className="flex flex-row p-3">
+      <div className="flex flex-col p-3">
+        {selectedImage && (
+          <div className="relative mb-2 dark:bg-zinc-700 p-4 rounded-lg">
+            <Image
+              src={URL.createObjectURL(selectedImage)}
+              alt="Selected image"
+              width={100}
+              height={100}
+              className="rounded-lg"
+            />
+            <Button
+              size="icon"
+              variant="secondary"
+              className="absolute top-2 right-2 rounded-full bg-zinc-800 hover:bg-zinc-700"
+              onClick={removeSelectedImage}
+            >
+              <X className="h-4 w-4 text-white" />
+            </Button>
+          </div>
+        )}
         <div className="flex flex-row">
+          <div className="flex flex-row">
+            <Button
+              size="icon"
+              variant="secondary"
+              className="hover:bg-primary-foreground rounded-full"
+            >
+              <CirclePlus className="h-5 w-5 text-violet-500 " />
+            </Button>
+            <Button
+              size="icon"
+              variant="secondary"
+              className="hover:bg-primary-foreground rounded-full"
+              onClick={handleImageButtonClick}
+            >
+              <ImageIcon className="h-5 w-5 text-violet-500 " />
+            </Button>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleImageUpload}
+              accept="image/*"
+              className="hidden"
+            />
+            <Button
+              size="icon"
+              variant="secondary"
+              className="hover:bg-primary-foreground rounded-full"
+            >
+              <Sticker className="h-5 w-5 text-violet-500 " />
+            </Button>
+          </div>
+          <div className="flex gap-2 flex-grow relative px-1">
+            <Input
+              placeholder="Type a message..."
+              className="flex-1 rounded-full"
+              value={inputMessage}
+              onChange={(e) => setInputMessage(e.target.value)}
+              onKeyPress={handleSendMessage}
+            />
+            <SmilePlus className="h-5 w-5 text-violet-500 absolute right-4 top-1/2 transform -translate-y-1/2" />
+          </div>
           <Button
             size="icon"
             variant="secondary"
             className="hover:bg-primary-foreground rounded-full"
+            // onClick={handleSendMessage}
           >
-            <CirclePlus className="h-5 w-5 text-violet-500 " />
-          </Button>
-          <Button
-            size="icon"
-            variant="secondary"
-            className="hover:bg-primary-foreground rounded-full"
-          >
-            <Image className="h-5 w-5 text-violet-500 " />
-          </Button>
-          <Button
-            size="icon"
-            variant="secondary"
-            className="hover:bg-primary-foreground rounded-full"
-          >
-            <Sticker className="h-5 w-5 text-violet-500 " />
+            {inputMessage.trim() !== "" || selectedImage ? (
+              <Send className="h-5 w-5 text-violet-500" />
+            ) : (
+              <ThumbsUp className="h-5 w-5 text-violet-500" />
+            )}
           </Button>
         </div>
-        <div className="flex gap-2 flex-grow relative">
-          <Input
-            placeholder="Type a message..."
-            className="flex-1 rounded-full"
-            value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
-            onKeyPress={handleSendMessage}
-          />
-          <SmilePlus className="h-5 w-5 text-violet-500 absolute right-3 top-1/2 transform -translate-y-1/2" />
-        </div>
-        <Button
-          size="icon"
-          variant="secondary"
-          className="hover:bg-primary-foreground rounded-full"
-        >
-          <ThumbsUp className="h-5 w-5 text-violet-500 " />
-        </Button>
       </div>
     </div>
   );

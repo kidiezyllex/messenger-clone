@@ -4,9 +4,20 @@ const nextConfig = {
     domains: [
       "utfs.io",
       "static.designboom.com",
-      "upload.wikimedia.org",
       "res.cloudinary.com",
+      "benhvienjw.vn",
+      "upload.wikimedia.org",
     ],
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  experimental: {
+    missingSuspenseWithCSRBailout: false,
+  },
+  images: {
+    loader: "custom",
+    loaderFile: "./image-loader.js",
   },
 };
 
