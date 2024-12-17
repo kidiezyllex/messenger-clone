@@ -18,3 +18,8 @@ export function formatDate2(date: Date | undefined) {
   if (!date) return "";
   return format(date, "h:mm a dd/MM/yyyy");
 }
+
+export function formatDate3(date: Date | undefined) {
+  if (!date) return "";
+  return format(date, "h:mm a");
+}

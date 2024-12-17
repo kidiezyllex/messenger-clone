@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prismadb from "../../../../lib/prismadb";
+import { pusherServer } from "@/lib/pusher";
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -34,7 +35,7 @@ export async function POST(req: Request) {
     });
 
     // Update the conversation's lastMessageAt
-    await prismadb.conversation.update({
+    const updatedConversation = await prismadb.conversation.update({
       where: {
         id: conversationId,
       },
@@ -56,6 +57,15 @@ export async function POST(req: Request) {
       },
     });
 
+    await pusherServer.trigger(conversationId, "message:new", message);
+    const lastMessage =
+      updatedConversation.messages[updatedConversation.messages.length - 1];
+    updatedConversation.users.map((user) => {
+      pusherServer.trigger(user.email!, "conversation:update", {
+        id: conversationId,
+        message: [lastMessage],
+      });
+    });
     return NextResponse.json(message);
   } catch (error) {
     console.error("Error creating message:", error);

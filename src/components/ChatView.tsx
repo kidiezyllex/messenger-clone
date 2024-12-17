@@ -15,15 +15,18 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea, ScrollBar } from "./ui/scroll-area";
-import { Conversation } from "../../lib/entity-types";
+import { Conversation, Message } from "../../lib/entity-types";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useUploadThing } from "@/utils/uploadthing";
-import imageLoader from "../../image-loader";
+import { formatDate3 } from "../../lib/utils";
+import { pusherClient } from "@/lib/pusher";
+
 export function ChatView({ conversationId }: { conversationId: string }) {
   const [conversation, setConversation] = useState<Conversation>();
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const { data: session } = useSession();
@@ -34,29 +37,41 @@ export function ChatView({ conversationId }: { conversationId: string }) {
   const fetchData = async () => {
     const res = await axios.get(`/api/conversations/${conversationId}`);
     setConversation(res.data);
+    setMessages(res.data.messages);
   };
+
   useEffect(() => {
     fetchData();
+
+    pusherClient.subscribe(conversationId);
+    pusherClient.bind("message:new", (message: Message) => {
+      setMessages((current) => [...current, message]);
+    });
+
+    return () => {
+      pusherClient.unsubscribe(conversationId);
+      pusherClient.unbind("message:new");
+    };
   }, [conversationId]);
 
-  const handleSendMessage = async (
-    e: React.KeyboardEvent<HTMLInputElement>
-  ) => {
-    if (e.key === "Enter" && inputMessage.trim() !== "") {
+  const handleSendMessage = async () => {
+    if (inputMessage.trim() !== "" || selectedImage) {
       try {
-        // Upload ảnh lên trước
-        const res = await startUpload([selectedImage]);
+        let imageUrl = "";
+        if (selectedImage) {
+          const res = await startUpload([selectedImage]);
+          imageUrl = res[0].url;
+        }
 
-        // POST message
         await axios.post(`/api/messages`, {
           conversationId,
-          image: res[0].url || "",
+          image: imageUrl,
           content: inputMessage,
           senderId: userId,
         });
+
         setInputMessage("");
         setSelectedImage(null);
-        fetchData();
       } catch (error) {
         console.error(error);
       }
@@ -77,6 +92,7 @@ export function ChatView({ conversationId }: { conversationId: string }) {
   const removeSelectedImage = () => {
     setSelectedImage(null);
   };
+
   return (
     <div className="flex h-full flex-1 flex-col flex-grow bg-secondary rounded-xl ml-4 border">
       <div className="flex items-center justify-between p-3 border-b dark:border-b-zinc-600 border-b-zinc-300">
@@ -118,7 +134,7 @@ export function ChatView({ conversationId }: { conversationId: string }) {
       </div>
       <ScrollArea className="flex-1 overflow-auto space-y-2 px-3">
         <div className="space-y-4">
-          {conversation?.messages?.map((message) => (
+          {messages.map((message) => (
             <div
               key={message.id}
               className={
@@ -131,24 +147,27 @@ export function ChatView({ conversationId }: { conversationId: string }) {
                 <AvatarImage src={message?.sender?.image} />
                 <AvatarFallback>{message?.sender?.name}</AvatarFallback>
               </Avatar>
-              <div className="rounded-2xl bg-background dark:bg-zinc-700 py-2 px-4 max-w-[70%] gap-2">
+              <div className="rounded-lg bg-background dark:bg-zinc-700 py-2 px-4 max-w-[70%]">
                 {message.image && (
-                  <div className="w-full h-52 flex items-center justify-center py-4 relative">
+                  <div className="w-80 h-52 flex items-center justify-center py-4 my-2 relative">
                     <Image
                       src={message?.image}
-                      alt="Hotel Image"
+                      alt="Message Image"
                       layout="fill"
                       objectFit="cover"
-                      quality={75}
+                      quality={50}
+                      className="rounded-lg"
                     />
                   </div>
                 )}
-                <p className="text-sm text-zinc-600 dark:text-zinc-300">
-                  {message?.image}
-                </p>
-                <p className="text-sm text-zinc-600 dark:text-zinc-300">
-                  {message?.body}
-                </p>
+                <div className="flex flex-col gap-2">
+                  <p className="text-base text-zinc-600 dark:text-zinc-300">
+                    {message?.body}
+                  </p>
+                  <p className="text-sm text-muted-foreground self-start">
+                    {formatDate3(message?.createdAt)}
+                  </p>
+                </div>
               </div>
             </div>
           ))}
@@ -213,7 +232,11 @@ export function ChatView({ conversationId }: { conversationId: string }) {
               className="flex-1 rounded-full"
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
-              onKeyPress={handleSendMessage}
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  handleSendMessage();
+                }
+              }}
             />
             <SmilePlus className="h-5 w-5 text-violet-500 absolute right-4 top-1/2 transform -translate-y-1/2" />
           </div>
@@ -221,7 +244,7 @@ export function ChatView({ conversationId }: { conversationId: string }) {
             size="icon"
             variant="secondary"
             className="hover:bg-primary-foreground rounded-full"
-            // onClick={handleSendMessage}
+            onClick={handleSendMessage}
           >
             {inputMessage.trim() !== "" || selectedImage ? (
               <Send className="h-5 w-5 text-violet-500" />
