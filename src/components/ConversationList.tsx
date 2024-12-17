@@ -42,9 +42,11 @@ export function ConversationList() {
     fecthData();
   }, [userId]);
   return (
-    <div className="flex flex-col h-full w-80 p-2 py-4 bg-secondary rounded-xl gap-3">
+    <div className="flex flex-col h-full w-80 p-2 py-4 bg-secondary rounded-xl gap-3 border">
       <div className="flex flex-col mx-2 gap-2">
-        <h1 className="text-2xl font-bold">Đoạn chat</h1>
+        <h1 className="text-2xl font-bold text-zinc-600 dark:text-zinc-300">
+          Đoạn chat
+        </h1>
         <div className="flex flex-row gap-2 justify-center items-center">
           <div className="relative rounded-full flex-grow">
             <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />

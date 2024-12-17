@@ -49,7 +49,7 @@ export function Sidebar() {
                 <Button
                   size="icon"
                   className={cn(
-                    "flex flex-row items-center justify-start gap-3 px-4 dark:bg-secondary dark:text-slate-300 w-full",
+                    "flex flex-row items-center justify-start gap-3 px-4 dark:bg-secondary bg-purple-600 hover:bg-purple-700 dark:text-slate-300 w-full",
                     !expanded &&
                       "px-0 justify-center items-center dark:bg-secondary"
                   )}
@@ -86,6 +86,7 @@ export function Sidebar() {
           size="icon"
           variant="secondary"
           onClick={() => setExpanded(!expanded)}
+          className="bg-purple-600 hover:bg-purple-700 text-white dark:bg-secondary"
         >
           {expanded ? (
             <ChevronLeft className="h-4 w-4" />

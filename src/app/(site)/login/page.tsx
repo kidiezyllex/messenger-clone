@@ -35,7 +35,7 @@ export default function LoginForm() {
         description: "Đăng nhập thành công!",
       });
       setIsLoading(false);
-      router.push("/t");
+      router.push("/t/5");
     } catch (err: any) {
       if (err?.status === 400) {
         toast({

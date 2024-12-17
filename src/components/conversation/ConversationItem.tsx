@@ -34,8 +34,8 @@ export function ConversationItem({
       key={conversation.id}
       className={
         pathName === conversation.id
-          ? "bg-zinc-700  flex items-center gap-3 p-3 hover:bg-zinc-700 rounded-md cursor-pointer"
-          : "flex items-center gap-3 p-3 hover:bg-zinc-700 rounded-md cursor-pointer"
+          ? "dark:bg-zinc-700 dark:hover:bg-zinc-700 bg-background border flex items-center gap-3 p-3 rounded-md cursor-pointer"
+          : "dark:hover:bg-zinc-700 flex items-center gap-3 p-3 rounded-md cursor-pointer"
       }
     >
       <Avatar className="w-12 h-12 bg-background">

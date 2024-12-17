@@ -38,7 +38,7 @@
     }
 
     ::-webkit-scrollbar-thumb {
-      @apply rounded-full bg-zinc-500 border-[1px] border-transparent border-solid bg-clip-padding;
+      @apply rounded-full dark:bg-zinc-500 bg-zinc-400 border-[1px] border-transparent border-solid bg-clip-padding;
     }
   }
 

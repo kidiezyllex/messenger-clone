@@ -3,9 +3,9 @@ import prismadb from "../../../../lib/prismadb";
 
 export async function POST(req: Request) {
   const body = await req.json();
-  const { conversationId, senderId, content } = body;
+  const { conversationId, image, content, senderId } = body;
 
-  if (!conversationId || !senderId || !content) {
+  if (!conversationId || !content) {
     return NextResponse.json(
       { error: "Missing required fields" },
       { status: 400 }
@@ -16,10 +16,14 @@ export async function POST(req: Request) {
     const message = await prismadb.message.create({
       data: {
         body: content,
+        image: image,
         conversation: {
           connect: { id: conversationId },
         },
         sender: {
+          connect: { id: senderId },
+        },
+        seen: {
           connect: { id: senderId },
         },
       },
@@ -36,6 +40,19 @@ export async function POST(req: Request) {
       },
       data: {
         lastMessageAt: new Date(),
+        messages: {
+          connect: {
+            id: message.id,
+          },
+        },
+      },
+      include: {
+        users: true,
+        messages: {
+          include: {
+            seen: true,
+          },
+        },
       },
     });
 
