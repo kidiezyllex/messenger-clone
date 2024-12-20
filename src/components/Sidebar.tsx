@@ -21,6 +21,7 @@ import { useSession } from "next-auth/react";
 import { User } from "../../lib/entity-types";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { ModeToggle } from "./ModeToggle";
+import { useToast } from "@/hooks/use-toast";
 
 const navItems = [
   { icon: MessageCircle, label: "Đoạn chat" },
@@ -33,6 +34,8 @@ export function Sidebar() {
   const [expanded, setExpanded] = useState(false);
   const [user, setUser] = useState<User>();
   const { data: session } = useSession();
+  const { toast } = useToast();
+
   return (
     <div
       className={cn(
@@ -67,6 +70,16 @@ export function Sidebar() {
         ))}
       </div>
       <div className="flex flex-col gap-2">
+        <Button
+          variant="outline"
+          onClick={() => {
+            toast({
+              variant: "default",
+              title: "Scheduled: Catch up",
+              description: "Friday, February 10, 2023 at 5:57 PM",
+            });
+          }}
+        ></Button>
         <ModeToggle></ModeToggle>
         <Button
           variant="outline"

@@ -38,7 +38,6 @@ const authOptions: AuthOptions = {
         const user = await prismadb.user.findUnique({
           where: { email: credentials.email },
         });
-
         if (!user || !user?.hashedPassword) {
           throw new Error("Invalid email or password");
         }

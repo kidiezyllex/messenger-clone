@@ -9,19 +9,27 @@ generator client {
 }
 
 model User {
-  id             String         @id @default(uuid())
-  name           String?
-  email          String?        @unique
-  emailVerified  DateTime?
-  image          String?
-  hashedPassword String?
-  createAt       DateTime       @default(now())
-  updateAt       DateTime       @updatedAt
-  conversations  Conversation[] @relation("UserConversations")
-  seenMessages   Message[]      @relation("UserSeenMessages")
-  accounts       Account[]
-  messages       Message[]
-  sentMessages   Message[]      @relation("MessageSender")
+  id                     String          @id @default(uuid())
+  name                   String?
+  email                  String?         @unique
+  emailVerified          DateTime?
+  image                  String?
+  hashedPassword         String?
+  lastConversationId     String?
+  createAt               DateTime        @default(now())
+  updateAt               DateTime        @updatedAt
+  blockedUserIdList      String[]
+  conversations          Conversation[]  @relation("UserConversations")
+  seenMessages           Message[]       @relation("UserSeenMessages")
+  accounts               Account[]
+  messages               Message[]
+  sentMessages           Message[]       @relation("MessageSender")
+  userId                 String?
+  Conversation           Conversation[]
+  groups                 Conversation[]  @relation("GroupCreator")
+  friends                Friend[]        @relation("UserFriends")
+  sentFriendRequests     FriendRequest[] @relation("SentFriendRequests")
+  receivedFriendRequests FriendRequest[] @relation("ReceivedFriendRequests")
 }
 
 model Account {
@@ -43,15 +51,20 @@ model Account {
 }
 
 model Conversation {
-  id            String    @id @default(uuid())
-  createdAt     DateTime  @default(now())
-  lastMessageAt DateTime  @default(now())
-  name          String?
-  isGroup       Boolean?
-  messages      Message[]
-  messagesIds   String[]
-  usersIds      String[]
-  users         User[]    @relation("UserConversations")
+  id             String    @id @default(uuid())
+  createdAt      DateTime  @default(now())
+  lastMessageAt  DateTime  @default(now())
+  name           String?
+  isGroup        Boolean?
+  groupImage     String?
+  groupCreator   User      @relation("GroupCreator", fields: [groupCreatorId], references: [id], onDelete: Cascade)
+  groupCreatorId String
+  usersIds       String[]
+  users          User[]    @relation("UserConversations")
+  messages       Message[]
+  messagesIds    String[]
+  User           User?     @relation(fields: [userId], references: [id])
+  userId         String?
 }
 
 model Message {
@@ -67,4 +80,27 @@ model Message {
   userId         String?
   sender         User         @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
   senderId       String
+}
+
+model Friend {
+  id        String   @id @default(uuid())
+  userId    String
+  friendId  String
+  createdAt DateTime @default(now())
+  friend    User     @relation("UserFriends", fields: [friendId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, friendId])
+}
+
+model FriendRequest {
+  id         String   @id @default(uuid())
+  senderId   String
+  receiverId String
+  status     String   @default("pending") // Can be "pending", "accepted", or "rejected"
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  sender     User     @relation("SentFriendRequests", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver   User     @relation("ReceivedFriendRequests", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@unique([senderId, receiverId])
 }

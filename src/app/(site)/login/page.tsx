@@ -13,13 +13,14 @@ import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 
 export default function LoginForm() {
-  const session = useSession();
   const { toast } = useToast();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [trigger, setTrigger] = useState(false);
   const isHomePage = usePathname() === "/";
+  const { data: session } = useSession();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -29,38 +30,39 @@ export default function LoginForm() {
         password,
         redirect: false,
       });
-      toast({
-        variant: "default",
-        title: "Thành công!",
-        description: "Đăng nhập thành công!",
-      });
-      setIsLoading(false);
-      router.push("/t/5");
-    } catch (err: any) {
-      if (err?.status === 400) {
+      if (result?.status === 400) {
         toast({
           variant: "destructive",
           title: "Thất bại!",
           description: "Thiếu email hoặc mật khẩu!",
         });
-      } else if (err?.status === 401) {
+      } else if (result?.status === 401) {
         toast({
           variant: "destructive",
           title: "Thất bại!",
           description: "Email hoặc mật khẩu không hợp lệ!",
         });
+      } else if (result?.status === 200) {
+        toast({
+          variant: "default",
+          title: "Thành công!",
+          description: "Đăng nhập thành công!",
+        });
+        setTrigger(true);
       }
+    } catch (result: any) {
+    } finally {
       setIsLoading(false);
     }
   };
   useEffect(() => {
-    if (session?.status === "authenticated") {
-      console.log("Authenticated");
-    }
-  }, [session?.status]);
+    // console.log(session?.user);
+    // router.push("/t/5");
+    setTrigger(false);
+  }, [trigger]);
 
   return isHomePage ? (
-    <div className="w-full max-w-md mx-auto bg-primary-foreground border p-4 rounded-md h-fit flex flex-col gap-3 items-center">
+    <div className="w-full max-w-md mx-auto bg-primary-foreground border p-6 rounded-md h-fit flex flex-col gap-3 items-center">
       <div className="w-full h-10 relative flex flex-row justify-center">
         <Image
           layout="fill"
@@ -74,7 +76,9 @@ export default function LoginForm() {
       <h1 className="text-2xl font-bold">Đăng nhập tài khoản</h1>
       <form onSubmit={handleSubmit} className="space-y-4 w-full">
         <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email" className="text-sm">
+            Email
+          </Label>
           <Input
             id="email"
             type="email"
@@ -85,7 +89,9 @@ export default function LoginForm() {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password" className="text-sm">
+            Password
+          </Label>
           <Input
             id="password"
             type="password"
@@ -154,10 +160,10 @@ export default function LoginForm() {
         </Button>
       </div>
       <div className="flex flex-row gap-2 mt-2">
-        <span className="text-zinc-300 dark:text-zinc-500 text-base self-center text-center">
+        <span className="text-zinc-300 dark:text-zinc-500 text-sm self-center text-center">
           Bạn chưa có tài khoản?
         </span>
-        <Link href="/signup" className="text-base text-zinc-300 underline">
+        <Link href="/signup" className="text-sm text-zinc-300 underline">
           Tạo tài khoản
         </Link>
       </div>

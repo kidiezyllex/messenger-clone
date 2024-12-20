@@ -11,7 +11,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "../ui/button";
 import {
   EllipsisVertical,
   MailCheck,
@@ -19,7 +18,6 @@ import {
   PhoneCall,
   Video,
 } from "lucide-react";
-import axios from "axios";
 import { usePathname, useRouter } from "next/navigation";
 export function ConversationItem({
   conversation,
