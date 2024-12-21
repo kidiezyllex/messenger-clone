@@ -16,9 +16,11 @@ export function ChatView({ conversationId }: { conversationId: string }) {
   const userId = (session?.user as any)?.id;
 
   const fetchData = async () => {
-    const res = await axios.get(`/api/conversations/${conversationId}`);
-    setConversation(res.data);
-    setMessages(res.data.messages);
+    if (conversationId !== "new-account") {
+      const res = await axios.get(`/api/conversations/${conversationId}`);
+      setConversation(res.data);
+      setMessages(res.data.messages);
+    }
   };
 
   useEffect(() => {
@@ -36,7 +38,13 @@ export function ChatView({ conversationId }: { conversationId: string }) {
   }, [conversationId]);
 
   return (
-    <div className="flex h-full flex-1 flex-col flex-grow bg-secondary rounded-xl ml-4 border">
+    <div
+      className={
+        conversationId === "new-account"
+          ? "hidden"
+          : "flex h-full flex-1 flex-col flex-grow bg-secondary rounded-xl ml-4 border"
+      }
+    >
       <ChatViewTop conversation={conversation}></ChatViewTop>
       <ScrollArea className="flex-1 overflow-auto space-y-2 px-3">
         <div className="space-y-4">

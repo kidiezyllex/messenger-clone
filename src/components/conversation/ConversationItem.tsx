@@ -36,7 +36,7 @@ export function ConversationItem({
           : "dark:hover:bg-zinc-700 flex items-center gap-3 p-3 rounded-md cursor-pointer"
       }
     >
-      <Avatar className="w-12 h-12 bg-background">
+      <Avatar className="w-11 h-11 bg-background">
         <AvatarImage src={conversation?.users[1]?.image} />
         <AvatarFallback>{conversation.name[0]}</AvatarFallback>
       </Avatar>

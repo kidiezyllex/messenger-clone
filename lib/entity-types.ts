@@ -5,6 +5,7 @@ export interface User {
   emailVerified?: Date;
   image?: string;
   hashedPassword?: string;
+  lastConversationId?: string;
   createAt: Date;
   updateAt: Date;
   conversations: Conversation[];
