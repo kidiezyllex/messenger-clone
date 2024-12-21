@@ -30,11 +30,9 @@ const navItems = [
 
 export function Sidebar() {
   const [expanded, setExpanded] = useState(false);
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
-  useEffect(() => {
-    if (!session) router.push("/");
-  }, []);
+  if (!session && status === "unauthenticated") router.push("/");
   return (
     <div
       className={cn(

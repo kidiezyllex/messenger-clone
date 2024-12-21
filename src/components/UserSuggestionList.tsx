@@ -8,18 +8,53 @@ import axios from "axios";
 import { User } from "../../lib/entity-types";
 import { useSession } from "next-auth/react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { useToast } from "@/hooks/use-toast";
 
 export function UserSuggestionList() {
   const [users, setUsers] = useState<User[]>([]);
-  const { data: session } = useSession();
+  const [receiverIds, setReceiverIds] = useState<String[]>([]);
+  const { data: session, status } = useSession();
   const userId = (session?.user as any)?.id;
+  const { toast } = useToast();
+
   useEffect(() => {
     const fecthData = async () => {
       const res = await axios.get(`/api/users`);
-      setUsers(res.data);
+      const users = res.data.filter((item: any) => item.id !== userId);
+      setUsers(users);
+
+      // Fetch danh sách lời mời kết bạn
+      const res2 = await axios.get(`/api/friend-requests/${userId}`);
+      const receiverIds = res2.data.map((item: any) => item.receiverId);
+      setReceiverIds(receiverIds);
     };
-    fecthData();
+    if (status === "authenticated") {
+      fecthData();
+    }
   }, [userId]);
+  const handleSendFriendRequest = async (
+    senderId: string,
+    receiverId: string
+  ) => {
+    try {
+      const res = await axios.post(`/api/friend-requests`, {
+        senderId: senderId,
+        receiverId: receiverId,
+      });
+      if (res?.status === 200)
+        toast({
+          variant: "default",
+          title: "Thành công!",
+          description: "Đã gửi lời mời kết bạn!",
+        });
+    } catch (err) {
+      toast({
+        variant: "destructive",
+        title: "Thất bại!",
+        description: "Gửi lời mời không thành công!",
+      });
+    }
+  };
   return (
     <div className="flex flex-col h-full w-96 p-2 py-4 bg-secondary rounded-xl gap-3 border">
       <div className="flex flex-col mx-2 gap-2">
@@ -48,7 +83,11 @@ export function UserSuggestionList() {
               </AvatarFallback>
             </Avatar>
             <p className="font-medium text-sm flex-grow">{user?.name}</p>
-            <Button className="bg-blue-400 hover:bg-blue-400 text-white border-2 border-blue-300 hover:border-blue-300 dark:border-secondary">
+            <Button
+              disabled={receiverIds?.includes(user?.id)}
+              onClick={() => handleSendFriendRequest(userId, user?.id)}
+              className="bg-blue-400 hover:bg-blue-400 text-white border-2 border-blue-300 hover:border-blue-300 dark:border-secondary"
+            >
               Kết bạn
             </Button>
           </div>
