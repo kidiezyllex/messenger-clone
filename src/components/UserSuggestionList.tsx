@@ -1,58 +1,25 @@
 "use client";
-import { SearchIcon, UserRoundPlus, UsersRound } from "lucide-react";
+import { SearchIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Button } from "./ui/button";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { User } from "../../lib/entity-types";
-import { useSession } from "next-auth/react";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { useToast } from "@/hooks/use-toast";
-
+import { useState } from "react";
+import UserSuggestions from "./user-suggestion/UserSuggestions";
+import UserRequestSent from "./user-suggestion/UserRequestSent";
 export function UserSuggestionList() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [receiverIds, setReceiverIds] = useState<String[]>([]);
-  const { data: session, status } = useSession();
-  const userId = (session?.user as any)?.id;
-  const { toast } = useToast();
-
-  useEffect(() => {
-    const fecthData = async () => {
-      const res = await axios.get(`/api/users`);
-      const users = res.data.filter((item: any) => item.id !== userId);
-      setUsers(users);
-
-      // Fetch danh sách lời mời kết bạn
-      const res2 = await axios.get(`/api/friend-requests/${userId}`);
-      const receiverIds = res2.data.map((item: any) => item.receiverId);
-      setReceiverIds(receiverIds);
-    };
-    if (status === "authenticated") {
-      fecthData();
-    }
-  }, [userId]);
-  const handleSendFriendRequest = async (
-    senderId: string,
-    receiverId: string
-  ) => {
-    try {
-      const res = await axios.post(`/api/friend-requests`, {
-        senderId: senderId,
-        receiverId: receiverId,
-      });
-      if (res?.status === 200)
-        toast({
-          variant: "default",
-          title: "Thành công!",
-          description: "Đã gửi lời mời kết bạn!",
-        });
-    } catch (err) {
-      toast({
-        variant: "destructive",
-        title: "Thất bại!",
-        description: "Gửi lời mời không thành công!",
-      });
+  const [activated, setActivated] = useState("requested");
+  const renderTab = () => {
+    switch (activated) {
+      case "suggestion":
+        return <UserSuggestions />;
+      case "requested":
+        return <UserRequestSent />;
+      // case "doctors":
+      //   return <DoctorsManagement />;
+      // case "tests":
+      //   return <TestTypesManagement />;
+      // case "medicine-warehouse":
+      //   return <MedicineWarehouse />;
+      default:
+        return null;
     }
   };
   return (
@@ -64,36 +31,56 @@ export function UserSuggestionList() {
         <div className="flex flex-row gap-1 justify-center items-center">
           <div className="relative rounded-full flex-grow">
             <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input placeholder="Tìm kiếm bằng email..." className="pl-8" />
+            <Input
+              placeholder="Tìm kiếm bằng email..."
+              className="dark:bg-primary-foreground pl-8"
+            />
           </div>
         </div>
       </div>
-      <ScrollArea className="flex-1 overflow-auto space-y-2">
-        {users.map((user, index) => (
-          <div
-            key={index + user.id}
-            className={
-              "dark:hover:bg-zinc-700  flex items-center gap-3 p-3 rounded-md cursor-pointer"
-            }
-          >
-            <Avatar className="w-11 h-11">
-              <AvatarImage src={user?.image} />
-              <AvatarFallback className="bg-blue-400 text-white border-2 border-blue-300 dark:border-secondary">
-                {user?.name[0]}
-              </AvatarFallback>
-            </Avatar>
-            <p className="font-medium text-sm flex-grow">{user?.name}</p>
-            <Button
-              disabled={receiverIds?.includes(user?.id)}
-              onClick={() => handleSendFriendRequest(userId, user?.id)}
-              className="bg-blue-400 hover:bg-blue-400 text-white border-2 border-blue-300 hover:border-blue-300 dark:border-secondary"
-            >
-              Kết bạn
-            </Button>
-          </div>
-        ))}
-        <ScrollBar orientation="vertical" />
-      </ScrollArea>
+      <div className="flex flex-row gap-4 w-full justify-center px-4">
+        <p
+          onClick={() => setActivated("suggestion")}
+          className={
+            activated === "suggestion"
+              ? "border-b-2 border-blue-500 cursor-pointer text-sm font-semibold"
+              : "border-b-2 border-secondary cursor-pointer text-sm font-semibold"
+          }
+        >
+          Đề xuất
+        </p>
+        <p
+          onClick={() => setActivated("requested")}
+          className={
+            activated === "requested"
+              ? "border-b-2 border-blue-500 cursor-pointer text-sm font-semibold"
+              : "border-b-2 border-secondary cursor-pointer text-sm font-semibold"
+          }
+        >
+          Đã gửi
+        </p>
+        <p
+          onClick={() => setActivated("friendRequest")}
+          className={
+            activated === "friendRequest"
+              ? "border-b-2 border-blue-500 cursor-pointer text-sm font-semibold"
+              : "border-b-2 border-secondary cursor-pointer text-sm font-semibold"
+          }
+        >
+          Lời mời kết bạn
+        </p>
+        <p
+          onClick={() => setActivated("friend")}
+          className={
+            activated === "friend"
+              ? "border-b-2 border-blue-500 cursor-pointer text-sm font-semibold"
+              : "border-b-2 border-secondary cursor-pointer text-sm font-semibold"
+          }
+        >
+          Bạn bè
+        </p>
+      </div>
+      {renderTab()}
     </div>
   );
 }

@@ -7,6 +7,9 @@ import {
   Store,
   MessageCircleMore,
   LogOut,
+  EllipsisVertical,
+  ContactRound,
+  Settings,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,7 +23,13 @@ import { signOut, useSession } from "next-auth/react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { ModeToggle } from "./ModeToggle";
 import { useRouter } from "next/navigation";
-
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 const navItems = [
   { icon: MessageCircle, label: "Đoạn chat" },
   { icon: Store, label: "Marketplace" },
@@ -37,7 +46,7 @@ export function Sidebar() {
     <div
       className={cn(
         "h-full flex flex-col justify-between transition-all duration-100",
-        expanded ? "w-64" : "w-16"
+        expanded ? "w-72" : "w-16"
       )}
     >
       <div className="space-y-3 mr-4">
@@ -86,7 +95,47 @@ export function Sidebar() {
                   {session?.user?.email}
                 </p>
               </div>
-              <Button
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <div className="cursor-pointer h-8 w-8 rounded-full hover:bg-background pointer-events-auto flex flex-row justify-center items-center">
+                    <EllipsisVertical className="h-4 w-4" />
+                  </div>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent
+                  className="w-60 bg-zinc-900 items-end mb-4"
+                  align="end"
+                >
+                  <DropdownMenuItem className="p-2 flex justify-between">
+                    <span className="font-semibold text-sm">Cài đặt</span>
+                    <Settings className="h-4 w-4" />
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    className="p-2 flex justify-between"
+                    onClick={() => {
+                      signOut();
+                    }}
+                  >
+                    <span className="font-semibold text-sm">
+                      Cập nhật hồ sơ
+                    </span>
+                    <ContactRound className="h-4 w-4" />
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+
+                  <DropdownMenuItem
+                    className="p-2 flex justify-between"
+                    onClick={() => {
+                      signOut();
+                    }}
+                  >
+                    <span className="font-semibold text-sm">Đăng xuất</span>
+                    <LogOut className="h-4 w-4" />
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              {/* <Button
                 size="icon"
                 className="rounded-full w-10 h-10"
                 variant="outline"
@@ -95,7 +144,7 @@ export function Sidebar() {
                 }}
               >
                 <LogOut className="h-4 w-4"></LogOut>
-              </Button>
+              </Button> */}
             </div>
           )}
         </div>
