@@ -23,3 +23,8 @@ export function formatDate3(date: Date | undefined) {
   if (!date) return "";
   return format(date, "h:mm a");
 }
+
+export const getLastName = (text: string) => {
+  const [, name] = text?.match(/"name": "(.*?)"/) || [];
+  return name?.split(" ")?.pop();
+};

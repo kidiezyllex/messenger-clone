@@ -15,6 +15,7 @@ import {
 import { DropdownMenu, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import StickerBoard from "./StickerBoard";
 import { Input } from "../ui/input";
+import { Badge } from "../ui/badge";
 
 export default function ChatViewBottom({
   conversationId,
@@ -24,12 +25,14 @@ export default function ChatViewBottom({
   userId: string;
 }) {
   const [inputMessage, setInputMessage] = useState("");
+  const [sending, setSending] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { startUpload } = useUploadThing("imageUploader");
   const handleSendMessage = async () => {
     if (inputMessage.trim() !== "" || selectedImage) {
       try {
+        setSending(true);
         let imageUrl = "";
         if (selectedImage) {
           const res = await startUpload([selectedImage]);
@@ -43,9 +46,9 @@ export default function ChatViewBottom({
           senderId: userId,
           type: imageUrl?.trim() === "" ? "text" : "image",
         });
-
         setInputMessage("");
         setSelectedImage(null);
+        setSending(false);
       } catch (error) {
         console.error(error);
       }
@@ -87,7 +90,14 @@ export default function ChatViewBottom({
           </Button>
         </div>
       )}
-      <div className="flex flex-row">
+      <div className="flex flex-row relative">
+        {sending && (
+          <div className="absolute bottom-14 flex flex-row w-full items-center justify-center">
+            <Badge className="bg-zinc-900 text-slate-300 pointer-events-none">
+              Đang gửi ...
+            </Badge>
+          </div>
+        )}
         <div className="flex flex-row">
           <Button
             size="icon"

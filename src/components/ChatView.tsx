@@ -1,9 +1,10 @@
 "use client";
+
+import { useEffect, useRef, useState } from "react";
+import { useSession } from "next-auth/react";
+import axios from "axios";
 import { ScrollArea, ScrollBar } from "./ui/scroll-area";
 import { Conversation, Message } from "../../lib/entity-types";
-import { useEffect, useRef, useState } from "react";
-import axios from "axios";
-import { useSession } from "next-auth/react";
 import { pusherClient } from "@/lib/pusher";
 import ChatViewTop from "./chat/ChatViewTop";
 import MessageCpn from "./chat/MessageCpn";
@@ -14,55 +15,62 @@ export function ChatView({ conversationId }: { conversationId: string }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const { data: session } = useSession();
   const userId = (session?.user as any)?.id;
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const pusherInitialized = useRef(false);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   const fetchData = async () => {
     if (conversationId !== "new-account") {
-      const res = await axios.get(`/api/conversations/${conversationId}`);
-      setConversation(res.data);
-      console.log(res.data);
-      setMessages(res.data.messages);
+      try {
+        const res = await axios.get(`/api/conversations/${conversationId}`);
+        setConversation(res.data);
+        setMessages(res.data.messages);
+        scrollToBottom();
+      } catch (error) {
+        console.error("Error fetching conversation data:", error);
+      }
     }
   };
 
   useEffect(() => {
     fetchData();
+  }, [conversationId]);
 
-    pusherClient.subscribe(conversationId);
-    pusherClient.bind("message:new", (message: Message) => {
-      setMessages((current) => [...current, message]);
-    });
+  useEffect(() => {
+    if (!pusherInitialized.current) {
+      pusherClient.subscribe(conversationId);
+      pusherClient.bind("message:new", (message: Message) => {
+        setMessages((current) => [...current, message]);
+        scrollToBottom();
+      });
+      pusherInitialized.current = true;
+    }
 
     return () => {
-      pusherClient.unsubscribe(conversationId);
-      pusherClient.unbind("message:new");
+      if (pusherInitialized.current) {
+        pusherClient.unsubscribe(conversationId);
+        pusherClient.unbind("message:new");
+        pusherInitialized.current = false;
+      }
     };
   }, [conversationId]);
 
   return (
-    <div
-      className={
-        conversationId === "new-account"
-          ? "hidden"
-          : "flex h-full flex-1 flex-col flex-grow bg-secondary rounded-xl ml-4 border"
-      }
-    >
-      <ChatViewTop conversation={conversation}></ChatViewTop>
+    <div className="flex h-full flex-1 flex-col flex-grow bg-secondary rounded-xl ml-4 border">
+      <ChatViewTop conversation={conversation} />
       <ScrollArea className="h-full">
         <div className="p-4 space-y-4">
           {messages.map((message) => (
-            <MessageCpn
-              key={message.id}
-              message={message}
-              userId={userId}
-            ></MessageCpn>
+            <MessageCpn key={message.id} message={message} userId={userId} />
           ))}
+          <div ref={messagesEndRef} />
         </div>
         <ScrollBar orientation="vertical" className="bg-zinc-900" />
       </ScrollArea>
-      <ChatViewBottom
-        conversationId={conversationId}
-        userId={userId}
-      ></ChatViewBottom>
+      <ChatViewBottom conversationId={conversationId} userId={userId} />
     </div>
   );
 }

@@ -12,12 +12,13 @@ export default function ChatPage({
     <div className="flex flex-row w-full p-4 bg-primary-foreground min-h-screen h-screen overflow-hidden">
       <Sidebar />
       {params.conversationId !== "new-account" ? (
-        <ConversationList />
+        <>
+          <ConversationList />
+          <ChatView conversationId={params.conversationId} />
+        </>
       ) : (
         <UserSuggestionList />
       )}
-
-      <ChatView conversationId={params.conversationId} />
     </div>
   );
 }

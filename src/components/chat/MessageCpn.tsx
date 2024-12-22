@@ -34,7 +34,7 @@ export default function MessageCpn({
               layout="fill"
               objectFit="cover"
               quality={50}
-              className="rounded-lg"
+              className="rounded-lg w-full"
             />
           </div>
         )}

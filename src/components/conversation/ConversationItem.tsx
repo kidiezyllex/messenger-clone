@@ -1,13 +1,11 @@
 "use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { formatDate2 } from "../../../lib/utils";
-import { Conversation } from "../../../lib/entity-types";
+import { formatDate2, getLastName } from "../../../lib/utils";
+import { Conversation, Message } from "../../../lib/entity-types";
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -20,6 +18,10 @@ import {
   Ban,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
+import { pusherClient } from "@/lib/pusher";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useSession } from "next-auth/react";
 export function ConversationItem({
   conversation,
 }: {
@@ -27,6 +29,34 @@ export function ConversationItem({
 }) {
   const router = useRouter();
   const pathName = usePathname().split("/")[2];
+  const [messages, setMessages] = useState<Message>();
+  const { data: session } = useSession();
+  const userId = (session?.user as any)?.id;
+  const fetchData = async () => {
+    if (conversation?.id !== "new-account") {
+      const res = await axios.get(`/api/conversations/${conversation?.id}`);
+      setMessages(res.data.messages[res.data.messages.length - 1]);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+    pusherClient.subscribe(conversation?.id);
+    pusherClient.bind("message:new", (message: Message) => {
+      setMessages(message);
+    });
+  }, [conversation?.id]);
+
+  const renderLatestMessage = () => {
+    if (messages?.senderId === userId) {
+      if (messages?.image) return "Bạn: Đã gửi 1 ảnh";
+      else return `Bạn: ${messages?.text}`;
+    } else {
+      if (messages?.image)
+        return `${getLastName(messages?.sender?.name)}: Đã gửi 1 ảnh`;
+      else return `${getLastName(messages?.sender?.name)}: ${messages?.text}`;
+    }
+  };
   return (
     <div
       onClick={() => router.push(`/t/${conversation.id}`)}
@@ -51,7 +81,7 @@ export function ConversationItem({
           </span>
         </div>
         <p className="truncate text-sm text-muted-foreground italic">
-          (Bạn mới trên Messenger Clone)
+          {renderLatestMessage()}
         </p>
       </div>
       <DropdownMenu>
