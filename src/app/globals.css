@@ -34,11 +34,11 @@
     }
 
     ::-webkit-scrollbar-track {
-      @apply bg-white;
+      @apply bg-background;
     }
 
     ::-webkit-scrollbar-thumb {
-      @apply rounded-full dark:bg-white bg-white border border-transparent border-solid bg-clip-padding;
+      @apply rounded-full dark:bg-background bg-background border border-solid;
     }
   }
 

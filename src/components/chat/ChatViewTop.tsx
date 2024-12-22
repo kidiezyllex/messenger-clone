@@ -10,11 +10,13 @@ export default function ChatViewTop({
   conversation: Conversation;
 }) {
   return (
-    <div className="flex items-center justify-between p-3 border-b dark:border-b-zinc-600 border-b-zinc-300">
+    <div className="flex items-center justify-between p-3 border-b dark:border-b-zinc-700 border-b-zinc-300">
       <div className="flex items-center gap-3">
-        <Avatar className="h-9 w-9">
+        <Avatar className="w-12 h-12">
           <AvatarImage src={conversation?.users[1]?.image} />
-          <AvatarFallback>{conversation?.name[0]}</AvatarFallback>
+          <AvatarFallback className="bg-blue-400 text-white border-2 border-blue-300 dark:border-secondary">
+            {conversation.name[0]}
+          </AvatarFallback>
         </Avatar>
         <div>
           <h2 className="font-semibold text-zinc-600 dark:text-zinc-300">
@@ -27,21 +29,21 @@ export default function ChatViewTop({
         <Button
           variant="ghost"
           size="icon"
-          className="text-violet-500 hover:text-violet-300"
+          className="text-blue-500 hover:text-blue-300"
         >
           <Phone className="h-5 w-5" />
         </Button>
         <Button
           variant="ghost"
           size="icon"
-          className="text-violet-500 hover:text-violet-300"
+          className="text-blue-500 hover:text-blue-300"
         >
           <Video className="h-6 w-6" />
         </Button>
         <Button
           variant="ghost"
           size="icon"
-          className="text-violet-500 hover:text-violet-300"
+          className="text-blue-500 hover:text-blue-300"
         >
           <MoreVertical className="h-5 w-5" />
         </Button>

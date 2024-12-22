@@ -6,6 +6,7 @@ export interface User {
   image?: string;
   hashedPassword?: string;
   lastConversationId?: string;
+  friendRequestId?: string;
   createAt: Date;
   updateAt: Date;
   conversations: Conversation[];

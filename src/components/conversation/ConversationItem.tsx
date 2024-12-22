@@ -17,6 +17,7 @@ import {
   BellRing,
   PhoneCall,
   Video,
+  Ban,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 export function ConversationItem({
@@ -32,13 +33,15 @@ export function ConversationItem({
       key={conversation.id}
       className={
         pathName === conversation.id
-          ? "dark:bg-zinc-700 dark:hover:bg-zinc-700 bg-background border flex items-center gap-3 p-3 rounded-md cursor-pointer"
-          : "dark:hover:bg-zinc-700 flex items-center gap-3 p-3 rounded-md cursor-pointer"
+          ? "dark:bg-zinc-700 dark:hover:bg-zinc-700 bg-background border flex items-center gap-3 p-4 rounded-lg cursor-pointer"
+          : "dark:hover:bg-zinc-700 flex items-center gap-3 p-4 rounded-lg cursor-pointer"
       }
     >
-      <Avatar className="w-11 h-11 bg-background">
+      <Avatar className="w-11 h-11">
         <AvatarImage src={conversation?.users[1]?.image} />
-        <AvatarFallback>{conversation.name[0]}</AvatarFallback>
+        <AvatarFallback className="bg-blue-400 text-white border-2 border-blue-300 dark:border-secondary">
+          {conversation.name[0]}
+        </AvatarFallback>
       </Avatar>
       <div className="flex-1 overflow-hidden">
         <div className="flex items-center justify-between">
@@ -47,8 +50,8 @@ export function ConversationItem({
             {/* {conversation.seenMessages} */}
           </span>
         </div>
-        <p className="truncate text-sm text-muted-foreground">
-          {formatDate2(conversation?.lastMessageAt)}
+        <p className="truncate text-sm text-muted-foreground italic">
+          (Bạn mới trên Messenger Clone)
         </p>
       </div>
       <DropdownMenu>
@@ -62,18 +65,25 @@ export function ConversationItem({
             <MailCheck className="h-4 w-4" />
             <span className="font-semibold text-sm">Đánh dấu là đã đọc</span>
           </DropdownMenuItem>
+          <DropdownMenuSeparator />
           <DropdownMenuItem className="p-2">
             <BellRing className="h-4 w-4" />
             <span className="font-semibold text-sm">Bật thông báo</span>
           </DropdownMenuItem>
-          <DropdownMenuSeparator></DropdownMenuSeparator>
+          <DropdownMenuSeparator />
           <DropdownMenuItem className="p-2">
             <PhoneCall className="h-4 w-4" />
             <span className="font-semibold text-sm">Gọi thoại</span>
           </DropdownMenuItem>
+          <DropdownMenuSeparator />
           <DropdownMenuItem className="p-2">
             <Video className="h-4 w-4" />
             <span className="font-semibold text-sm">Chat video</span>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem className="p-2">
+            <Ban className="h-4 w-4" />
+            <span className="font-semibold text-sm">Chặn người dùng</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

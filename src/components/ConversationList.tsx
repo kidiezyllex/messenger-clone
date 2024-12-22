@@ -29,25 +29,28 @@ export function ConversationList() {
         <div className="flex flex-row gap-1 justify-center items-center">
           <div className="relative rounded-full flex-grow">
             <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input placeholder="Tìm kiếm trên Messenger" className="pl-8" />
+            <Input
+              placeholder="Tìm kiếm trên Messenger"
+              className="pl-8 dark:bg-primary-foreground"
+            />
           </div>
           <Button
-            variant="ghost"
+            variant="outline"
             size="icon"
-            className="dark:hover:bg-background"
+            className="dark:bg-primary-foreground dark:hover:bg-background"
           >
             <UserRoundPlus className="h-4 w-4"></UserRoundPlus>
           </Button>
           <Button
-            variant="ghost"
+            variant="outline"
             size="icon"
-            className="dark:hover:bg-background"
+            className="dark:bg-primary-foreground dark:hover:bg-background"
           >
             <UsersRound className="h-4 w-4"></UsersRound>
           </Button>
         </div>
       </div>
-      <ScrollArea className="flex-1 overflow-auto space-y-2">
+      <ScrollArea className="flex-1 space-y-2 px-2">
         {conversations.map((conversation, index) => (
           <ConversationItem conversation={conversation} key={index} />
         ))}

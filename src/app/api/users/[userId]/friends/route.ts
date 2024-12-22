@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import prismadb from "../../../../../lib/prismadb";
+import prismadb from "../../../../../../lib/prismadb";
 
 export async function GET(
   req: Request,
@@ -7,18 +7,18 @@ export async function GET(
 ) {
   try {
     const { userId } = params;
+
     if (!userId) {
       return NextResponse.json(
         { error: "User ID is required" },
         { status: 400 }
       );
     }
-    const friendRequests = await prismadb.friendRequest.findMany({
-      where: {
-        OR: [{ senderId: userId }, { receiverId: userId }],
-      },
+
+    const friends = await prismadb.friend.findMany({
+      where: { userId: userId },
       include: {
-        sender: {
+        friend: {
           select: {
             id: true,
             name: true,
@@ -26,23 +26,14 @@ export async function GET(
             image: true,
           },
         },
-        receiver: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            image: true,
-          },
-        },
-      },
-      orderBy: {
-        createdAt: "desc",
       },
     });
 
-    return NextResponse.json(friendRequests);
+    const friendList = friends.map((friend) => friend.friend);
+
+    return NextResponse.json(friendList);
   } catch (error) {
-    console.error("Error fetching friend requests:", error);
+    console.error("Error fetching friends:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

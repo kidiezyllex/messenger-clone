@@ -57,8 +57,8 @@ model Conversation {
   name           String?
   isGroup        Boolean?
   groupImage     String?
-  groupCreator   User      @relation("GroupCreator", fields: [groupCreatorId], references: [id], onDelete: Cascade)
-  groupCreatorId String
+  groupCreator   User?     @relation("GroupCreator", fields: [groupCreatorId], references: [id], onDelete: Cascade)
+  groupCreatorId String?
   usersIds       String[]
   users          User[]    @relation("UserConversations")
   messages       Message[]

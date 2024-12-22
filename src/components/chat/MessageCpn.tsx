@@ -19,9 +19,11 @@ export default function MessageCpn({
           : "flex gap-3"
       }
     >
-      <Avatar className="h-8 w-8">
+      <Avatar className="h-10 w-10">
         <AvatarImage src={message?.sender?.image} />
-        <AvatarFallback>{message?.sender?.name}</AvatarFallback>
+        <AvatarFallback className="bg-blue-400 text-white border-2 border-blue-300 dark:border-secondary">
+          {message?.sender?.name[0]}
+        </AvatarFallback>
       </Avatar>
       <div className="rounded-lg bg-background dark:bg-zinc-700 py-2 px-4 max-w-[70%]">
         {message.image && (

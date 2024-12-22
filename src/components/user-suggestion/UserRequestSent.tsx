@@ -6,22 +6,19 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { useSession } from "next-auth/react";
 import { useToast } from "@/hooks/use-toast";
+import Loading from "../animation/Loading";
 
 export default function UserRequestSent() {
   const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(false);
   const { data: session, status } = useSession();
   const { toast } = useToast();
   const userId = (session?.user as any)?.id;
-  console.log(status);
   const fecthData = async () => {
-    // Fetch danh sách lời mời kết bạn
-    const res = await axios.get(`/api/friend-requests/${userId}`);
-    const receiverIds = res.data.map((item: any) => item.receiverId);
-    const res2 = await axios.get(`/api/users`);
-    const users = res2.data.filter(
-      (item: any) => item.id !== userId && receiverIds.includes(item.id)
-    );
-    setUsers(users);
+    setLoading(true);
+    const res = await axios.get(`/api/friend-requests/sent/${userId}`);
+    setUsers(res.data);
+    setLoading(false);
   };
   useEffect(() => {
     if (status === "authenticated") {
@@ -53,7 +50,9 @@ export default function UserRequestSent() {
       });
     }
   };
-  return (
+  return loading ? (
+    <Loading></Loading>
+  ) : (
     <ScrollArea className={"rounded-md"}>
       <div
         className={

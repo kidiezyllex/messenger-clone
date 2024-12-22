@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import UserSuggestions from "./user-suggestion/UserSuggestions";
 import UserRequestSent from "./user-suggestion/UserRequestSent";
+import UserPendingRequest from "./user-suggestion/UserPendingRequest";
+import FriendList from "./user-suggestion/FriendList";
 export function UserSuggestionList() {
   const [activated, setActivated] = useState("requested");
   const renderTab = () => {
@@ -12,12 +14,10 @@ export function UserSuggestionList() {
         return <UserSuggestions />;
       case "requested":
         return <UserRequestSent />;
-      // case "doctors":
-      //   return <DoctorsManagement />;
-      // case "tests":
-      //   return <TestTypesManagement />;
-      // case "medicine-warehouse":
-      //   return <MedicineWarehouse />;
+      case "pendingRequest":
+        return <UserPendingRequest />;
+      case "friend":
+        return <FriendList />;
       default:
         return null;
     }
@@ -60,9 +60,9 @@ export function UserSuggestionList() {
           Đã gửi
         </p>
         <p
-          onClick={() => setActivated("friendRequest")}
+          onClick={() => setActivated("pendingRequest")}
           className={
-            activated === "friendRequest"
+            activated === "pendingRequest"
               ? "border-b-2 border-blue-500 cursor-pointer text-sm font-semibold"
               : "border-b-2 border-secondary cursor-pointer text-sm font-semibold"
           }

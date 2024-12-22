@@ -8,6 +8,7 @@ const nextConfig = {
       "benhvienjw.vn",
       "upload.wikimedia.org",
       "https://zalo-api.zadn.vn",
+      "unsplash.com",
     ],
   },
   eslint: {

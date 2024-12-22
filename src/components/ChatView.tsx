@@ -19,6 +19,7 @@ export function ChatView({ conversationId }: { conversationId: string }) {
     if (conversationId !== "new-account") {
       const res = await axios.get(`/api/conversations/${conversationId}`);
       setConversation(res.data);
+      console.log(res.data);
       setMessages(res.data.messages);
     }
   };
@@ -46,8 +47,8 @@ export function ChatView({ conversationId }: { conversationId: string }) {
       }
     >
       <ChatViewTop conversation={conversation}></ChatViewTop>
-      <ScrollArea className="flex-1 overflow-auto space-y-2 px-3">
-        <div className="space-y-4">
+      <ScrollArea className="h-full">
+        <div className="p-4 space-y-4">
           {messages.map((message) => (
             <MessageCpn
               key={message.id}
@@ -56,7 +57,7 @@ export function ChatView({ conversationId }: { conversationId: string }) {
             ></MessageCpn>
           ))}
         </div>
-        <ScrollBar orientation="vertical" />
+        <ScrollBar orientation="vertical" className="bg-zinc-900" />
       </ScrollArea>
       <ChatViewBottom
         conversationId={conversationId}

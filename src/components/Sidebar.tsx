@@ -115,6 +115,7 @@ export function Sidebar() {
                     className="p-2 flex justify-between"
                     onClick={() => {
                       signOut();
+                      router.push("/");
                     }}
                   >
                     <span className="font-semibold text-sm">

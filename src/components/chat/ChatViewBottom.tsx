@@ -41,6 +41,7 @@ export default function ChatViewBottom({
           image: imageUrl,
           content: inputMessage,
           senderId: userId,
+          type: imageUrl?.trim() === "" ? "text" : "image",
         });
 
         setInputMessage("");
@@ -93,7 +94,7 @@ export default function ChatViewBottom({
             variant="secondary"
             className="hover:bg-primary-foreground rounded-full"
           >
-            <CirclePlus className="h-5 w-5 text-violet-500 " />
+            <CirclePlus className="h-5 w-5 text-blue-500 " />
           </Button>
           <Button
             size="icon"
@@ -101,7 +102,7 @@ export default function ChatViewBottom({
             className="hover:bg-primary-foreground rounded-full"
             onClick={handleImageButtonClick}
           >
-            <ImageIcon className="h-5 w-5 text-violet-500 " />
+            <ImageIcon className="h-5 w-5 text-blue-500 " />
           </Button>
           <input
             type="file"
@@ -118,7 +119,7 @@ export default function ChatViewBottom({
                 variant="secondary"
                 className="hover:bg-primary-foreground rounded-full"
               >
-                <Sticker className="h-5 w-5 text-violet-500 " />
+                <Sticker className="h-5 w-5 text-blue-500 " />
               </Button>
             </DropdownMenuTrigger>
             <StickerBoard></StickerBoard>
@@ -136,7 +137,7 @@ export default function ChatViewBottom({
               }
             }}
           />
-          <SmilePlus className="h-5 w-5 text-violet-500 absolute right-4 top-1/2 transform -translate-y-1/2" />
+          <SmilePlus className="h-5 w-5 text-blue-500 absolute right-4 top-1/2 transform -translate-y-1/2" />
         </div>
         <Button
           size="icon"
@@ -145,9 +146,9 @@ export default function ChatViewBottom({
           onClick={handleSendMessage}
         >
           {inputMessage.trim() !== "" || selectedImage ? (
-            <Send className="h-5 w-5 text-violet-500" />
+            <Send className="h-5 w-5 text-blue-500" />
           ) : (
-            <ThumbsUp className="h-5 w-5 text-violet-500" />
+            <ThumbsUp className="h-5 w-5 text-blue-500" />
           )}
         </Button>
       </div>
