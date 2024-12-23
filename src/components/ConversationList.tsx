@@ -1,5 +1,12 @@
 "use client";
-import { SearchIcon, UserRoundPlus, UsersRound } from "lucide-react";
+
+import {
+  SearchIcon,
+  UserRoundPlus,
+  UsersRound,
+  ArrowLeft,
+  MessageCircleMore,
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "./ui/button";
@@ -8,55 +15,132 @@ import axios from "axios";
 import { Conversation, User } from "../../lib/entity-types";
 import { useSession } from "next-auth/react";
 import { ConversationItem } from "./conversation/ConversationItem";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useRouter } from "next/navigation";
 
 export function ConversationList() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [isSearchMode, setIsSearchMode] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const { data: session, status } = useSession();
   const userId = (session?.user as any)?.id;
+  const router = useRouter();
 
   useEffect(() => {
     if (status === "authenticated") {
-      const fecthData = async () => {
+      const fetchData = async () => {
         const res = await axios.get(`/api/conversations/user/${userId}`);
         setConversations(res.data);
+
+        const res2 = await axios.get(`/api/users`);
+        const users = res2.data.filter((item: any) => item.id !== userId);
+        setUsers(users);
       };
-      fecthData();
+      fetchData();
     }
-  }, [status]);
+  }, [status, userId]);
+
+  const handleCreateConversation = async (user: User) => {
+    try {
+      const res = await axios.post(`/api/conversations`, {
+        userId,
+        friendId: user?.id,
+        name: user?.name,
+        isGroup: false,
+        members: [userId, user?.id],
+      });
+      setIsSearchMode(false);
+      if (res?.status === 200) {
+        router.push(`/t/${res.data.id}`);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const filteredUsers = users.filter((user) =>
+    user.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="flex flex-col h-full w-96 p-2 py-4 bg-secondary rounded-xl gap-3 border">
       <div className="flex flex-col mx-2 gap-2">
-        <h1 className="text-xl font-bold text-zinc-600 dark:text-zinc-300">
-          Đoạn chat
+        <h1 className="text-lg font-bold text-zinc-600 dark:text-zinc-300">
+          {isSearchMode ? "Tìm kiếm người dùng" : "Đoạn chat"}
         </h1>
         <div className="flex flex-row gap-1 justify-center items-center">
+          {isSearchMode && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                setIsSearchMode(false);
+                setSearchQuery("");
+              }}
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          )}
           <div className="relative rounded-full flex-grow">
             <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
-              placeholder="Tìm kiếm trên Messenger"
-              className="pl-8 dark:bg-primary-foreground"
+              placeholder={
+                isSearchMode ? "Tìm kiếm người dùng" : "Tìm kiếm trên Messenger"
+              }
+              className="dark:bg-primary-foreground pl-9 text-sm"
+              onFocus={() => setIsSearchMode(true)}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <Button
-            variant="outline"
-            size="icon"
-            className="dark:bg-primary-foreground dark:hover:bg-background"
-          >
-            <UserRoundPlus className="h-4 w-4"></UserRoundPlus>
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            className="dark:bg-primary-foreground dark:hover:bg-background"
-          >
-            <UsersRound className="h-4 w-4"></UsersRound>
-          </Button>
+          {!isSearchMode && (
+            <>
+              <Button
+                variant="outline"
+                size="icon"
+                className="dark:bg-primary-foreground dark:hover:bg-background"
+              >
+                <UserRoundPlus className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                className="dark:bg-primary-foreground dark:hover:bg-background"
+              >
+                <UsersRound className="h-4 w-4" />
+              </Button>
+            </>
+          )}
         </div>
       </div>
-      <ScrollArea className="flex-1 space-y-2 px-2">
-        {conversations.map((conversation, index) => (
-          <ConversationItem conversation={conversation} key={index} />
-        ))}
+      <ScrollArea className="rounded-md">
+        <div className="flex flex-col rounded-md px-2">
+          {isSearchMode
+            ? filteredUsers.map((user, index) => (
+                <div
+                  key={index + user.id}
+                  className="flex items-center gap-3 p-4 rounded-md dark:hover:bg-zinc-700"
+                >
+                  <Avatar className="w-11 h-11">
+                    <AvatarImage src={user?.image} />
+                    <AvatarFallback className="bg-blue-400 text-white border-2 border-blue-300 dark:border-secondary">
+                      {user?.name[0]}
+                    </AvatarFallback>
+                  </Avatar>
+                  <p className="font-medium text-sm flex-grow">{user?.name}</p>
+                  <Button
+                    onClick={() => handleCreateConversation(user)}
+                    className="flex flex-row gap-2 bg-blue-400 hover:bg-blue-400 text-white border-2 border-blue-300 hover:border-blue-300 dark:border-secondary"
+                  >
+                    Nhắn tin
+                    <MessageCircleMore className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))
+            : conversations.map((conversation, index) => (
+                <ConversationItem conversation={conversation} key={index} />
+              ))}
+        </div>
         <ScrollBar orientation="vertical" />
       </ScrollArea>
     </div>

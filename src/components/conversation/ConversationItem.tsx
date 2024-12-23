@@ -49,7 +49,6 @@ export function ConversationItem({
     }
   }, [status]);
   const renderLatestMessage = () => {
-    console.log(messages?.sender);
     if (messages?.senderId === userId) {
       if (messages?.image) return "Bạn: Đã gửi 1 ảnh";
       else return `Bạn: ${messages?.text}`;
@@ -81,12 +80,15 @@ export function ConversationItem({
           <span className="text-xs text-muted-foreground"></span>
         </div>
         <p className="truncate text-sm text-muted-foreground italic">
-          {messages && renderLatestMessage()}
+          {messages ? renderLatestMessage() : "(Chưa có tin nhắn)"}
         </p>
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <div className="h-8 w-8 rounded-full hover:bg-background pointer-events-auto flex flex-row justify-center items-center">
+          <div
+            className="h-8 w-8 rounded-full hover:bg-background pointer-events-auto flex flex-row justify-center items-center"
+            onClick={(e) => e.stopPropagation()}
+          >
             <EllipsisVertical className="h-4 w-4" />
           </div>
         </DropdownMenuTrigger>

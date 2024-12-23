@@ -1,0 +1,11 @@
+Chức năng còn thiếu
+1. Tìm kiếm người dùng:
+
+1. React tin nhắn 
+2. Reply tin nhắn
+3. Chuyển tiếp tin nhắn
+4. Gửi file
+5. Ghim tin nhắn, bỏ ghim tin nhắn
+6. [Nhóm] Tag người dùng
+7. Tạo nhóm
+8. Xem nhóm chung

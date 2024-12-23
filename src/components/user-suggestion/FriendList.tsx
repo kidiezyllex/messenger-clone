@@ -5,15 +5,13 @@ import axios from "axios";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { useSession } from "next-auth/react";
-import { useToast } from "@/hooks/use-toast";
 import Loading from "../animation/Loading";
-import { MessageCircle, MessageCircleMore } from "lucide-react";
+import { MessageCircleMore } from "lucide-react";
 import { useRouter } from "next/navigation";
 export default function FriendList() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const { data: session, status } = useSession();
-  const { toast } = useToast();
   const userId = (session?.user as any)?.id;
   const router = useRouter();
   const fecthData = async () => {
@@ -38,14 +36,9 @@ export default function FriendList() {
       });
       if (res?.status === 200) {
         router.push(`/t/${res.data.id}`);
-        // fecthData();
       }
     } catch (err) {
-      toast({
-        variant: "destructive",
-        title: "Thất bại!",
-        description: "Lỗi!",
-      });
+      console.log(err);
     }
   };
   return loading ? (
