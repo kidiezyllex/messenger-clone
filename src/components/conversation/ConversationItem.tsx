@@ -1,6 +1,6 @@
 "use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { formatDate2, getLastName } from "../../../lib/utils";
+import { getLastName } from "../../../lib/utils";
 import { Conversation, Message } from "../../../lib/entity-types";
 import {
   DropdownMenu,
@@ -30,24 +30,26 @@ export function ConversationItem({
   const router = useRouter();
   const pathName = usePathname().split("/")[2];
   const [messages, setMessages] = useState<Message>();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const userId = (session?.user as any)?.id;
+  const user2 = conversation.users.filter((item) => item.id !== userId);
   const fetchData = async () => {
     if (conversation?.id !== "new-account") {
       const res = await axios.get(`/api/conversations/${conversation?.id}`);
       setMessages(res.data.messages[res.data.messages.length - 1]);
     }
   };
-
   useEffect(() => {
-    fetchData();
-    pusherClient.subscribe(conversation?.id);
-    pusherClient.bind("message:new", (message: Message) => {
-      setMessages(message);
-    });
-  }, [conversation?.id]);
-
+    if (status === "authenticated") {
+      fetchData();
+      pusherClient.subscribe(conversation?.id);
+      pusherClient.bind("message:new", (message: Message) => {
+        setMessages(message);
+      });
+    }
+  }, [status]);
   const renderLatestMessage = () => {
+    console.log(messages?.sender);
     if (messages?.senderId === userId) {
       if (messages?.image) return "Bạn: Đã gửi 1 ảnh";
       else return `Bạn: ${messages?.text}`;
@@ -68,20 +70,18 @@ export function ConversationItem({
       }
     >
       <Avatar className="w-11 h-11">
-        <AvatarImage src={conversation?.users[1]?.image} />
+        <AvatarImage src={user2[0]?.image} />
         <AvatarFallback className="bg-blue-400 text-white border-2 border-blue-300 dark:border-secondary">
           {conversation.name[0]}
         </AvatarFallback>
       </Avatar>
       <div className="flex-1 overflow-hidden">
         <div className="flex items-center justify-between">
-          <p className="font-medium text-sm">{conversation.name}</p>
-          <span className="text-xs text-muted-foreground">
-            {/* {conversation.seenMessages} */}
-          </span>
+          <p className="font-medium text-sm">{user2[0]?.name}</p>
+          <span className="text-xs text-muted-foreground"></span>
         </div>
         <p className="truncate text-sm text-muted-foreground italic">
-          {renderLatestMessage()}
+          {messages && renderLatestMessage()}
         </p>
       </div>
       <DropdownMenu>

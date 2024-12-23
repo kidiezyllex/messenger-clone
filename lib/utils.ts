@@ -25,6 +25,6 @@ export function formatDate3(date: Date | undefined) {
 }
 
 export const getLastName = (text: string) => {
-  const [, name] = text?.match(/"name": "(.*?)"/) || [];
-  return name?.split(" ")?.pop();
+  const lastName = text.split(" ");
+  return lastName[lastName.length - 1];
 };

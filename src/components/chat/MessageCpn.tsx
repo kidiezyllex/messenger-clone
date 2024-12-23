@@ -25,24 +25,52 @@ export default function MessageCpn({
           {message?.sender?.name[0]}
         </AvatarFallback>
       </Avatar>
-      <div className="rounded-lg bg-background dark:bg-zinc-700 py-2 px-4 max-w-[70%]">
-        {message.image && (
-          <div className="w-80 h-52 flex items-center justify-center py-4 my-2 relative">
-            <Image
-              src={message?.image}
-              alt="Message Image"
-              layout="fill"
-              objectFit="cover"
-              quality={50}
-              className="rounded-lg w-full"
-            />
-          </div>
-        )}
+      <div
+        className={
+          message?.type === "sticker"
+            ? ""
+            : "rounded-lg bg-background dark:bg-zinc-700 py-2 px-4 max-w-[70%]"
+        }
+      >
+        {message?.image ? (
+          message?.type === "sticker" ? (
+            <div className="relative max-h-24 w-auto">
+              <Image
+                src={message?.image}
+                alt="Message Image"
+                width={0}
+                height={0}
+                sizes="100vw"
+                className="rounded-lg max-h-24 w-auto object-contain"
+                style={{
+                  width: "auto",
+                  height: "auto",
+                }}
+              />
+            </div>
+          ) : (
+            <div className="relative max-h-52 w-auto mb-2">
+              <Image
+                src={message?.image}
+                alt="Message Image"
+                width={0}
+                height={0}
+                sizes="100vw"
+                className="rounded-lg max-h-52 w-auto object-contain"
+                style={{
+                  width: "auto",
+                  height: "auto",
+                }}
+              />
+            </div>
+          )
+        ) : null}
+
         <div className="flex flex-col gap-2">
           <p className="text-base text-zinc-600 dark:text-zinc-300">
             {message?.text}
           </p>
-          <p className="text-sm text-muted-foreground self-start">
+          <p className="text-xs text-muted-foreground self-end">
             {formatDate3(message?.createdAt)}
           </p>
         </div>

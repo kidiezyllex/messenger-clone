@@ -38,8 +38,6 @@ export default function ChatViewBottom({
           const res = await startUpload([selectedImage]);
           imageUrl = res[0].url;
         }
-
-        console.log(imageUrl);
         await axios.post(`/api/messages`, {
           conversationId,
           image: imageUrl,
@@ -71,7 +69,7 @@ export default function ChatViewBottom({
     setSelectedImage(null);
   };
   return (
-    <div className="flex flex-col p-3">
+    <div className="flex flex-col p-3 border-t dark:border-t-zinc-700 border-t-zinc-300">
       {selectedImage && (
         <div className="relative mb-2 dark:bg-zinc-700 p-4 rounded-lg">
           <Image
@@ -133,7 +131,11 @@ export default function ChatViewBottom({
                 <Sticker className="h-5 w-5 text-blue-500 " />
               </Button>
             </DropdownMenuTrigger>
-            <StickerBoard></StickerBoard>
+            <StickerBoard
+              userId={userId}
+              conversationId={conversationId}
+              setSending={setSending}
+            ></StickerBoard>
           </DropdownMenu>
         </div>
         <div className="flex gap-2 flex-grow relative px-1">

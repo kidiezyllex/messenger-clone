@@ -11,15 +11,18 @@ import { ConversationItem } from "./conversation/ConversationItem";
 
 export function ConversationList() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const userId = (session?.user as any)?.id;
+
   useEffect(() => {
-    const fecthData = async () => {
-      const res = await axios.get(`/api/conversations/user/${userId}`);
-      setConversations(res.data);
-    };
-    fecthData();
-  }, [userId]);
+    if (status === "authenticated") {
+      const fecthData = async () => {
+        const res = await axios.get(`/api/conversations/user/${userId}`);
+        setConversations(res.data);
+      };
+      fecthData();
+    }
+  }, [status]);
   return (
     <div className="flex flex-col h-full w-96 p-2 py-4 bg-secondary rounded-xl gap-3 border">
       <div className="flex flex-col mx-2 gap-2">

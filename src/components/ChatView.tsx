@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import { ScrollArea, ScrollBar } from "./ui/scroll-area";
-import { Conversation, Message } from "../../lib/entity-types";
+import { Conversation, Message, User } from "../../lib/entity-types";
 import { pusherClient } from "@/lib/pusher";
 import ChatViewTop from "./chat/ChatViewTop";
 import MessageCpn from "./chat/MessageCpn";
@@ -13,31 +13,33 @@ import ChatViewBottom from "./chat/ChatViewBottom";
 export function ChatView({ conversationId }: { conversationId: string }) {
   const [conversation, setConversation] = useState<Conversation>();
   const [messages, setMessages] = useState<Message[]>([]);
-  const { data: session } = useSession();
+  const [user2, setUser2] = useState<User>();
+  const { data: session, status } = useSession();
   const userId = (session?.user as any)?.id;
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const pusherInitialized = useRef(false);
-
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const fetchData = async () => {
-    if (conversationId !== "new-account") {
-      try {
-        const res = await axios.get(`/api/conversations/${conversationId}`);
-        setConversation(res.data);
-        setMessages(res.data.messages);
-        scrollToBottom();
-      } catch (error) {
-        console.error("Error fetching conversation data:", error);
-      }
+    try {
+      const res = await axios.get(`/api/conversations/${conversationId}`);
+      const user2 = res.data.users.filter((item: any) => item.id !== userId);
+      setConversation(res.data);
+      setMessages(res.data.messages);
+      setUser2(user2[0]);
+      scrollToBottom();
+    } catch (error) {
+      console.error(error);
     }
   };
 
   useEffect(() => {
-    fetchData();
-  }, [conversationId]);
+    if (conversationId !== "new-account" && status === "authenticated") {
+      fetchData();
+    }
+  }, [status]);
 
   useEffect(() => {
     if (!pusherInitialized.current) {
@@ -60,7 +62,7 @@ export function ChatView({ conversationId }: { conversationId: string }) {
 
   return (
     <div className="flex h-full flex-1 flex-col flex-grow bg-secondary rounded-xl ml-4 border">
-      <ChatViewTop conversation={conversation} />
+      <ChatViewTop conversationId={conversation?.id} user2={user2} />
       <ScrollArea className="h-full">
         <div className="p-4 space-y-4">
           {messages.map((message) => (

@@ -22,7 +22,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ roomId, userName }) => {
         roomId,
         uuid(),
         userName,
-        720
+        1080
       );
 
       // Create instance object from Kit Token
@@ -56,7 +56,8 @@ const VideoCall: React.FC<VideoCallProps> = ({ roomId, userName }) => {
 
   return (
     <div
-      className="myCallContainer w-[100%] h-[100%] bg-background"
+      className="myCallContainer w-[100%] h-[100%]"
+      style={{ backgroundColor: "#1C1F2E" }}
       ref={callContainerRef}
     ></div>
   );
