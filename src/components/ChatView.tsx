@@ -70,7 +70,10 @@ export function ChatView({ conversationId }: { conversationId: string }) {
           ))}
           <div ref={messagesEndRef} />
         </div>
-        <ScrollBar orientation="vertical" className="bg-zinc-900" />
+        <ScrollBar
+          orientation="vertical"
+          className="dark:bg-primary-foreground bg-secondary"
+        />
       </ScrollArea>
       <ChatViewBottom conversationId={conversationId} userId={userId} />
     </div>

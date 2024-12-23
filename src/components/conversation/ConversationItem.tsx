@@ -92,7 +92,7 @@ export function ConversationItem({
             <EllipsisVertical className="h-4 w-4" />
           </div>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-64 bg-zinc-900">
+        <DropdownMenuContent className="w-64 bg-background dark:bg-zinc-900 dark:text-slate-300 text-slate-600">
           <DropdownMenuItem className="p-2">
             <MailCheck className="h-4 w-4" />
             <span className="font-semibold text-sm">Đánh dấu là đã đọc</span>
@@ -100,7 +100,7 @@ export function ConversationItem({
           <DropdownMenuSeparator />
           <DropdownMenuItem className="p-2">
             <BellRing className="h-4 w-4" />
-            <span className="font-semibold text-sm">Bật thông báo</span>
+            <span className="font-semibold text-sm ">Bật thông báo</span>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem className="p-2">

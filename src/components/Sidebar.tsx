@@ -69,7 +69,12 @@ export function Sidebar() {
                 </Button>
               </TooltipTrigger>
               {!expanded && (
-                <TooltipContent side="right">{item.label}</TooltipContent>
+                <TooltipContent
+                  side="right"
+                  className="bg-background dark:text-slate-300 text-slate-600 font-semibold border dark:border-primary-foreground"
+                >
+                  {item.label}
+                </TooltipContent>
               )}
             </Tooltip>
           </TooltipProvider>
@@ -103,7 +108,7 @@ export function Sidebar() {
                 </DropdownMenuTrigger>
 
                 <DropdownMenuContent
-                  className="w-60 bg-zinc-900 items-end mb-4"
+                  className="w-60 items-end mb-4 bg-background dark:bg-zinc-900 dark:text-slate-300 text-slate-600"
                   align="end"
                 >
                   <DropdownMenuItem className="p-2 flex justify-between">

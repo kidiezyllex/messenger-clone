@@ -60,7 +60,7 @@ export default function UserSuggestions() {
   return loading ? (
     <Loading></Loading>
   ) : (
-    <ScrollArea className={"rounded-md"}>
+    <ScrollArea className="rounded-md">
       <div
         className={
           status === "loading" ? "hidden" : "flex flex-col gap-3 p-3 rounded-md"
