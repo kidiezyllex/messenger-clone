@@ -39,6 +39,7 @@ export default function ChatViewBottom({
           imageUrl = res[0].url;
         }
 
+        console.log(imageUrl);
         await axios.post(`/api/messages`, {
           conversationId,
           image: imageUrl,

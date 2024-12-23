@@ -57,9 +57,10 @@ export default function LoginForm() {
   };
   useEffect(() => {
     if (trigger) {
-      if ((session?.user as any)?.lastConversationId)
+      if ((session?.user as any)?.lastConversationId) {
+        console.log((session?.user as any)?.lastConversationId);
         router.push(`/t/${(session?.user as any)?.lastConversationId}`);
-      else router.push("/t/new-account");
+      } else router.push("/t/new-account");
     }
     setTrigger(false);
   }, [trigger]);
