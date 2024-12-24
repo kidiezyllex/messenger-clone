@@ -4,7 +4,15 @@ import prismadb from "../../../../lib/prismadb";
 
 export async function POST(req: Request) {
   const body = await req.json();
-  const { conversationId, image, content, senderId, type } = body;
+  const {
+    conversationId,
+    image,
+    content,
+    senderId,
+    type,
+    replyMessageId,
+    replyText,
+  } = body;
 
   if (!conversationId) {
     return NextResponse.json(
@@ -14,24 +22,33 @@ export async function POST(req: Request) {
   }
 
   try {
-    const message = await prismadb.message.create({
-      data: {
-        type: type,
-        text: content,
-        image: image,
-        conversation: {
-          connect: { id: conversationId },
-        },
-        sender: {
-          connect: { id: senderId },
-        },
-        seen: {
-          connect: { id: senderId },
-        },
+    const messageData: any = {
+      type: type,
+      text: content,
+      image: image,
+      conversation: {
+        connect: { id: conversationId },
       },
+      sender: {
+        connect: { id: senderId },
+      },
+      seen: {
+        connect: { id: senderId },
+      },
+    };
+
+    if (replyMessageId) {
+      messageData.replyTo = {
+        connect: { id: replyMessageId },
+      };
+      messageData.replyText = replyText;
+    }
+    const message = await prismadb.message.create({
+      data: messageData,
       include: {
         sender: true,
         seen: true,
+        replyTo: true,
       },
     });
     // Update the conversation's lastMessageAt and the user's lastConversationId

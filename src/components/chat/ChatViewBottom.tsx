@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import { useUploadThing } from "@/utils/uploadthing";
 import axios from "axios";
@@ -16,19 +16,34 @@ import { DropdownMenu, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import StickerBoard from "./StickerBoard";
 import { Input } from "../ui/input";
 import { Badge } from "../ui/badge";
+import { Message } from "../../../lib/entity-types";
 
 export default function ChatViewBottom({
   conversationId,
   userId,
+  replyMessage,
 }: {
   conversationId: string;
   userId: string;
+  replyMessage: Message | null;
 }) {
   const [inputMessage, setInputMessage] = useState("");
   const [sending, setSending] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [isReplying, setIsReplying] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const { startUpload } = useUploadThing("imageUploader");
+
+  useEffect(() => {
+    if (replyMessage) {
+      setIsReplying(true);
+      inputRef.current?.focus();
+    } else {
+      setIsReplying(false);
+    }
+  }, [replyMessage]);
+
   const handleSendMessage = async () => {
     if (inputMessage.trim() !== "" || selectedImage) {
       try {
@@ -44,9 +59,12 @@ export default function ChatViewBottom({
           content: inputMessage,
           senderId: userId,
           type: imageUrl?.trim() === "" ? "text" : "image",
+          replyMessageId: isReplying ? replyMessage?.id : "",
+          replyText: isReplying ? replyMessage?.text : "",
         });
         setInputMessage("");
         setSelectedImage(null);
+        setIsReplying(false);
         setSending(false);
       } catch (error) {
         console.error(error);
@@ -68,6 +86,11 @@ export default function ChatViewBottom({
   const removeSelectedImage = () => {
     setSelectedImage(null);
   };
+
+  const cancelReply = () => {
+    setIsReplying(false);
+  };
+
   return (
     <div className="flex flex-col p-3 border-t dark:border-t-zinc-700 border-t-zinc-300">
       {selectedImage && (
@@ -82,10 +105,28 @@ export default function ChatViewBottom({
           <Button
             size="icon"
             variant="secondary"
-            className="absolute top-2 right-2 rounded-full bg-zinc-800 hover:bg-zinc-700"
+            className="absolute top-2 right-2 rounded-full bg-zinc-800 dark:hover:bg-primary-foreground"
             onClick={removeSelectedImage}
           >
             <X className="h-4 w-4 text-white" />
+          </Button>
+        </div>
+      )}
+      {isReplying && (
+        <div className="flex items-center justify-between p-2 rounded-lg mb-2">
+          <div className="flex flex-col gap-1">
+            <p className="text-sm text-white font-semibold">Trả lời tin nhắn</p>
+            <p className="text-sm text-slate-600 dark:text-slate-300 truncate">
+              {replyMessage?.text}
+            </p>
+          </div>
+          <Button
+            size="icon"
+            variant="ghost"
+            className="h-8 w-8 rounded-full hover:bg-primary-foreground"
+            onClick={cancelReply}
+          >
+            <X className="h-4 w-4" />
           </Button>
         </div>
       )}
@@ -140,7 +181,10 @@ export default function ChatViewBottom({
         </div>
         <div className="flex gap-2 flex-grow relative px-1">
           <Input
-            placeholder="Type a message..."
+            ref={inputRef}
+            placeholder={
+              isReplying ? "Type your reply..." : "Type a message..."
+            }
             className="flex-1 rounded-full"
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}

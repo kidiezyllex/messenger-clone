@@ -13,6 +13,7 @@ import {
   RotateCcw,
   Forward,
   Pin,
+  Quote,
 } from "lucide-react";
 import { Button } from "../ui/button";
 import {
@@ -28,22 +29,20 @@ const reactionEmojis = ["👍", "❤️", "😂", "😮", "😢", "😡"];
 export default function MessageCpn({
   message,
   userId,
-}: // onReply,
-{
+  setReplyMessage,
+}: {
   message: Message;
   userId: string;
-  // onReply: (message: Message) => void;
+  setReplyMessage: (message: Message) => void;
 }) {
   const [showOptions, setShowOptions] = useState(false);
   const [reaction, setReaction] = useState<string | null>(null);
-
   const handleReaction = (emoji: string) => {
     setReaction(emoji);
   };
 
-  const handleReply = () => {
-    // onReply(message);
-    console.log("");
+  const handleReply = (message: Message) => {
+    setReplyMessage(message);
   };
 
   const handleEdit = () => {
@@ -124,6 +123,14 @@ export default function MessageCpn({
         ) : null}
 
         <div className="flex flex-col gap-2 relative">
+          {message?.replyText && (
+            <div className="flex flex-row gap-2 items-center text-sm text-zinc-600 dark:text-zinc-300 p-2 rounded-md bg-background dark:bg-zinc-900 italic">
+              <Quote className="h-4 w-4 text-zinc-600 dark:text-zinc-300 italic"></Quote>
+              <p className="text-sm text-zinc-600 dark:text-zinc-300">
+                {message?.replyText}
+              </p>
+            </div>
+          )}
           <p className="text-base text-zinc-600 dark:text-zinc-300">
             {message?.text}
           </p>
@@ -178,7 +185,7 @@ export default function MessageCpn({
               variant="ghost"
               size="icon"
               className="h-8 w-8 rounded-full hover:bg-primary-foreground"
-              onClick={handleReply}
+              onClick={() => handleReply(message)}
             >
               <MessageCircleReply className="h-5 w-5 dark:text-slate-300 text-slate-600" />
             </Button>

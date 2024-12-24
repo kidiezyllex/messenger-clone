@@ -11,25 +11,8 @@ export interface User {
   updateAt: Date;
   conversations: Conversation[];
   seenMessages: Message[];
-  accounts: Account[];
   messages: Message[];
   sentMessages: Message[];
-}
-
-export interface Account {
-  id: string;
-  userId: string;
-  type: string;
-  provider: string;
-  providerAccountId: string;
-  refresh_token?: string;
-  access_token?: string;
-  expires_at?: number;
-  token_type?: string;
-  scope?: string;
-  id_token?: string;
-  session_state?: string;
-  user: User;
 }
 
 export interface Conversation {
@@ -55,8 +38,12 @@ export interface Message {
   conversationId: string;
   user?: User;
   userId?: string;
-  sender: User;
-  senderId: string;
+  sender?: User;
+  senderId?: string;
+  replyTo?: Message;
+  replyToId?: string;
+  replies?: Message[];
+  replyText?: string;
 }
 
 export interface StickerImage {

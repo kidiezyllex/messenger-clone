@@ -1,6 +1,5 @@
 Chức năng còn thiếu
 1. Tìm kiếm người dùng:
-
 1. React tin nhắn 
 2. Reply tin nhắn
 3. Chuyển tiếp tin nhắn
@@ -9,3 +8,13 @@ Chức năng còn thiếu
 6. [Nhóm] Tag người dùng
 7. Tạo nhóm
 8. Xem nhóm chung
+9. Bạn đã dùng Pusher, nhưng có thể thử thêm WebSocket hoặc Supabase Realtime nếu cần mở rộng các tính năng như trạng thái "đang gõ", trạng thái online/offline.
+typing indicators, presence system (online/offline status).
+10. Tích hợp Firebase Cloud Messaging (FCM) để gửi thông báo trên cả web và ứng dụng di động.
+11. Emojis và GIFs: Tích hợp với API như GIPHY.
+13. Đa ngôn ngữ: Ứng dụng: Sử dụng thư viện như next-i18next.
+14. IndexedDB: Lưu trữ dữ liệu locally trên trình duyệt.
+- Tính năng: Offline support, caching tin nhắn và media.
+12. Elasticsearch
+- Ứng dụng: Tích hợp để cải thiện tính năng tìm kiếm.
+- Tính năng: Tìm kiếm full-text trong tin nhắn, tìm kiếm người dùng nâng cao.

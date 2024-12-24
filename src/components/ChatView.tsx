@@ -14,6 +14,7 @@ export function ChatView({ conversationId }: { conversationId: string }) {
   const [conversation, setConversation] = useState<Conversation>();
   const [messages, setMessages] = useState<Message[]>([]);
   const [user2, setUser2] = useState<User>();
+  const [replyMessage, setReplyMessage] = useState<Message>();
   const { data: session, status } = useSession();
   const userId = (session?.user as any)?.id;
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -28,6 +29,7 @@ export function ChatView({ conversationId }: { conversationId: string }) {
       const user2 = res.data.users.filter((item: any) => item.id !== userId);
       setConversation(res.data);
       setMessages(res.data.messages);
+      console.log(res.data);
       setUser2(user2[0]);
       scrollToBottom();
     } catch (error) {
@@ -66,7 +68,12 @@ export function ChatView({ conversationId }: { conversationId: string }) {
       <ScrollArea className="h-full">
         <div className="p-4 space-y-4">
           {messages.map((message) => (
-            <MessageCpn key={message.id} message={message} userId={userId} />
+            <MessageCpn
+              key={message.id}
+              message={message}
+              userId={userId}
+              setReplyMessage={setReplyMessage}
+            />
           ))}
           <div ref={messagesEndRef} />
         </div>
@@ -75,7 +82,11 @@ export function ChatView({ conversationId }: { conversationId: string }) {
           className="dark:bg-primary-foreground bg-secondary"
         />
       </ScrollArea>
-      <ChatViewBottom conversationId={conversationId} userId={userId} />
+      <ChatViewBottom
+        conversationId={conversationId}
+        userId={userId}
+        replyMessage={replyMessage}
+      />
     </div>
   );
 }

@@ -23,6 +23,7 @@ https://www.messenger.com/t
 </div>
 
 - **Next.js**: Renders web pages and handles routing for the Front-End, while also supporting API Routes for the Back-End.
+- **Typescript**:
 - **Tailwind**: A utility-first CSS library that supports dark mode and responsive design.
 - **NextAuth**: Provides authentication and authorization, manages login sessions, and supports Google and GitHub login.
 - **Shadcn UI**: A UI components library.

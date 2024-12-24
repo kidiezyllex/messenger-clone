@@ -61,6 +61,11 @@ model Message {
   userId         String?
   sender         User         @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
   senderId       String
+  // Self-referential relation
+  replyTo        Message?     @relation("ReplyToMessage", fields: [replyToId], references: [id], onDelete: Cascade)
+  replyToId      String?
+  replies        Message[]    @relation("ReplyToMessage")
+  replyText      String?
 }
 
 model Friend {
