@@ -190,7 +190,10 @@ export function CreateGroupDialog({
                 </div>
               ))
             )}
-            <ScrollBar orientation="vertical" />
+            <ScrollBar
+              orientation="vertical"
+              className="dark:bg-primary-foreground bg-secondary"
+            />{" "}
           </ScrollArea>
           {userIdList.length > 0 && (
             <div>

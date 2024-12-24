@@ -20,7 +20,7 @@ export function ChatView({ conversationId }: { conversationId: string }) {
   const userId = (session?.user as any)?.id;
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const pusherInitialized = useRef(false);
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });

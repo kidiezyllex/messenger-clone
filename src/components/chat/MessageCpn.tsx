@@ -23,6 +23,8 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { ForwardDialog } from "./ForwardDialog";
+import { Dialog, DialogTrigger } from "../ui/dialog";
 
 const reactionEmojis = ["👍", "❤️", "😂", "😮", "😢", "😡"];
 
@@ -36,6 +38,7 @@ export default function MessageCpn({
   setReplyMessage: (message: Message) => void;
 }) {
   const [showOptions, setShowOptions] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [reaction, setReaction] = useState<string | null>(null);
   const handleReaction = (emoji: string) => {
     setReaction(emoji);
@@ -53,11 +56,6 @@ export default function MessageCpn({
   const handleDelete = () => {
     // Implement delete functionality
     console.log("Delete message:", message.id);
-  };
-
-  const handleForward = () => {
-    // Implement forward functionality
-    console.log("Forward message:", message.id);
   };
 
   const handlePin = () => {
@@ -214,10 +212,21 @@ export default function MessageCpn({
               <RotateCcw className="mr-2 h-4 w-4" />
               <span>Thu hồi</span>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleForward}>
-              <Forward className="mr-2 h-4 w-4" />
-              <span>Chuyển tiếp</span>
-            </DropdownMenuItem>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    setIsDialogOpen(true);
+                    e.stopPropagation();
+                    e.preventDefault();
+                  }}
+                >
+                  <Forward className="mr-2 h-4 w-4" />
+                  <span>Chuyển tiếp</span>
+                </DropdownMenuItem>
+              </DialogTrigger>
+              <ForwardDialog message={message} />
+            </Dialog>
             <DropdownMenuItem onClick={handlePin}>
               <Pin className="mr-2 h-4 w-4" />
               <span>Ghim</span>

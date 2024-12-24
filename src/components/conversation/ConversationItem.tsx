@@ -69,8 +69,8 @@ export function ConversationItem({
       key={conversation.id}
       className={
         pathName === conversation.id
-          ? "dark:bg-zinc-700 dark:hover:bg-zinc-700 bg-background flex items-center gap-3 p-4 rounded-md cursor-pointer"
-          : "dark:hover:bg-zinc-700 flex items-center gap-3 p-4 rounded-lg cursor-pointer"
+          ? "dark:bg-zinc-700 dark:hover:bg-zinc-700 bg-background flex items-center gap-3 p-4 rounded-md cursor-pointer flex-grow"
+          : "dark:hover:bg-zinc-700 flex items-center gap-3 p-4 rounded-lg cursor-pointer flex-grow"
       }
     >
       <Avatar className="w-11 h-11">
