@@ -53,8 +53,8 @@ export function ConversationItem({
       if (messages?.image) return "Bạn: Đã gửi 1 ảnh";
       else
         return `Bạn: ${
-          messages?.text?.length > 25
-            ? messages?.text.slice(0, 25) + "..."
+          messages?.text?.length > 20
+            ? messages?.text.slice(0, 20) + "..."
             : messages?.text
         }`;
     } else {

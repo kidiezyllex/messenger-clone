@@ -9,6 +9,7 @@ import { pusherClient } from "@/lib/pusher";
 import ChatViewTop from "./chat/ChatViewTop";
 import MessageCpn from "./chat/MessageCpn";
 import ChatViewBottom from "./chat/ChatViewBottom";
+import ChatSidebar from "./chat/ChatSidebar";
 
 export function ChatView({ conversationId }: { conversationId: string }) {
   const [conversation, setConversation] = useState<Conversation>();
@@ -19,6 +20,8 @@ export function ChatView({ conversationId }: { conversationId: string }) {
   const userId = (session?.user as any)?.id;
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const pusherInitialized = useRef(false);
+  const [expanded, setExpanded] = useState(true);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -62,30 +65,40 @@ export function ChatView({ conversationId }: { conversationId: string }) {
   }, [conversationId]);
 
   return (
-    <div className="flex h-full flex-1 flex-col flex-grow bg-secondary rounded-xl ml-4 border">
-      <ChatViewTop conversationId={conversation?.id} user2={user2} />
-      <ScrollArea className="h-full">
-        <div className="p-4 space-y-4">
-          {messages.map((message) => (
-            <MessageCpn
-              key={message.id}
-              message={message}
-              userId={userId}
-              setReplyMessage={setReplyMessage}
-            />
-          ))}
-          <div ref={messagesEndRef} />
-        </div>
-        <ScrollBar
-          orientation="vertical"
-          className="dark:bg-primary-foreground bg-secondary"
+    <div className="flex gap-4 flex-1">
+      <div className="flex h-full flex-col flex-grow bg-secondary rounded-xl ml-4 border">
+        <ChatViewTop
+          conversation={conversation}
+          user2={user2}
+          setExpanded={setExpanded}
+          expanded={expanded}
         />
-      </ScrollArea>
-      <ChatViewBottom
-        conversationId={conversationId}
-        userId={userId}
-        replyMessage={replyMessage}
-      />
+        <ScrollArea className="h-full">
+          <div className="p-4 space-y-4">
+            {messages.map((message) => (
+              <MessageCpn
+                key={message.id}
+                message={message}
+                userId={userId}
+                setReplyMessage={setReplyMessage}
+              />
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
+          <ScrollBar
+            orientation="vertical"
+            className="dark:bg-primary-foreground bg-secondary"
+          />
+        </ScrollArea>
+        <ChatViewBottom
+          conversationId={conversationId}
+          userId={userId}
+          replyMessage={replyMessage}
+        />
+      </div>
+      {expanded && (
+        <ChatSidebar conversation={conversation} user2={user2}></ChatSidebar>
+      )}
     </div>
   );
 }

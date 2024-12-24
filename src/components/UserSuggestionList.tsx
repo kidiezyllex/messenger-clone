@@ -23,7 +23,7 @@ export function UserSuggestionList() {
     }
   };
   return (
-    <div className="flex flex-col h-full w-96 p-2 py-4 bg-secondary rounded-xl gap-3 border">
+    <div className="flex flex-col h-full w-[350px] p-2 py-4 bg-secondary rounded-xl gap-3 border">
       <div className="flex flex-col mx-2 gap-2">
         <h1 className="text-lg font-bold text-zinc-600 dark:text-zinc-300">
           Người dùng đề xuất
