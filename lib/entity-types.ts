@@ -20,7 +20,9 @@ export interface Conversation {
   createdAt: Date;
   lastMessageAt: Date;
   name?: string;
+  groupImage?: string;
   isGroup?: boolean;
+  groupName?: string;
   messages: Message[];
   users: User[];
   messagesIds: String[];

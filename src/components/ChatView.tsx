@@ -29,7 +29,6 @@ export function ChatView({ conversationId }: { conversationId: string }) {
       const user2 = res.data.users.filter((item: any) => item.id !== userId);
       setConversation(res.data);
       setMessages(res.data.messages);
-      console.log(res.data);
       setUser2(user2[0]);
       scrollToBottom();
     } catch (error) {

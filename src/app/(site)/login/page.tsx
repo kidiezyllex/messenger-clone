@@ -60,7 +60,7 @@ export default function LoginForm() {
       if ((session?.user as any)?.lastConversationId) {
         console.log((session?.user as any)?.lastConversationId);
         router.push(`/t/${(session?.user as any)?.lastConversationId}`);
-      } else router.push("/t/new-account");
+      } else router.push("/t/user-suggested");
     }
     setTrigger(false);
   }, [trigger]);

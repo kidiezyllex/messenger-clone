@@ -51,7 +51,12 @@ export function ConversationItem({
   const renderLatestMessage = () => {
     if (messages?.senderId === userId) {
       if (messages?.image) return "Bạn: Đã gửi 1 ảnh";
-      else return `Bạn: ${messages?.text}`;
+      else
+        return `Bạn: ${
+          messages?.text?.length > 25
+            ? messages?.text.slice(0, 25) + "..."
+            : messages?.text
+        }`;
     } else {
       if (messages?.image)
         return `${getLastName(messages?.sender?.name)}: Đã gửi 1 ảnh`;
@@ -64,22 +69,30 @@ export function ConversationItem({
       key={conversation.id}
       className={
         pathName === conversation.id
-          ? "dark:bg-zinc-700 dark:hover:bg-zinc-700 bg-background border flex items-center gap-3 p-4 rounded-lg cursor-pointer"
+          ? "dark:bg-zinc-700 dark:hover:bg-zinc-700 bg-background flex items-center gap-3 p-4 rounded-md cursor-pointer"
           : "dark:hover:bg-zinc-700 flex items-center gap-3 p-4 rounded-lg cursor-pointer"
       }
     >
       <Avatar className="w-11 h-11">
-        <AvatarImage src={user2[0]?.image} />
+        <AvatarImage
+          src={
+            conversation?.isGroup ? conversation?.groupImage : user2[0]?.image
+          }
+        />
         <AvatarFallback className="bg-blue-400 text-white border-2 border-blue-300 dark:border-secondary">
-          {conversation.name[0]}
+          {conversation?.isGroup ? conversation?.name : conversation?.name[0]}
         </AvatarFallback>
       </Avatar>
-      <div className="flex-1 overflow-hidden">
+      <div className="flex flex-col justify-between flex-1">
         <div className="flex items-center justify-between">
-          <p className="font-medium text-sm">{user2[0]?.name}</p>
+          <p className="font-medium text-sm">
+            {conversation?.isGroup
+              ? `Nhóm: ${conversation?.name}`
+              : user2[0]?.name}
+          </p>
           <span className="text-xs text-muted-foreground"></span>
         </div>
-        <p className="truncate text-sm text-muted-foreground italic">
+        <p className="text-sm text-muted-foreground italic">
           {messages ? renderLatestMessage() : "(Chưa có tin nhắn)"}
         </p>
       </div>

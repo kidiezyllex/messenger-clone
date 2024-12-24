@@ -7,7 +7,7 @@ import UserRequestSent from "./user-suggestion/UserRequestSent";
 import UserPendingRequest from "./user-suggestion/UserPendingRequest";
 import FriendList from "./user-suggestion/FriendList";
 export function UserSuggestionList() {
-  const [activated, setActivated] = useState("requested");
+  const [activated, setActivated] = useState("suggestion");
   const renderTab = () => {
     switch (activated) {
       case "suggestion":
@@ -25,7 +25,7 @@ export function UserSuggestionList() {
   return (
     <div className="flex flex-col h-full w-96 p-2 py-4 bg-secondary rounded-xl gap-3 border">
       <div className="flex flex-col mx-2 gap-2">
-        <h1 className="text-xl font-bold text-zinc-600 dark:text-zinc-300">
+        <h1 className="text-lg font-bold text-zinc-600 dark:text-zinc-300">
           Người dùng đề xuất
         </h1>
         <div className="flex flex-row gap-1 justify-center items-center">

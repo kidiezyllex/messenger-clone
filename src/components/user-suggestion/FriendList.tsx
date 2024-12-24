@@ -32,6 +32,7 @@ export default function FriendList() {
         friendId: user?.id,
         name: user?.name,
         isGroup: false,
+        groupImage: "",
         members: [userId, user?.id],
       });
       if (res?.status === 200) {
