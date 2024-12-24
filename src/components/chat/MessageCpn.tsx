@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState } from "react";
 import { Message } from "../../../lib/entity-types";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";

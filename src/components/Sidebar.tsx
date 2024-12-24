@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   MessageCircle,
   Archive,
@@ -141,16 +141,6 @@ export function Sidebar() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              {/* <Button
-                size="icon"
-                className="rounded-full w-10 h-10"
-                variant="outline"
-                onClick={() => {
-                  signOut();
-                }}
-              >
-                <LogOut className="h-4 w-4"></LogOut>
-              </Button> */}
             </div>
           )}
         </div>

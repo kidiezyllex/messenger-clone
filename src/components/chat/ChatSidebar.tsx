@@ -17,10 +17,8 @@ import {
   BellOff,
   Flag,
   LogOut,
-  FlagIcon,
   Ellipsis,
 } from "lucide-react";
-import Image from "next/image";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import { Conversation, User } from "../../../lib/entity-types";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";

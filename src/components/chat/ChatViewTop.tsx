@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { MoreVertical, Phone, Video } from "lucide-react";
 import { Conversation, User } from "../../../lib/entity-types";
-import VideoCall from "../VideoCall";
+import VideoCall from "./VideoCall";
 import { Dialog, DialogContent, DialogTitle } from "../ui/dialog";
 
 export default function ChatViewTop({

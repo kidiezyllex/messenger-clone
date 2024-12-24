@@ -61,7 +61,7 @@ export async function PATCH(
         id: messageId,
       },
       data: {
-        body: content,
+        text: content,
       },
       include: {
         sender: true,

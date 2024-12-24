@@ -33,7 +33,6 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
-    "embla-carousel-react": "^8.1.8",
     "framer-motion": "^11.15.0",
     "lucide-react": "^0.419.0",
     "next": "14.2.5",
@@ -44,15 +43,11 @@
     "pusher-js": "^8.4.0-rc2",
     "react": "^18",
     "react-dom": "^18",
-    "react-hook-form": "^7.52.2",
-    "recharts": "^2.12.7",
-    "stripe": "^16.12.0",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
     "uploadthing": "^6.13.3",
     "uuid": "^11.0.3",
     "zego-express-engine-reactnative": "^3.17.1",
-    "zod": "^3.23.8",
     "zustand": "^4.5.5"
   },
   "devDependencies": {
