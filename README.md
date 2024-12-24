@@ -10,17 +10,7 @@ https://www.messenger.com/t
 
 ### 1. Features
 
-- Real-time messaging with Pusher
-- Message notifications
-- Send friend requests
-- Responsive design for various devices
-- Credential authentication with NextAuth
-- Google authentication integration
-- GitHub authentication integration
-- Image uploads with UploadThing
-- Online/offline user status
-- Group and one-on-one messaging
-- Video calling
+- Nhaná
 
 ### 2. Tech Stack
 
@@ -31,6 +21,17 @@ https://www.messenger.com/t
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Antu_mongodb.svg/1024px-Antu_mongodb.svg.png" alt="Logo" height="30" >
 <img src="https://files.raycast.com/83afy69l6wjib1zd62gya59tpc76" alt="Logo" height="30" >
 </div>
+
+- **Next.js**: Renders web pages and handles routing for the Front-End, while also supporting API Routes for the Back-End.
+- **Tailwind**: A utility-first CSS library that supports dark mode and responsive design.
+- **NextAuth**: Provides authentication and authorization, manages login sessions, and supports Google and GitHub login.
+- **Shadcn UI**: A UI components library.
+- **Prisma**: An ORM (Object-Relational Mapping) tool for automatically generating and managing database schemas, as well as executing queries.
+- **PostgreSQL**: A scalable and reliable database system.
+- **AWS Neon Tech**: A serverless PostgreSQL hosting platform.
+- **Pusher**: Enables real-time messaging and manages user online/offline status.
+- **Uploadthing**: Handles file and image uploads and storage.
+- **ZegoCloud**: Supports 1-on-1 video calls and group video calls.
 
 ### 3. API Document
 
@@ -78,6 +79,16 @@ GITHUB_SECRET=
 
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
+
+NEXT_PUBLIC_ZEGO_APP_ID=
+NEXT_PUBLIC_ZEGO_SERVER_SECRET
+
+NEXT_PUBLIC_PUSHER_APP_KEY=
+PUSHER_APP_ID=
+PUSHER_SECRET
+
+UPLOADTHING_SECRET=
+UPLOADTHING_APP_ID
 ```
 
 4. Run application
