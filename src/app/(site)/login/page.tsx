@@ -58,7 +58,6 @@ export default function LoginForm() {
   useEffect(() => {
     if (trigger) {
       if ((session?.user as any)?.lastConversationId) {
-        console.log((session?.user as any)?.lastConversationId);
         router.push(`/t/${(session?.user as any)?.lastConversationId}`);
       } else router.push("/t/user-suggested");
     }

@@ -10,8 +10,10 @@ import ChatViewTop from "./chat/ChatViewTop";
 import MessageCpn from "./chat/MessageCpn";
 import ChatViewBottom from "./chat/ChatViewBottom";
 import ChatSidebar from "./chat/ChatSidebar";
+import useStore from "@/store/useStore";
 
-export function ChatView({ conversationId }: { conversationId: string }) {
+export function ChatView() {
+  const { selectConversationId } = useStore();
   const [conversation, setConversation] = useState<Conversation>();
   const [messages, setMessages] = useState<Message[]>([]);
   const [user2, setUser2] = useState<User>();
@@ -28,7 +30,7 @@ export function ChatView({ conversationId }: { conversationId: string }) {
 
   const fetchData = async () => {
     try {
-      const res = await axios.get(`/api/conversations/${conversationId}`);
+      const res = await axios.get(`/api/conversations/${selectConversationId}`);
       const user2 = res.data.users.filter((item: any) => item.id !== userId);
       setConversation(res.data);
       setMessages(res.data.messages);
@@ -40,14 +42,18 @@ export function ChatView({ conversationId }: { conversationId: string }) {
   };
 
   useEffect(() => {
-    if (conversationId !== "new-account" && status === "authenticated") {
+    if (
+      selectConversationId !== "" &&
+      selectConversationId !== "new-account" &&
+      status === "authenticated"
+    ) {
       fetchData();
     }
-  }, [status]);
+  }, [status, selectConversationId]);
 
   useEffect(() => {
     if (!pusherInitialized.current) {
-      pusherClient.subscribe(conversationId);
+      pusherClient.subscribe(selectConversationId);
       pusherClient.bind("message:new", (message: Message) => {
         setMessages((current) => [...current, message]);
         scrollToBottom();
@@ -57,12 +63,12 @@ export function ChatView({ conversationId }: { conversationId: string }) {
 
     return () => {
       if (pusherInitialized.current) {
-        pusherClient.unsubscribe(conversationId);
+        pusherClient.unsubscribe(selectConversationId);
         pusherClient.unbind("message:new");
         pusherInitialized.current = false;
       }
     };
-  }, [conversationId]);
+  }, [selectConversationId]);
 
   return (
     <div className="flex gap-4 flex-1">
@@ -91,7 +97,7 @@ export function ChatView({ conversationId }: { conversationId: string }) {
           />
         </ScrollArea>
         <ChatViewBottom
-          conversationId={conversationId}
+          conversationId={selectConversationId}
           userId={userId}
           replyMessage={replyMessage}
         />

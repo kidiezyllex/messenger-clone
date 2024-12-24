@@ -22,12 +22,14 @@ import { pusherClient } from "@/lib/pusher";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
+import useStore from "@/store/useStore";
 export function ConversationItem({
   conversation,
 }: {
   conversation: Conversation;
 }) {
   const router = useRouter();
+  const { setSelectConversationId, selectConversationId } = useStore();
   const pathName = usePathname().split("/")[2];
   const [messages, setMessages] = useState<Message>();
   const { data: session, status } = useSession();
@@ -44,10 +46,12 @@ export function ConversationItem({
       fetchData();
       pusherClient.subscribe(conversation?.id);
       pusherClient.bind("message:new", (message: Message) => {
-        setMessages(message);
+        if (conversation?.id === selectConversationId) {
+          setMessages(message);
+        }
       });
     }
-  }, [status]);
+  }, [selectConversationId]);
   const renderLatestMessage = () => {
     if (messages?.senderId === userId) {
       if (messages?.image) return "Bạn: Đã gửi 1 ảnh";
@@ -65,7 +69,10 @@ export function ConversationItem({
   };
   return (
     <div
-      onClick={() => router.push(`/t/${conversation.id}`)}
+      onClick={() => {
+        window.history.pushState(null, "", `/t/${conversation.id}`);
+        setSelectConversationId(conversation.id);
+      }}
       key={conversation.id}
       className={
         pathName === conversation.id

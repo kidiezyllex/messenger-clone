@@ -11,14 +11,17 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Conversation, User } from "../../lib/entity-types";
+import { Conversation, Message, User } from "../../lib/entity-types";
 import { useSession } from "next-auth/react";
 import { ConversationItem } from "./conversation/ConversationItem";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
 import { CreateGroupDialog } from "./group/CreateGroupDialog";
+import useStore from "@/store/useStore";
+import { pusherClient } from "@/lib/pusher";
 
 export function ConversationList() {
+  const { selectConversationId } = useStore();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [isSearchMode, setIsSearchMode] = useState(false);
@@ -27,20 +30,23 @@ export function ConversationList() {
   const { data: session, status } = useSession();
   const userId = (session?.user as any)?.id;
   const router = useRouter();
+  const fetchData = async () => {
+    const res = await axios.get(`/api/conversations/user/${userId}`);
+    setConversations(res.data);
 
+    const res2 = await axios.get(`/api/users`);
+    const users = res2.data.filter((item: any) => item.id !== userId);
+    setUsers(users);
+  };
   useEffect(() => {
     if (status === "authenticated") {
-      const fetchData = async () => {
-        const res = await axios.get(`/api/conversations/user/${userId}`);
-        setConversations(res.data);
-
-        const res2 = await axios.get(`/api/users`);
-        const users = res2.data.filter((item: any) => item.id !== userId);
-        setUsers(users);
-      };
       fetchData();
+      pusherClient.subscribe(selectConversationId);
+      pusherClient.bind("message:new", () => {
+        fetchData();
+      });
     }
-  }, [status, userId]);
+  }, [status, userId, selectConversationId]);
 
   const handleCreateConversation = async (user: User) => {
     try {
@@ -100,7 +106,9 @@ export function ConversationList() {
                 variant="outline"
                 size="icon"
                 className="dark:bg-primary-foreground dark:hover:bg-background"
-                onClick={() => router.push("/t/user-suggested")}
+                onClick={() => {
+                  window.history.pushState(null, "", "/t/user-suggested");
+                }}
               >
                 <UserRoundPlus className="h-4 w-4" />
               </Button>
