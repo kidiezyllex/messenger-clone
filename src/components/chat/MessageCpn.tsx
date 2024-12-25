@@ -52,30 +52,13 @@ export default function MessageCpn({
   const [isVideoCallActive, setIsVideoCallActive] = useState(false);
   const { data: session, status } = useSession();
   const { setSelectConversationId, selectConversationId } = useStore();
-  const [pinnedMessages, setPinnedMessages] = useState<Message[]>([]);
-
-  const fetchData = async () => {
-    try {
-      const res = await axios.get(`/api/conversations/${selectConversationId}`);
-      setPinnedMessages(res.data.pinnedMessages);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    if (status === "authenticated") {
-      fetchData();
-    }
-  }, [selectConversationId, pinnedMessages]);
-  const handleReaction = (emoji: string) => {
-    setReaction(emoji);
-  };
 
   const handleReply = (message: Message) => {
     setReplyMessage(message);
   };
-
+  const handleReaction = (emoji: string) => {
+    setReaction(emoji);
+  };
   const handleEdit = () => {
     // Implement edit functionality
     console.log("Edit message:", message.id);

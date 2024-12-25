@@ -11,10 +11,8 @@ import MessageCpn from "./chat/MessageCpn";
 import ChatViewBottom from "./chat/ChatViewBottom";
 import ChatSidebar from "./chat/ChatSidebar";
 import useStore from "@/store/useStore";
-import { ChevronDown, Pin } from "lucide-react";
-import { Button } from "./ui/button";
-import { formatDate2, formatDate3 } from "../../lib/utils";
 import PinnedMessage from "./chat/PinnedMessage";
+import { usePathname } from "next/navigation";
 
 export function ChatView() {
   const { selectConversationId } = useStore();
@@ -28,11 +26,13 @@ export function ChatView() {
   const pusherInitialized = useRef(false);
   const [expanded, setExpanded] = useState(false);
   const [pinnedMessages, setPinnedMessages] = useState<Message[]>([]);
+  const conversationId = usePathname().split("/")[2];
+  console.log(conversationId);
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
-  const fetchData = useCallback(async () => {
+  const fetchData = async () => {
     try {
       const res = await axios.get(`/api/conversations/${selectConversationId}`);
       const user2 = res.data.users.filter((item: any) => item.id !== userId);
@@ -40,11 +40,10 @@ export function ChatView() {
       setMessages(res.data.messages);
       setUser2(user2[0]);
       setPinnedMessages(res.data.pinnedMessages);
-      console.log(res.data.pinnedMessages);
     } catch (error) {
       console.error(error);
     }
-  }, [selectConversationId, userId]);
+  };
 
   useEffect(() => {
     if (
@@ -56,7 +55,7 @@ export function ChatView() {
         setTimeout(scrollToBottom, 0);
       });
     }
-  }, [status, selectConversationId, fetchData, scrollToBottom]);
+  }, [conversationId]);
 
   useEffect(() => {
     if (!pusherInitialized.current) {
@@ -78,7 +77,7 @@ export function ChatView() {
         pusherInitialized.current = false;
       }
     };
-  }, [selectConversationId, scrollToBottom]);
+  }, [conversationId]);
 
   return (
     <div className="flex gap-4 flex-1">

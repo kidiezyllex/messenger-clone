@@ -20,7 +20,6 @@ import {
 import { usePathname, useRouter } from "next/navigation";
 import { pusherClient } from "@/lib/pusher";
 import { useEffect, useRef, useState } from "react";
-import axios from "axios";
 import { useSession } from "next-auth/react";
 import useStore from "@/store/useStore";
 export function ConversationItem({
@@ -31,53 +30,48 @@ export function ConversationItem({
   const router = useRouter();
   const { setSelectConversationId, selectConversationId } = useStore();
   const pathName = usePathname().split("/")[2];
-  const [messages, setMessages] = useState<Message>();
+  const [messages, setMessages] = useState<Message>(
+    conversation.messages[conversation.messages.length - 1]
+  );
   const { data: session, status } = useSession();
   const userId = (session?.user as any)?.id;
   const user2 = conversation.users.filter((item) => item.id !== userId);
   const pusherInitialized = useRef(false);
-  const fetchData = async () => {
-    if (conversation?.id !== "new-account") {
-      const res = await axios.get(`/api/conversations/${conversation?.id}`);
-      setMessages(res.data.messages[res.data.messages.length - 1]);
-    }
-  };
-  useEffect(() => {
-    if (status === "authenticated" && !pusherInitialized.current) {
-      fetchData();
-      pusherClient.subscribe(conversation?.id);
-      pusherClient.bind("message:new", (message: Message) => {
-        if (conversation?.id === selectConversationId) {
-          setMessages(message);
-        }
-      });
-    }
-    return () => {
-      if (pusherInitialized.current) {
-        pusherClient.unsubscribe(conversation?.id);
-        pusherClient.unbind("message:new");
-        pusherInitialized.current = false;
-      }
-    };
-  }, [selectConversationId]);
-  const renderLatestMessage = () => {
-    if (messages?.senderId === userId) {
-      if (messages?.image) return "Bạn: Đã gửi 1 ảnh";
-      else if (messages?.type === "call") return "Bạn: Đã gọi đến...";
-      else
-        return `Bạn: ${
-          messages?.text?.length > 20
-            ? messages?.text.slice(0, 20) + "..."
-            : messages?.text
-        }`;
-    } else {
-      if (messages?.image)
-        return `${getLastName(messages?.sender?.name)}: Đã gửi 1 ảnh`;
-      else if (messages?.type === "call")
-        return `${getLastName(messages?.sender?.name)}: Đã gọi đến...`;
-      else return `${getLastName(messages?.sender?.name)}: ${messages?.text}`;
-    }
-  };
+  // useEffect(() => {
+  //   if (status === "authenticated" && !pusherInitialized.current) {
+  //     pusherClient.subscribe(conversation?.id);
+  //     pusherClient.bind("message:new", (message: Message) => {
+  //       if (conversation?.id === selectConversationId) {
+  //         setMessages(message);
+  //       }
+  //     });
+  //   }
+  //   return () => {
+  //     if (pusherInitialized.current) {
+  //       pusherClient.unsubscribe(conversation?.id);
+  //       pusherClient.unbind("message:new");
+  //       pusherInitialized.current = false;
+  //     }
+  //   };
+  // }, [selectConversationId]);
+  // const renderLatestMessage = () => {
+  //   if (messages?.senderId === userId) {
+  //     if (messages?.image) return "Bạn: Đã gửi 1 ảnh";
+  //     else if (messages?.type === "call") return "Bạn: Đã gọi đến...";
+  //     else
+  //       return `Bạn: ${
+  //         messages?.text?.length > 20
+  //           ? messages?.text.slice(0, 20) + "..."
+  //           : messages?.text
+  //       }`;
+  //   } else {
+  //     if (messages?.image)
+  //       return `${getLastName(messages?.sender?.name)}: Đã gửi 1 ảnh`;
+  //     else if (messages?.type === "call")
+  //       return `${getLastName(messages?.sender?.name)}: Đã gọi đến...`;
+  //     else return `${getLastName(messages?.sender?.name)}: ${messages?.text}`;
+  //   }
+  // };
   return (
     <div
       onClick={() => {
@@ -111,7 +105,7 @@ export function ConversationItem({
           <span className="text-xs text-muted-foreground"></span>
         </div>
         <p className="text-sm text-muted-foreground italic">
-          {messages ? renderLatestMessage() : "(Chưa có tin nhắn)"}
+          {/* {messages ? renderLatestMessage() : "(Chưa có tin nhắn)"} */}
         </p>
       </div>
       <DropdownMenu>
