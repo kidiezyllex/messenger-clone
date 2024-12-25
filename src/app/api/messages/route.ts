@@ -7,6 +7,7 @@ export async function POST(req: Request) {
   const {
     conversationId,
     image,
+    file,
     content,
     senderId,
     type,
@@ -26,6 +27,7 @@ export async function POST(req: Request) {
       type: type,
       text: content,
       image: image,
+      file: file,
       conversation: {
         connect: { id: conversationId },
       },

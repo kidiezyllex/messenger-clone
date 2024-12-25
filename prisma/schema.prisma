@@ -53,6 +53,7 @@ model Message {
   text           String
   type           String
   image          String?
+  file           String?
   createdAt      DateTime     @default(now())
   seen           User[]       @relation("UserSeenMessages")
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)

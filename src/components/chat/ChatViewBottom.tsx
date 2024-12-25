@@ -5,12 +5,20 @@ import { useUploadThing } from "@/utils/uploadthing";
 import axios from "axios";
 import {
   CirclePlus,
+  FileText,
   ImageIcon,
   Send,
   SmilePlus,
   Sticker,
   ThumbsUp,
   X,
+  FileImage,
+  FileAudio,
+  FileVideo,
+  FileIcon as FilePdf,
+  FileArchive,
+  FileSpreadsheet,
+  File,
 } from "lucide-react";
 import { DropdownMenu, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import StickerBoard from "./StickerBoard";
@@ -30,10 +38,13 @@ export default function ChatViewBottom({
   const [inputMessage, setInputMessage] = useState("");
   const [sending, setSending] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isReplying, setIsReplying] = useState(false);
+  const imageInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const { startUpload } = useUploadThing("imageUploader");
+  const { startUpload: startImageUpload } = useUploadThing("imageUploader");
+  const { startUpload: startFileUpload } = useUploadThing("productPdf");
 
   useEffect(() => {
     if (replyMessage) {
@@ -45,29 +56,41 @@ export default function ChatViewBottom({
   }, [replyMessage]);
 
   const handleSendMessage = async () => {
-    if (inputMessage.trim() !== "" || selectedImage) {
+    if (inputMessage.trim() !== "" || selectedImage || selectedFile) {
       try {
         setSending(true);
         let imageUrl = "";
+        let fileUrl = "";
         if (selectedImage) {
-          const res = await startUpload([selectedImage]);
-          imageUrl = res[0].url;
+          const res = await startImageUpload([selectedImage]);
+          if (res && res[0]) {
+            imageUrl = res[0].url;
+          }
+        }
+        if (selectedFile) {
+          const res = await startFileUpload([selectedFile]);
+          if (res && res[0]) {
+            fileUrl = res[0].url;
+          }
         }
         await axios.post(`/api/messages`, {
           conversationId,
           image: imageUrl,
+          file: fileUrl,
           content: inputMessage,
           senderId: userId,
-          type: imageUrl?.trim() === "" ? "text" : "image",
+          type: fileUrl ? "file" : imageUrl ? "image" : "text",
           replyMessageId: isReplying ? replyMessage?.id : "",
           replyText: isReplying ? replyMessage?.text : "",
         });
         setInputMessage("");
         setSelectedImage(null);
+        setSelectedFile(null);
         setIsReplying(false);
         setSending(false);
       } catch (error) {
         console.error(error);
+        setSending(false);
       }
     }
   };
@@ -76,10 +99,23 @@ export default function ChatViewBottom({
     const file = e.target.files?.[0];
     if (file) {
       setSelectedImage(file);
+      setSelectedFile(null);
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      setSelectedImage(null);
     }
   };
 
   const handleImageButtonClick = () => {
+    imageInputRef.current?.click();
+  };
+
+  const handleFileButtonClick = () => {
     fileInputRef.current?.click();
   };
 
@@ -87,8 +123,45 @@ export default function ChatViewBottom({
     setSelectedImage(null);
   };
 
+  const removeSelectedFile = () => {
+    setSelectedFile(null);
+  };
+
   const cancelReply = () => {
     setIsReplying(false);
+  };
+
+  const renderFileTypeIcon = (fileType: string) => {
+    switch (fileType) {
+      case "text/plain":
+        return <FileText className="h-4 w-4" />;
+      case "image/jpeg":
+      case "image/png":
+      case "image/gif":
+      case "image/webp":
+        return <FileImage className="h-4 w-4" />;
+      case "audio/mpeg":
+      case "audio/wav":
+      case "audio/ogg":
+        return <FileAudio className="h-4 w-4" />;
+      case "video/mp4":
+      case "video/mpeg":
+      case "video/quicktime":
+        return <FileVideo className="h-4 w-4" />;
+      case "application/pdf":
+        return <FilePdf className="h-4 w-4" />;
+      case "application/zip":
+      case "application/x-rar-compressed":
+        return <FileArchive className="h-4 w-4" />;
+      case "application/vnd.ms-excel":
+      case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+        return <FileSpreadsheet className="h-4 w-4" />;
+      case "application/msword":
+      case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+        return <FileText className="h-4 w-4" />;
+      default:
+        return <File className="h-4 w-4" />;
+    }
   };
 
   return (
@@ -105,8 +178,26 @@ export default function ChatViewBottom({
           <Button
             size="icon"
             variant="secondary"
-            className="absolute top-2 right-2 rounded-full bg-zinc-800 dark:hover:bg-primary-foreground"
+            className="h-6 w-6 absolute top-2 right-2 rounded-full bg-zinc-800 dark:hover:bg-primary-foreground"
             onClick={removeSelectedImage}
+          >
+            <X className="h-4 w-4 text-white" />
+          </Button>
+        </div>
+      )}
+      {selectedFile && (
+        <div className="relative mb-2 dark:bg-zinc-700 p-4 rounded-lg">
+          <div className="flex flex-row items-center gap-2">
+            {renderFileTypeIcon(selectedFile.type)}
+            <p className="text-sm font-semibold dark:text-slate-300 text-slate-600">
+              {selectedFile.name}
+            </p>
+          </div>
+          <Button
+            size="icon"
+            variant="secondary"
+            className="h-6 w-6 absolute top-2 right-2 rounded-full bg-zinc-800 dark:hover:bg-primary-foreground"
+            onClick={removeSelectedFile}
           >
             <X className="h-4 w-4 text-white" />
           </Button>
@@ -143,6 +234,7 @@ export default function ChatViewBottom({
             size="icon"
             variant="secondary"
             className="hover:bg-primary-foreground rounded-full"
+            onClick={handleFileButtonClick}
           >
             <CirclePlus className="h-5 w-5 text-blue-500 " />
           </Button>
@@ -156,9 +248,16 @@ export default function ChatViewBottom({
           </Button>
           <input
             type="file"
-            ref={fileInputRef}
+            ref={imageInputRef}
             onChange={handleImageUpload}
             accept="image/*"
+            className="hidden"
+          />
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileSelect}
+            accept=".txt,.mp4,.mov,.mp3,.wav,.pdf"
             className="hidden"
           />
 
@@ -202,7 +301,7 @@ export default function ChatViewBottom({
           className="hover:bg-primary-foreground rounded-full"
           onClick={handleSendMessage}
         >
-          {inputMessage.trim() !== "" || selectedImage ? (
+          {inputMessage.trim() !== "" || selectedImage || selectedFile ? (
             <Send className="h-5 w-5 text-blue-500" />
           ) : (
             <ThumbsUp className="h-5 w-5 text-blue-500" />
