@@ -1,12 +1,18 @@
-<h1 align="center">
-MESSENGER CLONE</h1>
-https://www.messenger.com/t
+<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; margin: 0;">
+    <h1>MESSENGER CLONE</h1>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/b/be/Facebook_Messenger_logo_2020.svg" alt="Logo" height="50">
+</div>
 
+[0. Accounts for Testing](#0-accounts-for-testing)
 [1. Features](#1-features)
 [2. Tech Stack](#2-tech-stack)
 [3. API Document](#3-api-document)
 [Database Diagram](#database-diagram)
 [Run Project](#run-project)
+
+### 0. Accounts for Testing
+
+**email**: taikhoan1@gmail.com (taikhoan1 --> taikhoan10) **password**: 1234567
 
 ### 1. Features
 
@@ -51,11 +57,7 @@ https://www.messenger.com/t
 
 ### Database Diagram
 
-### Run Project
-
-##### 5.1. Link Web Application:
-
-##### 5.2. Run project locally:
+### Run Project locally
 
 1. Clone git
 
