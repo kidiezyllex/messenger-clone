@@ -30,6 +30,15 @@ export async function GET(
             createdAt: "asc",
           },
         },
+        pinnedMessages: {
+          include: {
+            sender: true,
+            seen: true,
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
       },
     });
 
@@ -51,36 +60,69 @@ export async function GET(
 }
 
 export async function PATCH(
-  req: Request,
+  request: Request,
   { params }: { params: { conversationId: string } }
 ) {
-  const { conversationId } = params;
-  const body = await req.json();
-  const { name } = body;
-
-  if (!conversationId) {
-    return NextResponse.json(
-      { error: "Conversation ID is required" },
-      { status: 400 }
-    );
-  }
-
   try {
-    const updatedConversation = await prismadb.conversation.update({
-      where: {
-        id: conversationId,
-      },
-      data: {
-        name,
-      },
-      include: {
-        users: true,
-      },
+    const { conversationId } = params;
+    const body = await request.json();
+    const { action, message } = body;
+
+    if (!action || !message || (action !== "pin" && action !== "unpin")) {
+      return NextResponse.json(
+        { error: "Invalid request body" },
+        { status: 400 }
+      );
+    }
+
+    const conversation = await prismadb.conversation.findUnique({
+      where: { id: conversationId },
+      include: { pinnedMessages: true },
     });
 
-    return NextResponse.json(updatedConversation);
+    if (!conversation) {
+      return NextResponse.json(
+        { error: "Conversation not found" },
+        { status: 404 }
+      );
+    }
+
+    let updatedPinnedMessages;
+
+    if (action === "pin") {
+      // Check if the message is already pinned
+      const isAlreadyPinned = conversation.pinnedMessages.some(
+        (pinnedMessage) => pinnedMessage.id === message.id
+      );
+
+      if (!isAlreadyPinned) {
+        updatedPinnedMessages = {
+          connect: { id: message.id },
+        };
+      } else {
+        return NextResponse.json(
+          { message: "Message is already pinned" },
+          { status: 200 }
+        );
+      }
+    } else {
+      // Unpin the message
+      updatedPinnedMessages = {
+        disconnect: { id: message.id },
+      };
+    }
+
+    const updatedConversation = await prismadb.conversation.update({
+      where: { id: conversationId },
+      data: {
+        pinnedMessages: updatedPinnedMessages,
+      },
+      include: { pinnedMessages: true },
+    });
+
+    return NextResponse.json(updatedConversation, { status: 200 });
   } catch (error) {
-    console.error("Error updating conversation:", error);
+    console.error("Error updating pinned messages:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

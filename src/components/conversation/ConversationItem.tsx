@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { pusherClient } from "@/lib/pusher";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import useStore from "@/store/useStore";
@@ -35,6 +35,7 @@ export function ConversationItem({
   const { data: session, status } = useSession();
   const userId = (session?.user as any)?.id;
   const user2 = conversation.users.filter((item) => item.id !== userId);
+  const pusherInitialized = useRef(false);
   const fetchData = async () => {
     if (conversation?.id !== "new-account") {
       const res = await axios.get(`/api/conversations/${conversation?.id}`);
@@ -42,7 +43,7 @@ export function ConversationItem({
     }
   };
   useEffect(() => {
-    if (status === "authenticated") {
+    if (status === "authenticated" && !pusherInitialized.current) {
       fetchData();
       pusherClient.subscribe(conversation?.id);
       pusherClient.bind("message:new", (message: Message) => {
@@ -51,6 +52,13 @@ export function ConversationItem({
         }
       });
     }
+    return () => {
+      if (pusherInitialized.current) {
+        pusherClient.unsubscribe(conversation?.id);
+        pusherClient.unbind("message:new");
+        pusherInitialized.current = false;
+      }
+    };
   }, [selectConversationId]);
   const renderLatestMessage = () => {
     if (messages?.senderId === userId) {

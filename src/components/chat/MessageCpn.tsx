@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Message } from "../../../lib/entity-types";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import Image from "next/image";
@@ -32,6 +32,8 @@ import {
 } from "../ui/dialog";
 import VideoCall from "./VideoCall";
 import { useSession } from "next-auth/react";
+import axios from "axios";
+import useStore from "@/store/useStore";
 
 const reactionEmojis = ["👍", "❤️", "😂", "😮", "😢", "😡"];
 
@@ -48,8 +50,24 @@ export default function MessageCpn({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [reaction, setReaction] = useState<string | null>(null);
   const [isVideoCallActive, setIsVideoCallActive] = useState(false);
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const { setSelectConversationId, selectConversationId } = useStore();
+  const [pinnedMessages, setPinnedMessages] = useState<Message[]>([]);
 
+  const fetchData = async () => {
+    try {
+      const res = await axios.get(`/api/conversations/${selectConversationId}`);
+      setPinnedMessages(res.data.pinnedMessages);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      fetchData();
+    }
+  }, [selectConversationId, pinnedMessages]);
   const handleReaction = (emoji: string) => {
     setReaction(emoji);
   };
@@ -64,13 +82,14 @@ export default function MessageCpn({
   };
 
   const handleDelete = () => {
-    // Implement delete functionality
     console.log("Delete message:", message.id);
   };
 
-  const handlePin = () => {
-    // Implement pin functionality
-    console.log("Pin message:", message.id);
+  const handlePin = async () => {
+    await axios.patch(`/api/conversations/${selectConversationId}`, {
+      message: message,
+      action: "pin",
+    });
   };
 
   const toggleVideoCall = () => {

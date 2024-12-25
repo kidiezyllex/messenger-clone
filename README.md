@@ -48,6 +48,7 @@
 ##### conversation:
 
 - `[GET] /api/conversations/user/${userId}`: Lấy tất cả conversation của 1 người dùng
+- `[PATCH] /api/conversations/${conversationId}`: Cập nhật tin nhắn được ghim
 
 ##### friend-requests:
 

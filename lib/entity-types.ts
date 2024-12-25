@@ -27,6 +27,7 @@ export interface Conversation {
   users: User[];
   messagesIds: String[];
   usersIds: String[];
+  pinnedMessages?: Message[];
 }
 
 export interface Message {

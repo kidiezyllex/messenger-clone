@@ -11,6 +11,10 @@ import MessageCpn from "./chat/MessageCpn";
 import ChatViewBottom from "./chat/ChatViewBottom";
 import ChatSidebar from "./chat/ChatSidebar";
 import useStore from "@/store/useStore";
+import { ChevronDown, Pin } from "lucide-react";
+import { Button } from "./ui/button";
+import { formatDate2, formatDate3 } from "../../lib/utils";
+import PinnedMessage from "./chat/PinnedMessage";
 
 export function ChatView() {
   const { selectConversationId } = useStore();
@@ -23,11 +27,11 @@ export function ChatView() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const pusherInitialized = useRef(false);
   const [expanded, setExpanded] = useState(false);
+  const [pinnedMessages, setPinnedMessages] = useState<Message[]>([]);
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
-
   const fetchData = useCallback(async () => {
     try {
       const res = await axios.get(`/api/conversations/${selectConversationId}`);
@@ -35,6 +39,8 @@ export function ChatView() {
       setConversation(res.data);
       setMessages(res.data.messages);
       setUser2(user2[0]);
+      setPinnedMessages(res.data.pinnedMessages);
+      console.log(res.data.pinnedMessages);
     } catch (error) {
       console.error(error);
     }
@@ -83,6 +89,11 @@ export function ChatView() {
           setExpanded={setExpanded}
           expanded={expanded}
         />
+        {pinnedMessages && (
+          <PinnedMessage
+            message={pinnedMessages[pinnedMessages.length - 1]}
+          ></PinnedMessage>
+        )}
         <ScrollArea className="h-full">
           <div className="p-4 space-y-4">
             {messages.map((message) => (

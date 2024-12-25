@@ -5,7 +5,6 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { userId, friendId, isGroup, groupImage, members, name } = body;
-    console.log(members);
     // Kiểm tra đầu vào cơ bản
     if (!userId) {
       return new NextResponse("User ID is required", { status: 400 });

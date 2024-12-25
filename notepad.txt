@@ -1,8 +1,6 @@
 Chức năng còn thiếu
-2. Gọi Video
-3. Chuyển tiếp tin nhắn
-4. Gửi file
-5. Ghim tin nhắn, bỏ ghim tin nhắn
+1. Gửi file
+2. Ghim tin nhắn, bỏ ghim tin nhắn
 6. [Nhóm] Tag người dùng
 7. Tạo nhóm
 8. Xem nhóm chung
