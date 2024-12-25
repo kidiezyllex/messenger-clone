@@ -1,6 +1,5 @@
 <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; margin: 0;">
-    <h1>MESSENGER CLONE</h1>
-    <img src="https://upload.wikimedia.org/wikipedia/commons/b/be/Facebook_Messenger_logo_2020.svg" alt="Logo" height="50">
+    <h1>MESSENGER CLONE <img src="https://upload.wikimedia.org/wikipedia/commons/b/be/Facebook_Messenger_logo_2020.svg" alt="Logo" height="26"></h1>
 </div>
 
 [0. Accounts for Testing](#0-accounts-for-testing)
@@ -12,7 +11,9 @@
 
 ### 0. Accounts for Testing
 
-**email**: taikhoan1@gmail.com (taikhoan1 --> taikhoan10) **password**: 1234567
+- **email**: taikhoan1@gmail.com (taikhoan1 --> taikhoan10)
+
+- **password**: 1234567
 
 ### 1. Features
 

@@ -1,10 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { MoreVertical, Phone, Video } from "lucide-react";
-import { Conversation, User } from "../../../lib/entity-types";
+import { Conversation, Message, User } from "../../../lib/entity-types";
 import VideoCall from "./VideoCall";
 import { Dialog, DialogContent, DialogTitle } from "../ui/dialog";
+import { pusherClient } from "@/lib/pusher";
+import { usePathname } from "next/navigation";
+import axios from "axios";
+import { useSession } from "next-auth/react";
 
 export default function ChatViewTop({
   conversation,
@@ -18,9 +22,43 @@ export default function ChatViewTop({
   expanded: boolean;
 }) {
   const [isVideoCallActive, setIsVideoCallActive] = useState(false);
+  const pathname = usePathname();
+  const conversationId = pathname.split("/")[2];
+  const { data: session } = useSession();
+
   const toggleVideoCall = () => {
     setIsVideoCallActive(!isVideoCallActive);
   };
+
+  const initiateVideoCall = async () => {
+    try {
+      await axios.post(`/api/messages`, {
+        conversationId,
+        image: "",
+        file: "",
+        content: "",
+        senderId: (session?.user as any)?.id,
+        type: "call",
+        replyMessageId: "",
+        replyText: "",
+      });
+      toggleVideoCall();
+    } catch (error) {
+      console.error("Error initiating video call:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      pusherClient.subscribe(conversationId);
+      pusherClient.bind("message:new", (message: Message) => {
+        if (message?.conversationId === conversationId) {
+          console.log(message?.conversationId);
+          toggleVideoCall();
+        }
+      });
+    }
+  }, [conversationId]);
   return (
     <>
       <div className="flex items-center justify-between p-3 border-b dark:border-b-zinc-700 border-b-zinc-300">
@@ -31,9 +69,10 @@ export default function ChatViewTop({
                 conversation?.isGroup ? conversation?.groupImage : user2?.image
               }
             />
-
             <AvatarFallback className="bg-blue-400 text-white border-2 border-blue-300 dark:border-secondary">
-              {conversation?.isGroup ? conversation?.name : user2?.name[0]}
+              {conversation?.isGroup
+                ? conversation?.name?.[0]
+                : user2?.name?.[0] || "?"}
             </AvatarFallback>
           </Avatar>
           <div>
@@ -57,7 +96,7 @@ export default function ChatViewTop({
             variant="ghost"
             size="icon"
             className="text-blue-500 hover:text-blue-300"
-            onClick={toggleVideoCall}
+            onClick={initiateVideoCall}
           >
             <Video className="h-6 w-6" />
           </Button>
@@ -80,9 +119,9 @@ export default function ChatViewTop({
           style={{ backgroundColor: "#1C1F2E" }}
         >
           <VideoCall
-            roomId={conversation?.id}
-            userId={user2?.id}
-            userName={user2?.name}
+            roomId={conversation?.id || ""}
+            userId={(session?.user as any)?.id}
+            userName={(session?.user as any)?.name}
             onClose={toggleVideoCall}
           />
         </DialogContent>

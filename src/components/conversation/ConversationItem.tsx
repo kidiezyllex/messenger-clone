@@ -55,6 +55,7 @@ export function ConversationItem({
   const renderLatestMessage = () => {
     if (messages?.senderId === userId) {
       if (messages?.image) return "Bạn: Đã gửi 1 ảnh";
+      else if (messages?.type === "call") return "Bạn: Đã gọi đến...";
       else
         return `Bạn: ${
           messages?.text?.length > 20
@@ -64,6 +65,8 @@ export function ConversationItem({
     } else {
       if (messages?.image)
         return `${getLastName(messages?.sender?.name)}: Đã gửi 1 ảnh`;
+      else if (messages?.type === "call")
+        return `${getLastName(messages?.sender?.name)}: Đã gọi đến...`;
       else return `${getLastName(messages?.sender?.name)}: ${messages?.text}`;
     }
   };

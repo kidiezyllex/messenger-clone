@@ -13,6 +13,7 @@ import {
   Forward,
   Pin,
   Quote,
+  Video,
 } from "lucide-react";
 import { Button } from "../ui/button";
 import {
@@ -23,7 +24,14 @@ import {
 } from "../ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { ForwardDialog } from "./ForwardDialog";
-import { Dialog, DialogTrigger } from "../ui/dialog";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+} from "../ui/dialog";
+import VideoCall from "./VideoCall";
+import { useSession } from "next-auth/react";
 
 const reactionEmojis = ["👍", "❤️", "😂", "😮", "😢", "😡"];
 
@@ -39,6 +47,9 @@ export default function MessageCpn({
   const [showOptions, setShowOptions] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [reaction, setReaction] = useState<string | null>(null);
+  const [isVideoCallActive, setIsVideoCallActive] = useState(false);
+  const { data: session } = useSession();
+
   const handleReaction = (emoji: string) => {
     setReaction(emoji);
   };
@@ -60,6 +71,10 @@ export default function MessageCpn({
   const handlePin = () => {
     // Implement pin functionality
     console.log("Pin message:", message.id);
+  };
+
+  const toggleVideoCall = () => {
+    setIsVideoCallActive(!isVideoCallActive);
   };
 
   return (
@@ -119,6 +134,23 @@ export default function MessageCpn({
           )
         ) : null}
 
+        {message?.type === "call" && (
+          <div
+            className="flex flex-row gap-2 items-center cursor-pointer"
+            onClick={toggleVideoCall}
+          >
+            <Button
+              size="icon"
+              variant="secondary"
+              className="hover:bg-primary-foreground rounded-full"
+            >
+              <Video className="h-5 w-5 text-blue-500 " />
+            </Button>
+            <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">
+              Cuộc gọi đến
+            </p>
+          </div>
+        )}
         <div className="flex flex-col gap-2 relative">
           {message?.replyText && (
             <div className="flex flex-row gap-2 items-center text-sm text-zinc-600 dark:text-zinc-300 p-2 rounded-md bg-background dark:bg-zinc-900 italic">
@@ -141,7 +173,6 @@ export default function MessageCpn({
           )}
         </div>
       </div>
-
       <div
         className={
           message?.senderId === userId
@@ -233,6 +264,20 @@ export default function MessageCpn({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+      <Dialog open={isVideoCallActive} onOpenChange={toggleVideoCall}>
+        <DialogTitle></DialogTitle>
+        <DialogContent
+          className="max-w-[90vw] w-[100%] h-[90vh] overflow-y-auto"
+          style={{ backgroundColor: "#1C1F2E" }}
+        >
+          <VideoCall
+            roomId={message?.conversationId}
+            userId={(session?.user as any)?.id}
+            userName={(session?.user as any)?.name}
+            onClose={toggleVideoCall}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

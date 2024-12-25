@@ -1,4 +1,5 @@
 Chức năng còn thiếu
+2. Gọi Video
 3. Chuyển tiếp tin nhắn
 4. Gửi file
 5. Ghim tin nhắn, bỏ ghim tin nhắn
