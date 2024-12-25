@@ -173,97 +173,102 @@ export default function MessageCpn({
           )}
         </div>
       </div>
-      <div
-        className={
-          message?.senderId === userId
-            ? "self-center flex"
-            : "flex self-center flex-row-reverse"
-        }
-      >
-        {showOptions && (
-          <>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 hover:bg-primary-foreground rounded-full"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <Smile className="h-5 w-5 dark:text-slate-300 text-slate-600" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-1 rounded-full bg-background dark:bg-zinc-900 px-4">
-                <div className="flex items-center">
-                  {reactionEmojis.map((emoji) => (
-                    <Button
-                      key={emoji}
-                      onClick={() => handleReaction(emoji)}
-                      className="text-xl hover:bg-muted p-1 rounded"
-                      variant="ghost"
-                      size="icon"
-                    >
-                      {emoji}
-                    </Button>
-                  ))}
-                </div>
-              </PopoverContent>
-            </Popover>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 rounded-full hover:bg-primary-foreground"
-              onClick={() => handleReply(message)}
+      {message?.type !== "call" && (
+        <div
+          className={
+            message?.senderId === userId
+              ? "self-center flex"
+              : "flex self-center flex-row-reverse"
+          }
+        >
+          {showOptions && (
+            <>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 hover:bg-primary-foreground rounded-full"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <Smile className="h-5 w-5 dark:text-slate-300 text-slate-600" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-1 rounded-full bg-background dark:bg-zinc-900 px-4">
+                  <div className="flex items-center">
+                    {reactionEmojis.map((emoji) => (
+                      <Button
+                        key={emoji}
+                        onClick={() => handleReaction(emoji)}
+                        className="text-xl hover:bg-muted p-1 rounded"
+                        variant="ghost"
+                        size="icon"
+                      >
+                        {emoji}
+                      </Button>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 rounded-full hover:bg-primary-foreground"
+                onClick={() => handleReply(message)}
+              >
+                <MessageCircleReply className="h-5 w-5 dark:text-slate-300 text-slate-600" />
+              </Button>
+            </>
+          )}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 rounded-full hover:bg-primary-foreground"
+                onClick={() => setShowOptions(true)}
+              >
+                <EllipsisVertical className="h-5 w-5 dark:text-slate-300 text-slate-600" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="start"
+              className="bg-background dark:bg-zinc-900 dark:text-slate-300 text-slate-600"
             >
-              <MessageCircleReply className="h-5 w-5 dark:text-slate-300 text-slate-600" />
-            </Button>
-          </>
-        )}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 rounded-full hover:bg-primary-foreground"
-              onClick={() => setShowOptions(true)}
-            >
-              <EllipsisVertical className="h-5 w-5 dark:text-slate-300 text-slate-600" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="start"
-            className="bg-background dark:bg-zinc-900 dark:text-slate-300 text-slate-600"
-          >
-            <DropdownMenuItem onClick={handleEdit}>
-              <Pencil className="mr-2 h-4 w-4" />
-              <span>Chỉnh sửa</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleDelete}>
-              <RotateCcw className="mr-2 h-4 w-4" />
-              <span>Thu hồi</span>
-            </DropdownMenuItem>
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger>
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    setIsDialogOpen(true);
-                    e.stopPropagation();
-                    e.preventDefault();
-                  }}
-                >
-                  <Forward className="mr-2 h-4 w-4" />
-                  <span>Chuyển tiếp</span>
-                </DropdownMenuItem>
-              </DialogTrigger>
-              <ForwardDialog message={message} />
-            </Dialog>
-            <DropdownMenuItem onClick={handlePin}>
-              <Pin className="mr-2 h-4 w-4" />
-              <span>Ghim</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+              <DropdownMenuItem onClick={handleEdit}>
+                <Pencil className="mr-2 h-4 w-4" />
+                <span>Chỉnh sửa</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleDelete}>
+                <RotateCcw className="mr-2 h-4 w-4" />
+                <span>Thu hồi</span>
+              </DropdownMenuItem>
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger>
+                  <DropdownMenuItem
+                    onClick={(e) => {
+                      setIsDialogOpen(true);
+                      e.stopPropagation();
+                      e.preventDefault();
+                    }}
+                  >
+                    <Forward className="mr-2 h-4 w-4" />
+                    <span>Chuyển tiếp</span>
+                  </DropdownMenuItem>
+                </DialogTrigger>
+                <ForwardDialog
+                  message={message}
+                  setIsDialogOpen={setIsDialogOpen}
+                />
+              </Dialog>
+              <DropdownMenuItem onClick={handlePin}>
+                <Pin className="mr-2 h-4 w-4" />
+                <span>Ghim</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      )}
       <Dialog open={isVideoCallActive} onOpenChange={toggleVideoCall}>
         <DialogTitle></DialogTitle>
         <DialogContent

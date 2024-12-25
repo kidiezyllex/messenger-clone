@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { MoreVertical, Phone, Video } from "lucide-react";
@@ -25,6 +25,7 @@ export default function ChatViewTop({
   const pathname = usePathname();
   const conversationId = pathname.split("/")[2];
   const { data: session } = useSession();
+  const pusherInitialized = useRef(false);
 
   const toggleVideoCall = () => {
     setIsVideoCallActive(!isVideoCallActive);
@@ -53,11 +54,17 @@ export default function ChatViewTop({
       pusherClient.subscribe(conversationId);
       pusherClient.bind("message:new", (message: Message) => {
         if (message?.conversationId === conversationId) {
-          console.log(message?.conversationId);
           toggleVideoCall();
         }
       });
     }
+    return () => {
+      if (pusherInitialized.current) {
+        pusherClient.unsubscribe(conversationId);
+        pusherClient.unbind("message:new");
+        pusherInitialized.current = false;
+      }
+    };
   }, [conversationId]);
   return (
     <>

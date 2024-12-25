@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import { ScrollArea, ScrollBar } from "./ui/scroll-area";
@@ -24,22 +24,21 @@ export function ChatView() {
   const pusherInitialized = useRef(false);
   const [expanded, setExpanded] = useState(false);
 
-  const scrollToBottom = () => {
+  const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  }, []);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const res = await axios.get(`/api/conversations/${selectConversationId}`);
       const user2 = res.data.users.filter((item: any) => item.id !== userId);
       setConversation(res.data);
       setMessages(res.data.messages);
       setUser2(user2[0]);
-      scrollToBottom();
     } catch (error) {
       console.error(error);
     }
-  };
+  }, [selectConversationId, userId]);
 
   useEffect(() => {
     if (
@@ -47,16 +46,21 @@ export function ChatView() {
       selectConversationId !== "new-account" &&
       status === "authenticated"
     ) {
-      fetchData();
+      fetchData().then(() => {
+        setTimeout(scrollToBottom, 0);
+      });
     }
-  }, [status, selectConversationId]);
+  }, [status, selectConversationId, fetchData, scrollToBottom]);
 
   useEffect(() => {
     if (!pusherInitialized.current) {
       pusherClient.subscribe(selectConversationId);
       pusherClient.bind("message:new", (message: Message) => {
-        setMessages((current) => [...current, message]);
-        scrollToBottom();
+        setMessages((current) => {
+          const updatedMessages = [...current, message];
+          setTimeout(scrollToBottom, 0);
+          return updatedMessages;
+        });
       });
       pusherInitialized.current = true;
     }
@@ -68,7 +72,7 @@ export function ChatView() {
         pusherInitialized.current = false;
       }
     };
-  }, [selectConversationId]);
+  }, [selectConversationId, scrollToBottom]);
 
   return (
     <div className="flex gap-4 flex-1">

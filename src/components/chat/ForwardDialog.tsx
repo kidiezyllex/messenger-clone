@@ -4,38 +4,70 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { SearchIcon, Send } from "lucide-react";
-import { Conversation, Message, User } from "../../../lib/entity-types";
+import { Loader2, SearchIcon, Send } from "lucide-react";
+import { Conversation, Message } from "../../../lib/entity-types";
 import axios from "axios";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import Loading from "../animation/Loading";
 import { ConversationItem } from "../conversation/ConversationItem";
 import { Button } from "../ui/button";
+import useStore from "@/store/useStore";
 
-export function ForwardDialog({ message }: { message: Message }) {
+export function ForwardDialog({
+  message,
+  setIsDialogOpen,
+}: {
+  message: Message;
+  setIsDialogOpen: (isDialogOpen: boolean) => void;
+}) {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isSending, setIsSending] = useState({ val: false, id: "" });
   const [searchTerm, setSearchTerm] = useState("");
   const { data: session, status } = useSession();
   const userId = (session?.user as any)?.id;
+  const { setSelectConversationId } = useStore();
 
   useEffect(() => {
     if (status === "authenticated") {
       const fetchData = async () => {
+        setLoading(true);
         const res = await axios.get(`/api/conversations/user/${userId}`);
         const filterConversation = res.data.filter(
           (conversation: any) => conversation?.id !== message?.conversationId
         );
         setConversations(filterConversation);
+        setLoading(false);
       };
       fetchData();
     }
   }, [status, userId]);
 
+  const handleSendMessage = async (conversationId: string) => {
+    try {
+      setIsSending({ val: true, id: conversationId });
+      await axios.post(`/api/messages`, {
+        conversationId: conversationId,
+        image: message?.image,
+        file: message?.file,
+        content: message?.text,
+        senderId: userId,
+        type: message?.file ? "file" : message?.image ? "image" : "text",
+        replyMessageId: "",
+        replyText: "",
+      });
+      setIsSending({ val: false, id: "" });
+      setIsDialogOpen(false);
+      window.history.pushState(null, "", `/t/${conversationId}`);
+      setSelectConversationId(conversationId);
+    } catch (error) {
+      setIsSending({ val: false, id: "" });
+      console.error(error);
+    }
+  };
   const filteredConversations = conversations.filter((conversations) =>
     conversations.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
   return (
     <DialogContent className="max-w-[1000px] w-[95%] h-[90%] overflow-y-auto flex flex-col gap-4">
       <DialogTitle className="h-fit pb-2 m-0 text-lg font-bold text-zinc-600 dark:text-zinc-300 border-b dark:border-b-zinc-700 border-b-zinc-300">
@@ -63,8 +95,20 @@ export function ForwardDialog({ message }: { message: Message }) {
                 <ConversationItem
                   conversation={conversation}
                 ></ConversationItem>
-                <Button className="flex flex-row gap-2 bg-blue-400 hover:bg-blue-400 text-white border-2 border-blue-300 hover:border-blue-300 dark:border-secondary">
-                  Gửi <Send className="h-4 w-4 ml-2"></Send>
+                <Button
+                  onClick={() => handleSendMessage(conversation?.id)}
+                  className="flex flex-row gap-2 bg-blue-400 hover:bg-blue-400 text-white border-2 border-blue-300 hover:border-blue-300 dark:border-secondary"
+                >
+                  {isSending.val && isSending.id === conversation?.id ? (
+                    <>
+                      Đang gửi
+                      <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                    </>
+                  ) : (
+                    <>
+                      Gửi <Send className="h-4 w-4 ml-2"></Send>
+                    </>
+                  )}
                 </Button>
               </div>
             ))

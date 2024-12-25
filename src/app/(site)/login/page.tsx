@@ -46,7 +46,7 @@ export default function LoginForm() {
         toast({
           variant: "default",
           title: "Thành công!",
-          description: "Đăng nhập thành công!",
+          description: "Đăng nhập thành công. Chờ 1 xíu nhé!",
         });
         setTrigger(true);
       }
