@@ -17,7 +17,7 @@ import {
   Video,
   Ban,
 } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { pusherClient } from "@/lib/pusher";
 import { useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
@@ -27,51 +27,54 @@ export function ConversationItem({
 }: {
   conversation: Conversation;
 }) {
-  const router = useRouter();
-  const { setSelectConversationId, selectConversationId } = useStore();
-  const pathName = usePathname().split("/")[2];
+  const { setSelectConversationId } = useStore();
   const [messages, setMessages] = useState<Message>(
     conversation.messages[conversation.messages.length - 1]
   );
+  const conversationId = usePathname().split("/")[2];
   const { data: session, status } = useSession();
   const userId = (session?.user as any)?.id;
   const user2 = conversation.users.filter((item) => item.id !== userId);
   const pusherInitialized = useRef(false);
-  // useEffect(() => {
-  //   if (status === "authenticated" && !pusherInitialized.current) {
-  //     pusherClient.subscribe(conversation?.id);
-  //     pusherClient.bind("message:new", (message: Message) => {
-  //       if (conversation?.id === selectConversationId) {
-  //         setMessages(message);
-  //       }
-  //     });
-  //   }
-  //   return () => {
-  //     if (pusherInitialized.current) {
-  //       pusherClient.unsubscribe(conversation?.id);
-  //       pusherClient.unbind("message:new");
-  //       pusherInitialized.current = false;
-  //     }
-  //   };
-  // }, [selectConversationId]);
-  // const renderLatestMessage = () => {
-  //   if (messages?.senderId === userId) {
-  //     if (messages?.image) return "Bạn: Đã gửi 1 ảnh";
-  //     else if (messages?.type === "call") return "Bạn: Đã gọi đến...";
-  //     else
-  //       return `Bạn: ${
-  //         messages?.text?.length > 20
-  //           ? messages?.text.slice(0, 20) + "..."
-  //           : messages?.text
-  //       }`;
-  //   } else {
-  //     if (messages?.image)
-  //       return `${getLastName(messages?.sender?.name)}: Đã gửi 1 ảnh`;
-  //     else if (messages?.type === "call")
-  //       return `${getLastName(messages?.sender?.name)}: Đã gọi đến...`;
-  //     else return `${getLastName(messages?.sender?.name)}: ${messages?.text}`;
-  //   }
-  // };
+  useEffect(() => {
+    if (status === "authenticated" && !pusherInitialized.current) {
+      pusherClient.subscribe(conversation?.id);
+      pusherClient.bind("message:new", (message: Message) => {
+        if (
+          conversation?.id === conversationId &&
+          conversation?.id === message?.conversationId
+        ) {
+          console.log(message?.text);
+          setMessages(message);
+        }
+      });
+    }
+    return () => {
+      if (pusherInitialized.current) {
+        pusherClient.unsubscribe(conversation?.id);
+        pusherClient.unbind("message:new");
+        pusherInitialized.current = false;
+      }
+    };
+  }, [conversationId]);
+  const renderLatestMessage = () => {
+    if (messages?.senderId === userId) {
+      if (messages?.image) return "Bạn: Đã gửi 1 ảnh";
+      else if (messages?.type === "call") return "Bạn: Đã gọi đến...";
+      else
+        return `Bạn: ${
+          messages?.text?.length > 20
+            ? messages?.text.slice(0, 20) + "..."
+            : messages?.text
+        }`;
+    } else {
+      if (messages?.image)
+        return `${getLastName(messages?.sender?.name)}: Đã gửi 1 ảnh`;
+      else if (messages?.type === "call")
+        return `${getLastName(messages?.sender?.name)}: Đã gọi đến...`;
+      else return `${getLastName(messages?.sender?.name)}: ${messages?.text}`;
+    }
+  };
   return (
     <div
       onClick={() => {
@@ -80,7 +83,7 @@ export function ConversationItem({
       }}
       key={conversation.id}
       className={
-        pathName === conversation.id
+        conversationId === conversation?.id
           ? "dark:bg-zinc-700 dark:hover:bg-zinc-700 bg-background flex items-center gap-3 p-4 rounded-md cursor-pointer flex-grow"
           : "dark:hover:bg-zinc-700 flex items-center gap-3 p-4 rounded-lg cursor-pointer flex-grow"
       }
@@ -105,7 +108,7 @@ export function ConversationItem({
           <span className="text-xs text-muted-foreground"></span>
         </div>
         <p className="text-sm text-muted-foreground italic">
-          {/* {messages ? renderLatestMessage() : "(Chưa có tin nhắn)"} */}
+          {messages ? renderLatestMessage() : "(Chưa có tin nhắn)"}
         </p>
       </div>
       <DropdownMenu>

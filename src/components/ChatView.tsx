@@ -15,7 +15,6 @@ import PinnedMessage from "./chat/PinnedMessage";
 import { usePathname } from "next/navigation";
 
 export function ChatView() {
-  const { selectConversationId } = useStore();
   const [conversation, setConversation] = useState<Conversation>();
   const [messages, setMessages] = useState<Message[]>([]);
   const [user2, setUser2] = useState<User>();
@@ -27,15 +26,15 @@ export function ChatView() {
   const [expanded, setExpanded] = useState(false);
   const [pinnedMessages, setPinnedMessages] = useState<Message[]>([]);
   const conversationId = usePathname().split("/")[2];
-  console.log(conversationId);
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
   const fetchData = async () => {
     try {
-      const res = await axios.get(`/api/conversations/${selectConversationId}`);
+      const res = await axios.get(`/api/conversations/${conversationId}`);
       const user2 = res.data.users.filter((item: any) => item.id !== userId);
+      console.log(res.data);
       setConversation(res.data);
       setMessages(res.data.messages);
       setUser2(user2[0]);
@@ -47,19 +46,19 @@ export function ChatView() {
 
   useEffect(() => {
     if (
-      selectConversationId !== "" &&
-      selectConversationId !== "new-account" &&
+      conversationId !== "" &&
+      conversationId !== "new-account" &&
       status === "authenticated"
     ) {
       fetchData().then(() => {
         setTimeout(scrollToBottom, 0);
       });
     }
-  }, [conversationId]);
+  }, [status, conversationId]);
 
   useEffect(() => {
     if (!pusherInitialized.current) {
-      pusherClient.subscribe(selectConversationId);
+      pusherClient.subscribe(conversationId);
       pusherClient.bind("message:new", (message: Message) => {
         setMessages((current) => {
           const updatedMessages = [...current, message];
@@ -72,7 +71,7 @@ export function ChatView() {
 
     return () => {
       if (pusherInitialized.current) {
-        pusherClient.unsubscribe(selectConversationId);
+        pusherClient.unsubscribe(conversationId);
         pusherClient.unbind("message:new");
         pusherInitialized.current = false;
       }
@@ -88,7 +87,7 @@ export function ChatView() {
           setExpanded={setExpanded}
           expanded={expanded}
         />
-        {pinnedMessages && (
+        {pinnedMessages[pinnedMessages.length - 1] && (
           <PinnedMessage
             message={pinnedMessages[pinnedMessages.length - 1]}
           ></PinnedMessage>
@@ -111,7 +110,7 @@ export function ChatView() {
           />
         </ScrollArea>
         <ChatViewBottom
-          conversationId={selectConversationId}
+          conversationId={conversationId}
           userId={userId}
           replyMessage={replyMessage}
         />
