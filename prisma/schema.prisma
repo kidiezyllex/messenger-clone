@@ -55,20 +55,21 @@ model Message {
   type           String
   image          String?
   file           String?
+  fileName       String?
   createdAt      DateTime      @default(now())
   seen           User[]        @relation("UserSeenMessages")
   conversation   Conversation  @relation("ConversationMessages", fields: [conversationId], references: [id], onDelete: Cascade)
   conversationId String
   pinnedIn       Conversation? @relation("PinnedMessages", fields: [pinnedInId], references: [id])
   pinnedInId     String?
-  user           User?         @relation(fields: [userId], references: [id])
-  userId         String?
   sender         User          @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
   senderId       String
   replyTo        Message?      @relation("ReplyToMessage", fields: [replyToId], references: [id], onDelete: Cascade)
   replyToId      String?
   replies        Message[]     @relation("ReplyToMessage")
   replyText      String?
+  User           User?         @relation(fields: [userId], references: [id])
+  userId         String?
 }
 
 model Friend {

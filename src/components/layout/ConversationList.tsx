@@ -8,15 +8,15 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Conversation, Message, User } from "../../lib/entity-types";
+import { Conversation, Message, User } from "../../../lib/entity-types";
 import { useSession } from "next-auth/react";
-import { ConversationItem } from "./conversation/ConversationItem";
+import { ConversationItem } from "../conversation/ConversationItem";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
-import { CreateGroupDialog } from "./group/CreateGroupDialog";
+import { CreateGroupDialog } from "../group/CreateGroupDialog";
 import useStore from "@/store/useStore";
 import { pusherClient } from "@/lib/pusher";
 

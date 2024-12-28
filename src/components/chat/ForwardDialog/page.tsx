@@ -5,12 +5,12 @@ import { useSession } from "next-auth/react";
 import { DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Loader2, SearchIcon, Send } from "lucide-react";
-import { Conversation, Message } from "../../../lib/entity-types";
+import { Conversation, Message } from "../../../../lib/entity-types";
 import axios from "axios";
-import { ScrollArea, ScrollBar } from "../ui/scroll-area";
-import Loading from "../animation/Loading";
-import { ConversationItem } from "../conversation/ConversationItem";
-import { Button } from "../ui/button";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import Loading from "@/components/animation/Loading";
+import { ConversationItem } from "@/components/conversation/ConversationItem";
+import { Button } from "@/components/ui/button";
 import useStore from "@/store/useStore";
 
 export function ForwardDialog({

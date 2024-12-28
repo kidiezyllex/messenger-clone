@@ -70,6 +70,14 @@ const authOptions: AuthOptions = {
       session.user = token as any;
       return session;
     },
+    async redirect({ url, baseUrl }) {
+      if (url.startsWith("/t/user-suggested")) {
+        return `${baseUrl}${url}`;
+      }
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      else if (new URL(url).origin === baseUrl) return url;
+      return baseUrl;
+    },
   },
 };
 

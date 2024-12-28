@@ -2,10 +2,10 @@
 import { SearchIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import UserSuggestions from "./user-suggestion/UserSuggestions";
-import UserRequestSent from "./user-suggestion/UserRequestSent";
-import UserPendingRequest from "./user-suggestion/UserPendingRequest";
-import FriendList from "./user-suggestion/FriendList";
+import UserSuggestions from "../user-suggestion/UserSuggestions/page";
+import UserRequestSent from "../user-suggestion/UserRequestSent/page";
+import UserPendingRequest from "../user-suggestion/UserPendingRequest/page";
+import FriendList from "../user-suggestion/FriendList/page";
 export function UserSuggestionList() {
   const [activated, setActivated] = useState("suggestion");
   const renderTab = () => {

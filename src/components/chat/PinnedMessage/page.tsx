@@ -1,7 +1,7 @@
 import React from "react";
-import { Message } from "../../../lib/entity-types";
-import { Button } from "../ui/button";
-import { formatDate2 } from "../../../lib/utils";
+import { Message } from "../../../../lib/entity-types";
+import { Button } from "@/components/ui/button";
+import { formatDate2 } from "../../../../lib/utils";
 import { ChevronDown, Pin } from "lucide-react";
 
 export default function PinnedMessage({ message }: { message: Message }) {

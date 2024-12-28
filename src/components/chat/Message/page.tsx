@@ -1,9 +1,8 @@
 "use client";
-import React, { useCallback, useEffect, useState } from "react";
-import { Message } from "../../../lib/entity-types";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import Image from "next/image";
-import { formatDate3 } from "../../../lib/utils";
+import React, { useState } from "react";
+import { Message } from "../../../../lib/entity-types";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { formatDate3 } from "../../../../lib/utils";
 import {
   Smile,
   MessageCircleReply,
@@ -12,28 +11,35 @@ import {
   RotateCcw,
   Forward,
   Pin,
-  Quote,
-  Video,
 } from "lucide-react";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { ForwardDialog } from "./ForwardDialog";
+} from "@/components/ui/dropdown-menu";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { ForwardDialog } from "../ForwardDialog/page";
 import {
   Dialog,
   DialogTrigger,
   DialogContent,
   DialogTitle,
-} from "../ui/dialog";
-import VideoCall from "./VideoCall";
+} from "@/components/ui/dialog";
+import VideoCall from "../VideoCallDialog/page";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import useStore from "@/store/useStore";
+import { StickerMessage } from "../StickerMessage/page";
+import { ImageMessage } from "../ImageMessage/page";
+import { TextMessage } from "../TextMessage/page";
+// import { FileMessage }
+import { CallMessage } from "../CallMessage/page";
 
 const reactionEmojis = ["👍", "❤️", "😂", "😮", "😢", "😡"];
 
@@ -50,7 +56,7 @@ export default function MessageCpn({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [reaction, setReaction] = useState<string | null>(null);
   const [isVideoCallActive, setIsVideoCallActive] = useState(false);
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const { setSelectConversationId, selectConversationId } = useStore();
 
   const handleReply = (message: Message) => {
@@ -60,21 +66,17 @@ export default function MessageCpn({
     setReaction(emoji);
   };
   const handleEdit = () => {
-    // Implement edit functionality
     console.log("Edit message:", message.id);
   };
-
   const handleDelete = () => {
     console.log("Delete message:", message.id);
   };
-
   const handlePin = async () => {
     await axios.patch(`/api/conversations/${selectConversationId}`, {
       message: message,
       action: "pin",
     });
   };
-
   const toggleVideoCall = () => {
     setIsVideoCallActive(!isVideoCallActive);
   };
@@ -99,81 +101,32 @@ export default function MessageCpn({
         className={
           message?.type === "sticker"
             ? ""
-            : "rounded-lg bg-background dark:bg-zinc-700 py-2 px-4 max-w-[70%]"
+            : "rounded-lg bg-background dark:bg-zinc-700 py-2 px-4 max-w-[70%] space-y-2"
         }
       >
-        {message?.image ? (
-          message?.type === "sticker" ? (
-            <div className="relative max-h-24 w-auto">
-              <Image
-                src={message?.image}
-                alt="Message Image"
-                width={0}
-                height={0}
-                sizes="100vw"
-                className="rounded-lg max-h-24 w-auto object-contain"
-                style={{
-                  width: "auto",
-                  height: "auto",
-                }}
-              />
-            </div>
-          ) : (
-            <div className="relative max-h-52 w-auto mb-2">
-              <Image
-                src={message?.image}
-                alt="Message Image"
-                width={0}
-                height={0}
-                sizes="100vw"
-                className="rounded-lg max-h-52 w-auto object-contain"
-                style={{
-                  width: "auto",
-                  height: "auto",
-                }}
-              />
-            </div>
-          )
-        ) : null}
-
+        {message?.type === "sticker" && message.image && (
+          <StickerMessage image={message.image} />
+        )}
+        {message?.type === "image" && message.image && (
+          <ImageMessage image={message.image} />
+        )}
+        {message?.type === "text" && (
+          <TextMessage text={message.text} replyText={message.replyText} />
+        )}
+        {/* {message?.type === "file" && (
+          <FileMessage text={message.text} replyText={message.replyText} />
+        )} */}
         {message?.type === "call" && (
-          <div
-            className="flex flex-row gap-2 items-center cursor-pointer"
-            onClick={toggleVideoCall}
-          >
-            <Button
-              size="icon"
-              variant="secondary"
-              className="hover:bg-primary-foreground rounded-full"
-            >
-              <Video className="h-5 w-5 text-blue-500 " />
-            </Button>
-            <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">
-              Cuộc gọi đến
-            </p>
+          <CallMessage onCallClick={toggleVideoCall} />
+        )}
+        <p className="text-xs text-muted-foreground self-end">
+          {formatDate3(message?.createdAt)}
+        </p>
+        {reaction && (
+          <div className="border absolute -bottom-6 -right-8 bg-background dark:bg-zinc-700 rounded-full p-0.5 px-2 text-xs">
+            {reaction}
           </div>
         )}
-        <div className="flex flex-col gap-2 relative">
-          {message?.replyText && (
-            <div className="flex flex-row gap-2 items-center text-sm text-zinc-600 dark:text-zinc-300 p-2 rounded-md bg-background dark:bg-zinc-900 italic">
-              <Quote className="h-4 w-4 text-zinc-600 dark:text-zinc-300 italic"></Quote>
-              <p className="text-sm text-zinc-600 dark:text-zinc-300">
-                {message?.replyText}
-              </p>
-            </div>
-          )}
-          <p className="text-base text-zinc-600 dark:text-zinc-300">
-            {message?.text}
-          </p>
-          <p className="text-xs text-muted-foreground self-end">
-            {formatDate3(message?.createdAt)}
-          </p>
-          {reaction && (
-            <div className="border absolute -bottom-6 -right-8 bg-background dark:bg-zinc-700 rounded-full p-0.5 px-2 text-xs">
-              {reaction}
-            </div>
-          )}
-        </div>
       </div>
       {message?.type !== "call" && (
         <div
@@ -183,6 +136,7 @@ export default function MessageCpn({
               : "flex self-center flex-row-reverse"
           }
         >
+          {/* 3 chấm, react, reply */}
           {showOptions && (
             <>
               <Popover>

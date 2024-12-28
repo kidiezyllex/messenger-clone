@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { User } from "../../../lib/entity-types";
+import { User } from "../../../../lib/entity-types";
 import axios from "axios";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Button } from "../ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import { useToast } from "@/hooks/use-toast";
-import Loading from "../animation/Loading";
+import Loading from "@/components/animation/Loading";
 
 export default function UserRequestSent() {
   const [users, setUsers] = useState<User[]>([]);

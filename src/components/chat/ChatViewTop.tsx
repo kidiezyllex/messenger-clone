@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { MoreVertical, Phone, Video } from "lucide-react";
 import { Conversation, Message, User } from "../../../lib/entity-types";
-import VideoCall from "./VideoCall";
+import VideoCall from "./VideoCallDialog/page";
 import { Dialog, DialogContent, DialogTitle } from "../ui/dialog";
 import { pusherClient } from "@/lib/pusher";
 import { usePathname } from "next/navigation";

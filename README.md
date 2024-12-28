@@ -17,8 +17,6 @@
 
 ### 1. Features
 
-- Nhaná
-
 ### 2. Tech Stack
 
 <div style={{display:"inline"}}>

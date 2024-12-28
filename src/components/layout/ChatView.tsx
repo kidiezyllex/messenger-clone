@@ -3,15 +3,14 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import axios from "axios";
-import { ScrollArea, ScrollBar } from "./ui/scroll-area";
-import { Conversation, Message, User } from "../../lib/entity-types";
+import { ScrollArea, ScrollBar } from "../ui/scroll-area";
+import { Conversation, Message, User } from "../../../lib/entity-types";
 import { pusherClient } from "@/lib/pusher";
-import ChatViewTop from "./chat/ChatViewTop";
-import MessageCpn from "./chat/MessageCpn";
-import ChatViewBottom from "./chat/ChatViewBottom";
-import ChatSidebar from "./chat/ChatSidebar";
-import useStore from "@/store/useStore";
-import PinnedMessage from "./chat/PinnedMessage";
+import ChatViewTop from "../chat/ChatViewTop";
+import MessageCpn from "../chat/Message/page";
+import ChatViewBottom from "../chat/ChatViewBottom";
+import ChatSidebar from "../chat/ChatSidebar";
+import PinnedMessage from "../chat/PinnedMessage/page";
 import { usePathname } from "next/navigation";
 
 export function ChatView() {
@@ -34,7 +33,6 @@ export function ChatView() {
     try {
       const res = await axios.get(`/api/conversations/${conversationId}`);
       const user2 = res.data.users.filter((item: any) => item.id !== userId);
-      console.log(res.data);
       setConversation(res.data);
       setMessages(res.data.messages);
       setUser2(user2[0]);

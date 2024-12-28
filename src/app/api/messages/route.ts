@@ -8,6 +8,7 @@ export async function POST(req: Request) {
     conversationId,
     image,
     file,
+    fileName,
     content,
     senderId,
     type,
@@ -28,6 +29,7 @@ export async function POST(req: Request) {
       text: content,
       image: image,
       file: file,
+      fileName: fileName,
       conversation: {
         connect: { id: conversationId },
       },

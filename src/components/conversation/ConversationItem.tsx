@@ -44,7 +44,6 @@ export function ConversationItem({
           conversation?.id === conversationId &&
           conversation?.id === message?.conversationId
         ) {
-          console.log(message?.text);
           setMessages(message);
         }
       });

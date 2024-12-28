@@ -1,24 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { User } from "../../../lib/entity-types";
+import { User } from "../../../../lib/entity-types";
 import axios from "axios";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Button } from "../ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
-import { useToast } from "@/hooks/use-toast";
-import Loading from "../animation/Loading";
-
-export default function UserPendingRequest() {
+import Loading from "@/components/animation/Loading";
+import { MessageCircleMore } from "lucide-react";
+import { useRouter } from "next/navigation";
+export default function FriendList() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const { data: session, status } = useSession();
-  const { toast } = useToast();
   const userId = (session?.user as any)?.id;
+  const router = useRouter();
   const fecthData = async () => {
     setLoading(true);
-    const res = await axios.get(`/api/friend-requests/pending/${userId}`);
+    const res = await axios.get(`/api/users/${userId}/friends`);
     setUsers(res?.data);
-    console.log(res?.data);
     setLoading(false);
   };
   useEffect(() => {
@@ -26,26 +25,21 @@ export default function UserPendingRequest() {
       fecthData();
     }
   }, [userId]);
-  const handleAcceptFriendRequest = async (friendRequestId: string) => {
+  const handleCreateConversation = async (user: User) => {
     try {
-      const res = await axios.post(`/api/friend-requests/accept`, {
-        friendRequestId,
+      const res = await axios.post(`/api/conversations`, {
         userId,
+        friendId: user?.id,
+        name: user?.name,
+        isGroup: false,
+        groupImage: "",
+        members: [userId, user?.id],
       });
       if (res?.status === 200) {
-        toast({
-          variant: "default",
-          title: "Thành công!",
-          description: "Đã chấp nhận lời mời kết bạn!",
-        });
-        fecthData();
+        router.push(`/t/${res.data.id}`);
       }
     } catch (err) {
-      toast({
-        variant: "destructive",
-        title: "Thất bại!",
-        description: "Lỗi!",
-      });
+      console.log(err);
     }
   };
   return loading ? (
@@ -59,7 +53,7 @@ export default function UserPendingRequest() {
       >
         {users.length === 0 ? (
           <div className="flex items-center gap-3 p-4 rounded-md dark:bg-primary-foreground">
-            <p className="font-medium text-sm">Chưa có lời mời kết bạn.</p>
+            <p className="font-medium text-sm">Lmao, bạn không có bạn bè.</p>
           </div>
         ) : null}
         {users &&
@@ -76,10 +70,11 @@ export default function UserPendingRequest() {
               </Avatar>
               <p className="font-medium text-sm flex-grow">{user?.name}</p>
               <Button
-                onClick={() => handleAcceptFriendRequest(user?.friendRequestId)}
-                className="bg-blue-400 hover:bg-blue-400 text-white border-2 border-blue-300 hover:border-blue-300 dark:border-secondary"
+                onClick={() => handleCreateConversation(user)}
+                className="flex flex-row gap-2 bg-blue-400 hover:bg-blue-400 text-white border-2 border-blue-300 hover:border-blue-300 dark:border-secondary"
               >
-                Chấp nhận
+                Nhắn tin
+                <MessageCircleMore className="h-4 w-4" />
               </Button>
             </div>
           ))}

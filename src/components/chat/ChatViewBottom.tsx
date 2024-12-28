@@ -21,7 +21,7 @@ import {
   File,
 } from "lucide-react";
 import { DropdownMenu, DropdownMenuTrigger } from "../ui/dropdown-menu";
-import StickerBoard from "./StickerBoard";
+import StickerBoard from "./StickerBoard/page";
 import { Input } from "../ui/input";
 import { Badge } from "../ui/badge";
 import { Message } from "../../../lib/entity-types";
@@ -77,6 +77,7 @@ export default function ChatViewBottom({
           conversationId,
           image: imageUrl,
           file: fileUrl,
+          fileName: selectedFile.name || "",
           content: inputMessage,
           senderId: userId,
           type: fileUrl ? "file" : imageUrl ? "image" : "text",
@@ -88,6 +89,7 @@ export default function ChatViewBottom({
         setSelectedFile(null);
         setIsReplying(false);
         setSending(false);
+        setSelectedFile(null);
       } catch (error) {
         console.error(error);
         setSending(false);

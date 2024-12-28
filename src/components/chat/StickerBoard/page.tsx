@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Image from "next/image";
-import { stickers } from "../../../lib/stickers";
+import { stickers } from "../../../../lib/stickers";
 import axios from "axios";
 export default function StickerBoard({
   userId,

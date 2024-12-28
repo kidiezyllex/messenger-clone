@@ -1,8 +1,8 @@
 "use client";
-import { Sidebar } from "@/components/Sidebar";
-import { ConversationList } from "@/components/ConversationList";
-import { ChatView } from "@/components/ChatView";
-import { UserSuggestionList } from "@/components/UserSuggestionList";
+import { Sidebar } from "@/components/layout/Sidebar";
+import { ConversationList } from "@/components/layout/ConversationList";
+import { ChatView } from "@/components/layout/ChatView";
+import { UserSuggestionList } from "@/components/layout/UserSuggestionList";
 import useStore from "@/store/useStore";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
