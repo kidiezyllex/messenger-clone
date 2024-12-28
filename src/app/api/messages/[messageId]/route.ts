@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prismadb from "../../../../../lib/prismadb";
+import { pusherServer } from "@/lib/pusher";
 
 export async function GET(
   req: Request,
@@ -46,7 +47,7 @@ export async function PATCH(
 ) {
   const { messageId } = params;
   const body = await req.json();
-  const { content } = body;
+  const { content, type } = body;
 
   if (!messageId) {
     return NextResponse.json(
@@ -62,13 +63,14 @@ export async function PATCH(
       },
       data: {
         text: content,
+        type: type,
       },
       include: {
         sender: true,
         seen: true,
       },
     });
-
+    await pusherServer.trigger(messageId, "message:revoke", updatedMessage);
     return NextResponse.json(updatedMessage);
   } catch (error) {
     console.error("Error updating message:", error);

@@ -111,6 +111,8 @@ export function ChatView() {
           conversationId={conversationId}
           userId={userId}
           replyMessage={replyMessage}
+          setReplyMessage={setReplyMessage}
+
         />
       </div>
       {expanded && (

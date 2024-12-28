@@ -78,7 +78,7 @@ export default function ChatViewTop({
       {conversation?.name || user2?.name ? (
         <div className="flex items-center justify-between p-3 border-b dark:border-b-zinc-700 border-b-zinc-300">
           <div className="flex items-center gap-3">
-            <Avatar className="w-12 h-12">
+            <Avatar className="w-11 h-11">
               <AvatarImage
                 src={
                   conversation?.isGroup

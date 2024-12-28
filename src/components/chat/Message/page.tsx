@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Message } from "../../../../lib/entity-types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDate3 } from "../../../../lib/utils";
@@ -41,6 +41,7 @@ import { TextMessage } from "../TextMessage/page";
 // import { FileMessage }
 import { CallMessage } from "../CallMessage/page";
 import { FileMessage } from "../FileMessage/page";
+import { pusherClient } from "@/lib/pusher";
 
 const reactionEmojis = ["👍", "❤️", "😂", "😮", "😢", "😡"];
 
@@ -59,6 +60,7 @@ export default function MessageCpn({
   const [isVideoCallActive, setIsVideoCallActive] = useState(false);
   const { data: session } = useSession();
   const { setSelectConversationId, selectConversationId } = useStore();
+  const [revokedMessage, setRevokedMessage] = useState<Message | null>(null);
 
   const handleReply = (message: Message) => {
     setReplyMessage(message);
@@ -66,11 +68,11 @@ export default function MessageCpn({
   const handleReaction = (emoji: string) => {
     setReaction(emoji);
   };
-  const handleEdit = () => {
-    console.log("Edit message:", message.id);
-  };
-  const handleDelete = () => {
-    console.log("Delete message:", message.id);
+  const handleRevoke = async (message: Message) => {
+    await axios.patch(`/api/messages/${message?.id}`, {
+      content: "Tin nhắn đã thu hồi",
+      type: "revoke",
+    });
   };
   const handlePin = async () => {
     await axios.patch(`/api/conversations/${selectConversationId}`, {
@@ -81,6 +83,21 @@ export default function MessageCpn({
   const toggleVideoCall = () => {
     setIsVideoCallActive(!isVideoCallActive);
   };
+
+  useEffect(() => {
+    if (!message?.id) return;
+    pusherClient.subscribe(message?.id);
+    pusherClient.bind("message:revoke", (updatedMsg: Message) => {
+      if (updatedMsg?.id === message?.id) {
+        setRevokedMessage(updatedMsg);
+      }
+    });
+
+    return () => {
+      pusherClient.unsubscribe(message.id);
+      pusherClient.unbind("message:revoke");
+    };
+  }, [message?.id]);
 
   return (
     <div
@@ -100,15 +117,21 @@ export default function MessageCpn({
       </Avatar>
       <div
         className={
-          message?.type === "sticker"
+          !revokedMessage && message?.type === "sticker"
             ? ""
             : "relative rounded-lg bg-background dark:bg-zinc-700 py-2 px-4 max-w-[70%] space-y-2"
         }
       >
-        {message?.type === "sticker" && message.image && (
+        {(revokedMessage || message)?.type === "revoke" && (
+          <TextMessage
+            text={(revokedMessage || message)?.text}
+            replyText={""}
+          />
+        )}
+        {!revokedMessage && message?.type === "sticker" && message.image && (
           <StickerMessage image={message.image} />
         )}
-        {message?.type === "image" && message.image ? (
+        {!revokedMessage && message?.type === "image" && message.image ? (
           message?.text ? (
             <>
               <ImageMessage image={message.image} />
@@ -118,10 +141,10 @@ export default function MessageCpn({
             <ImageMessage image={message.image} />
           )
         ) : null}
-        {message?.type === "text" && (
+        {!revokedMessage && message?.type === "text" && (
           <TextMessage text={message.text} replyText={message.replyText} />
         )}
-        {message?.type === "file" && message?.file ? (
+        {!revokedMessage && message?.type === "file" && message?.file ? (
           message?.text ? (
             <>
               <FileMessage file={message.file} fileName={message.fileName} />
@@ -210,17 +233,15 @@ export default function MessageCpn({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-              align="start"
+              align="center"
               className="bg-background dark:bg-zinc-900 dark:text-slate-300 text-slate-600"
             >
-              <DropdownMenuItem onClick={handleEdit}>
-                <Pencil className="mr-2 h-4 w-4" />
-                <span>Chỉnh sửa</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleDelete}>
-                <RotateCcw className="mr-2 h-4 w-4" />
-                <span>Thu hồi</span>
-              </DropdownMenuItem>
+              {message?.senderId === userId && (
+                <DropdownMenuItem onClick={() => handleRevoke(message)}>
+                  <RotateCcw className="mr-2 h-4 w-4" />
+                  <span>Thu hồi</span>
+                </DropdownMenuItem>
+              )}
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger>
                   <DropdownMenuItem

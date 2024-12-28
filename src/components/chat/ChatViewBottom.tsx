@@ -30,10 +30,12 @@ export default function ChatViewBottom({
   conversationId,
   userId,
   replyMessage,
+  setReplyMessage,
 }: {
   conversationId: string;
   userId: string;
   replyMessage: Message | null;
+  setReplyMessage: (message: Message) => void;
 }) {
   const [inputMessage, setInputMessage] = useState("");
   const [sending, setSending] = useState(false);
@@ -131,6 +133,7 @@ export default function ChatViewBottom({
 
   const cancelReply = () => {
     setIsReplying(false);
+    setReplyMessage(null);
   };
 
   const renderFileTypeIcon = (fileType: string) => {
