@@ -28,3 +28,13 @@ export const getLastName = (text: string) => {
   const lastName = text.split(" ");
   return lastName[lastName.length - 1];
 };
+
+export const isWithinTwoMinutes = (
+  a: string | Date,
+  b: string | Date
+): boolean => {
+  const timeA = new Date(a).getTime();
+  const timeB = new Date(b).getTime();
+  const diff = Math.abs(timeA - timeB);
+  return diff < 2 * 60 * 1000;
+};

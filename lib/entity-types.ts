@@ -36,6 +36,7 @@ export interface Message {
   type?: string;
   image?: string;
   file?: string;
+  fileName?: string;
   createdAt: Date;
   seen: User[];
   conversation: Conversation;

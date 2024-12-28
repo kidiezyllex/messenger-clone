@@ -9,6 +9,8 @@ import { pusherClient } from "@/lib/pusher";
 import { usePathname } from "next/navigation";
 import axios from "axios";
 import { useSession } from "next-auth/react";
+import { useToast } from "@/hooks/use-toast";
+import { getLastName } from "../../../lib/utils";
 
 export default function ChatViewTop({
   conversation,
@@ -26,13 +28,18 @@ export default function ChatViewTop({
   const conversationId = pathname.split("/")[2];
   const { data: session } = useSession();
   const pusherInitialized = useRef(false);
-
+  const { toast } = useToast();
   const toggleVideoCall = () => {
     setIsVideoCallActive(!isVideoCallActive);
   };
 
   const initiateVideoCall = async () => {
     try {
+      toast({
+        variant: "default",
+        title: "Chờ xíu nhé!",
+        description: `Đang kết nối đến ${getLastName(user2?.name)}!`,
+      });
       await axios.post(`/api/messages`, {
         conversationId,
         image: "",

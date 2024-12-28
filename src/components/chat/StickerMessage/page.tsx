@@ -6,7 +6,7 @@ interface StickerMessageProps {
 
 export function StickerMessage({ image }: StickerMessageProps) {
   return (
-    <div className="relative max-h-24 w-auto">
+    <div className="relative max-h-24 w-auto mb-2">
       <Image
         src={image}
         alt="Sticker"

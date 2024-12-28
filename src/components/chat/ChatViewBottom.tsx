@@ -77,7 +77,7 @@ export default function ChatViewBottom({
           conversationId,
           image: imageUrl,
           file: fileUrl,
-          fileName: selectedFile.name || "",
+          fileName: selectedFile?.name || "",
           content: inputMessage,
           senderId: userId,
           type: fileUrl ? "file" : imageUrl ? "image" : "text",

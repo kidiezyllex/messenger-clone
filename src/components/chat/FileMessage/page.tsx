@@ -1,13 +1,28 @@
-// For now, we'll assume FileMessage is similar to TextMessage
-// You can extend this component to handle file attachments specifically
-// import { TextMessage } from "./TextMessage";
+import { Button } from "@/components/ui/button";
+import { Download, Eye, View } from "lucide-react";
+import Link from "next/link";
 
-// interface FileMessageProps {
-//   text: string;
-//   replyText?: string;
-//   // Add file-specific props here, e.g., fileName, fileSize, etc.
-// }
+interface FileMessageProps {
+  file: string;
+  fileName?: string;
+}
 
-// export function FileMessage({ text, replyText }: FileMessageProps) {
-//   return <TextMessage text={text} replyText={replyText} />;
-// }
+export function FileMessage({ file, fileName }: FileMessageProps) {
+  return (
+    <div className="flex flex-row gap-2 items-center">
+      <Link href={file} target="_blank">
+        <Button
+          size="icon"
+          variant="secondary"
+          className="hover:bg-primary-foreground rounded-full"
+        >
+          <Eye className="h-5 w-5 text-blue-500" />
+        </Button>
+      </Link>
+
+      <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">
+        {fileName || "File đính kèm"}
+      </p>
+    </div>
+  );
+}

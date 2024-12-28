@@ -40,6 +40,7 @@ import { ImageMessage } from "../ImageMessage/page";
 import { TextMessage } from "../TextMessage/page";
 // import { FileMessage }
 import { CallMessage } from "../CallMessage/page";
+import { FileMessage } from "../FileMessage/page";
 
 const reactionEmojis = ["👍", "❤️", "😂", "😮", "😢", "😡"];
 
@@ -83,7 +84,7 @@ export default function MessageCpn({
 
   return (
     <div
-      className={`relative ${
+      className={` ${
         message?.senderId === userId
           ? "flex gap-3 flex-row-reverse"
           : "flex gap-3"
@@ -101,29 +102,50 @@ export default function MessageCpn({
         className={
           message?.type === "sticker"
             ? ""
-            : "rounded-lg bg-background dark:bg-zinc-700 py-2 px-4 max-w-[70%] space-y-2"
+            : "relative rounded-lg bg-background dark:bg-zinc-700 py-2 px-4 max-w-[70%] space-y-2"
         }
       >
         {message?.type === "sticker" && message.image && (
           <StickerMessage image={message.image} />
         )}
-        {message?.type === "image" && message.image && (
-          <ImageMessage image={message.image} />
-        )}
+        {message?.type === "image" && message.image ? (
+          message?.text ? (
+            <>
+              <ImageMessage image={message.image} />
+              <TextMessage text={message.text} replyText={message.replyText} />
+            </>
+          ) : (
+            <ImageMessage image={message.image} />
+          )
+        ) : null}
         {message?.type === "text" && (
           <TextMessage text={message.text} replyText={message.replyText} />
         )}
-        {/* {message?.type === "file" && (
-          <FileMessage text={message.text} replyText={message.replyText} />
-        )} */}
+        {message?.type === "file" && message?.file ? (
+          message?.text ? (
+            <>
+              <FileMessage file={message.file} fileName={message.fileName} />
+              <TextMessage text={message.text} replyText={message.replyText} />
+            </>
+          ) : (
+            <FileMessage file={message.file} fileName={message.fileName} />
+          )
+        ) : null}
         {message?.type === "call" && (
-          <CallMessage onCallClick={toggleVideoCall} />
+          <CallMessage
+            onCallClick={toggleVideoCall}
+            createdAt={message?.createdAt}
+          />
         )}
-        <p className="text-xs text-muted-foreground self-end">
+        <p
+          className={`text-xs text-muted-foreground  ${
+            message?.senderId === userId ? "text-start" : "text-end"
+          }`}
+        >
           {formatDate3(message?.createdAt)}
         </p>
         {reaction && (
-          <div className="border absolute -bottom-6 -right-8 bg-background dark:bg-zinc-700 rounded-full p-0.5 px-2 text-xs">
+          <div className="border absolute -bottom-3 -right-4 bg-background dark:bg-zinc-700 rounded-full p-0.5 px-2 text-xs">
             {reaction}
           </div>
         )}
