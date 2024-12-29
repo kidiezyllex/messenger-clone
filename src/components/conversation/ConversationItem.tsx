@@ -24,8 +24,12 @@ import { useSession } from "next-auth/react";
 import useStore from "@/store/useStore";
 export function ConversationItem({
   conversation,
+  lastMessage,
+  index,
 }: {
   conversation: Conversation;
+  lastMessage: Message;
+  index: number;
 }) {
   const { setSelectConversationId } = useStore();
   const [messages, setMessages] = useState<Message>(
@@ -35,27 +39,11 @@ export function ConversationItem({
   const { data: session, status } = useSession();
   const userId = (session?.user as any)?.id;
   const user2 = conversation.users.filter((item) => item.id !== userId);
-  const pusherInitialized = useRef(false);
   useEffect(() => {
-    if (status === "authenticated" && !pusherInitialized.current) {
-      pusherClient.subscribe(conversation?.id);
-      pusherClient.bind("message:new", (message: Message) => {
-        if (
-          conversation?.id === conversationId &&
-          conversation?.id === message?.conversationId
-        ) {
-          setMessages(message);
-        }
-      });
-    }
-    return () => {
-      if (pusherInitialized.current) {
-        pusherClient.unsubscribe(conversation?.id);
-        pusherClient.unbind("message:new");
-        pusherInitialized.current = false;
-      }
-    };
-  }, [conversationId]);
+    if (lastMessage && index === 0) {
+      setMessages(lastMessage);
+    } else setMessages(conversation.messages[conversation.messages.length - 1]);
+  }, [lastMessage]);
   const renderLatestMessage = () => {
     if (messages?.senderId === userId) {
       if (messages?.image) return "Bạn: Đã gửi 1 ảnh";

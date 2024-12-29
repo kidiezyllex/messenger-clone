@@ -173,7 +173,10 @@ export default function MessageCpn({
           </div>
         )}
       </div>
-      {message?.type !== "call" && (
+      {!(
+        message?.type === "call" ||
+        (revokedMessage || message)?.type === "revoke"
+      ) ? (
         <div
           className={
             message?.senderId === userId
@@ -267,7 +270,7 @@ export default function MessageCpn({
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-      )}
+      ) : null}
       <Dialog open={isVideoCallActive} onOpenChange={toggleVideoCall}>
         <DialogTitle></DialogTitle>
         <DialogContent

@@ -21,6 +21,16 @@ const nextConfig = {
     loader: "custom",
     loaderFile: "./image-loader.js",
   },
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.optimization.splitChunks = {
+        cacheGroups: {
+          default: false,
+        },
+      };
+    }
+    return config;
+  },
 };
 
 export default nextConfig;

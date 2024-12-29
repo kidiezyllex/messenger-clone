@@ -55,8 +55,7 @@ export async function POST(req: Request) {
         replyTo: true,
       },
     });
-    // Update the conversation's lastMessageAt and the user's lastConversationId
-    const [updatedConversation, updatedUser] = await prismadb.$transaction([
+    await prismadb.$transaction([
       prismadb.conversation.update({
         where: {
           id: conversationId,
@@ -89,14 +88,7 @@ export async function POST(req: Request) {
     ]);
 
     await pusherServer.trigger(conversationId, "message:new", message);
-    const lastMessage =
-      updatedConversation.messages[updatedConversation.messages.length - 1];
-    updatedConversation.users.map((user) => {
-      pusherServer.trigger(user.email!, "conversation:update", {
-        id: conversationId,
-        message: [lastMessage],
-      });
-    });
+
     return NextResponse.json(message);
   } catch (error) {
     console.error("Error creating message:", error);

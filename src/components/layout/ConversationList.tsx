@@ -30,10 +30,10 @@ export function ConversationList() {
   const { data: session, status } = useSession();
   const userId = (session?.user as any)?.id;
   const router = useRouter();
+  const [lastMessage, setLastMessage] = useState<Message>(null);
   const fetchData = async () => {
     const res = await axios.get(`/api/conversations/user/${userId}`);
     setConversations(res.data);
-
     const res2 = await axios.get(`/api/users`);
     const users = res2.data.filter((item: any) => item.id !== userId);
     setUsers(users);
@@ -41,12 +41,17 @@ export function ConversationList() {
   useEffect(() => {
     if (status === "authenticated") {
       fetchData();
-      pusherClient.subscribe(selectConversationId);
-      pusherClient.bind("message:new", () => {
+      pusherClient?.subscribe(selectConversationId);
+      pusherClient?.bind("message:new", (message: Message) => {
+        setLastMessage(message);
         fetchData();
       });
     }
-  }, [status, userId, selectConversationId]);
+    return () => {
+      pusherClient.unsubscribe(selectConversationId);
+      pusherClient.unbind("message:new");
+    };
+  }, [status, selectConversationId]);
 
   const handleCreateConversation = async (user: User) => {
     try {
@@ -149,7 +154,11 @@ export function ConversationList() {
                 </div>
               ))
             : conversations.map((conversation, index) => (
-                <ConversationItem conversation={conversation} key={index} />
+                <ConversationItem
+                  conversation={conversation}
+                  index={index}
+                  lastMessage={lastMessage}
+                />
               ))}
         </div>
         <ScrollBar orientation="vertical" />
