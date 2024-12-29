@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -7,32 +7,34 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useTheme } from "next-themes";
+import useStore from "@/store/useStore";
 
 const themes = [
+  { name: "Light", value: "light", color: "#FFFFFF" },
+  { name: "Dark", value: "dark", color: "#1F2937" },
   { name: "Red", value: "red", color: "#DC2626" },
   { name: "Rose", value: "rose", color: "#E11D48" },
   { name: "Blue", value: "blue", color: "#3B82F6" },
   { name: "Green", value: "green", color: "#22C55E" },
   { name: "Violet", value: "violet", color: "#6D28D9" },
-  { name: "Orange", value: "orange", color: "#EA580C" },
   { name: "Yellow", value: "yellow", color: "#FACC15" },
+  { name: "Orange", value: "orange", color: "#EA580C" },
 ];
 
 interface ThemeSelectorDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectTheme: (theme: string) => void;
 }
 
 export function ThemeSelectorDialog({
   isOpen,
   onClose,
-  onSelectTheme,
 }: ThemeSelectorDialogProps) {
   const [selectedTheme, setSelectedTheme] = useState("light");
-
+  const { setTheme } = useStore();
   const handleSave = () => {
-    onSelectTheme(selectedTheme);
+    // setTheme(selectedTheme);
     onClose();
   };
 
@@ -44,21 +46,21 @@ export function ThemeSelectorDialog({
         </DialogTitle>
         <ScrollArea className="flex-grow">
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4">
-            {themes.map((theme) => (
+            {themes.map((themeOption) => (
               <div
-                key={theme.value}
+                key={themeOption.value}
                 className={`p-4 rounded-lg cursor-pointer transition-all ${
-                  selectedTheme === theme.value
+                  selectedTheme === themeOption.value
                     ? "ring-2 ring-blue-500"
                     : "hover:bg-gray-100 dark:hover:bg-gray-800"
                 }`}
-                onClick={() => setSelectedTheme(theme.value)}
+                onClick={() => setSelectedTheme(themeOption.value)}
               >
                 <div
                   className="w-full h-20 rounded-md mb-2"
-                  style={{ backgroundColor: theme.color }}
+                  style={{ backgroundColor: themeOption.color }}
                 />
-                <p className="text-center font-medium">{theme.name}</p>
+                <p className="text-center font-medium">{themeOption.name}</p>
               </div>
             ))}
           </div>

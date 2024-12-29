@@ -23,15 +23,16 @@ import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import { Conversation, User } from "../../../lib/entity-types";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { ThemeSelectorDialog } from "./ThemeSelectorDialog/page";
+import useStore from "@/store/useStore";
 export default function ChatSidebar({
   conversation,
   user2,
-  setLocalTheme,
 }: {
   conversation: Conversation;
   user2: User;
-  setLocalTheme: (val: any) => void;
 }) {
+  const { theme, setTheme } = useStore();
+
   const [sections, setSections] = useState({
     info: true,
     customize: true,
@@ -39,6 +40,7 @@ export default function ChatSidebar({
     files: true,
     privacy: true,
   });
+  const { setShowFileSideBar } = useStore();
   const [isThemeDialogOpen, setIsThemeDialogOpen] = useState(false);
 
   const toggleSection = (section: keyof typeof sections) => {
@@ -46,9 +48,6 @@ export default function ChatSidebar({
       ...prev,
       [section]: !prev[section],
     }));
-  };
-  const handleSelectTheme = (theme: string) => {
-    setLocalTheme(theme);
   };
   return (
     <ScrollArea className="rounded-tl-xl rounded-bl-xl">
@@ -248,6 +247,7 @@ export default function ChatSidebar({
               <Button
                 variant="ghost"
                 className="w-full justify-start text-slate-600 dark:text-slate-300 hover:bg-zinc-700"
+                onClick={() => setShowFileSideBar(true)}
               >
                 <ImageIcon className="w-4 h-4 mr-3" />
                 File phương tiện
@@ -255,6 +255,7 @@ export default function ChatSidebar({
               <Button
                 variant="ghost"
                 className="w-full justify-start text-slate-600 dark:text-slate-300 hover:bg-zinc-700"
+                onClick={() => setShowFileSideBar(true)}
               >
                 <FileIcon className="w-4 h-4 mr-3" />
                 File
@@ -262,6 +263,7 @@ export default function ChatSidebar({
               <Button
                 variant="ghost"
                 className="w-full justify-start text-slate-600 dark:text-slate-300 hover:bg-zinc-700"
+                onClick={() => setShowFileSideBar(true)}
               >
                 <Link2 className="w-4 h-4 mr-3" />
                 Liên kết
@@ -326,7 +328,6 @@ export default function ChatSidebar({
       <ThemeSelectorDialog
         isOpen={isThemeDialogOpen}
         onClose={() => setIsThemeDialogOpen(false)}
-        onSelectTheme={handleSelectTheme}
       />
     </ScrollArea>
   );

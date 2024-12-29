@@ -39,15 +39,15 @@ export const isWithinTwoMinutes = (
   return diff < 2 * 60 * 1000;
 };
 
-export const renderBackgroundTheme = (theme: string) => {
+export const renderBackgroundTheme = (theme: any) => {
   const themes: { [key: string]: string } = {
-    red: "bg-neutral-950",
-    rose: "bg-stone-900",
-    blue: "bg-slate-950",
-    green: "bg-stone-900",
-    violet: "bg-gray-950",
-    orange: "bg-stone-950",
-    yellow: "bg-stone-950",
+    red: "bg-neutral-950 dark:bg-neutral-950",
+    rose: "bg-stone-900 dark:bg-stone-900",
+    blue: "bg-slate-950 dark:bg-slate-950",
+    green: "bg-stone-900 dark:bg-stone-900",
+    violet: "bg-gray-950 dark:bg-gray-950",
+    orange: "bg-stone-950 dark:bg-stone-950",
+    yellow: "bg-stone-950 dark:bg-stone-950",
   };
   return themes[theme] || "";
 };

@@ -1,27 +1,21 @@
 import React, { useState } from "react";
 import { Message } from "../../../../lib/entity-types";
-import { Button } from "@/components/ui/button";
-import { formatDate2, renderBackgroundTheme } from "../../../../lib/utils";
+import { formatDate2 } from "../../../../lib/utils";
 import { ChevronDown, Pin } from "lucide-react";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { PinnedMessageDialog } from "../PinnedMessageDialog/page";
 
 export default function PinnedMessage({
   message,
   pinnedMessages,
-  localTheme,
 }: {
   message: Message;
   pinnedMessages: Message[];
-  localTheme: string;
 }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   return (
     <div
-      className={`flex flex-row justify-between border-b border-b-zinc-700 p-2 px-3 items-center ${renderBackgroundTheme(
-        localTheme
-      )}`}
+      className={`flex flex-row justify-between border-b border-b-zinc-700 p-2 px-3 items-center`}
     >
       <div className="flex gap-2">
         <div className="h-10 w-10 dark:bg-zinc-700 bg-background rounded-full flex items-center justify-center">

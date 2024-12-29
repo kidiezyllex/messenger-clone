@@ -75,13 +75,11 @@ export default function ChatViewTop({
       }
     };
   }, [conversationId]);
-  console.log(renderBackgroundTheme(localTheme));
   return (
     <>
       {conversation?.name || user2?.name ? (
         <div
-          className={`flex items-center justify-between p-3 border-b dark:border-b-zinc-700 border-b-zinc-300 rounded-tl-xl rounded-tr-xl
- ${renderBackgroundTheme(localTheme)}`}
+          className={`flex items-center justify-between p-3 border-b dark:border-b-zinc-700 border-b-zinc-300 rounded-tl-xl rounded-tr-xl`}
         >
           <div className={`flex items-center gap-3`}>
             <Avatar className="w-11 h-11">

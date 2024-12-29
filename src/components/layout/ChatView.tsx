@@ -13,6 +13,9 @@ import ChatSidebar from "../chat/ChatSidebar";
 import PinnedMessage from "../chat/PinnedMessage/page";
 import { usePathname } from "next/navigation";
 import { renderBackgroundTheme } from "../../../lib/utils";
+import useStore from "@/store/useStore";
+import clsx from "clsx";
+import FileSidebar from "../chat/FileSideBar/FileSideBar";
 
 export function ChatView() {
   const [conversation, setConversation] = useState<Conversation>();
@@ -26,11 +29,10 @@ export function ChatView() {
   const [expanded, setExpanded] = useState(false);
   const [pinnedMessages, setPinnedMessages] = useState<Message[]>([]);
   const conversationId = usePathname().split("/")[2];
-  const [localTheme, setLocalTheme] = useState("light");
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
-
+  const { theme, setTheme, showFileSideBar } = useStore();
   const fetchData = async () => {
     try {
       const res = await axios.get(`/api/conversations/${conversationId}`);
@@ -39,6 +41,7 @@ export function ChatView() {
       setMessages(res.data.messages);
       setUser2(user2[0]);
       setPinnedMessages(res.data.pinnedMessages);
+      setTheme(res?.data?.theme);
     } catch (error) {
       console.error(error);
     }
@@ -78,24 +81,23 @@ export function ChatView() {
     };
   }, [conversationId]);
   return (
-    <div className={`flex gap-4 flex-1`}>
+    <div className="flex gap-4 flex-1">
       <div className="flex h-full flex-col flex-grow bg-secondary rounded-xl ml-4 border">
         <ChatViewTop
           conversation={conversation}
           user2={user2}
           setExpanded={setExpanded}
           expanded={expanded}
-          localTheme={localTheme}
+          localTheme={theme}
         />
         {pinnedMessages[pinnedMessages.length - 1] && (
           <PinnedMessage
             message={pinnedMessages[pinnedMessages.length - 1]}
             pinnedMessages={pinnedMessages}
-            localTheme={localTheme}
           ></PinnedMessage>
         )}
         <ScrollArea className="h-full">
-          <div className={`p-4 space-y-4 ${renderBackgroundTheme(localTheme)}`}>
+          <div className={`p-4 space-y-4`}>
             {messages.map((message) => (
               <MessageCpn
                 key={message.id}
@@ -117,16 +119,16 @@ export function ChatView() {
           replyMessage={replyMessage}
           setReplyMessage={setReplyMessage}
           conversation={conversation}
-          localTheme={localTheme}
+          localTheme={theme}
         />
       </div>
-      {expanded && (
-        <ChatSidebar
-          conversation={conversation}
-          user2={user2}
-          setLocalTheme={setLocalTheme}
-        ></ChatSidebar>
-      )}
+      {expanded ? (
+        showFileSideBar ? (
+          <FileSidebar conversation={conversation}></FileSidebar>
+        ) : (
+          <ChatSidebar conversation={conversation} user2={user2}></ChatSidebar>
+        )
+      ) : null}
     </div>
   );
 }

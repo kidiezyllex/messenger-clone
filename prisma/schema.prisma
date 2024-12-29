@@ -36,6 +36,7 @@ model Conversation {
   createdAt      DateTime  @default(now())
   lastMessageAt  DateTime  @default(now())
   name           String?
+  theme          String?
   isGroup        Boolean?
   groupImage     String?
   groupCreator   User?     @relation("GroupCreator", fields: [groupCreatorId], references: [id], onDelete: Cascade)
