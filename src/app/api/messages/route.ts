@@ -14,6 +14,7 @@ export async function POST(req: Request) {
     type,
     replyMessageId,
     replyText,
+    taggedUsers,
   } = body;
 
   if (!conversationId) {
@@ -30,6 +31,7 @@ export async function POST(req: Request) {
       image: image,
       file: file,
       fileName: fileName,
+      taggedUsers: taggedUsers,
       conversation: {
         connect: { id: conversationId },
       },

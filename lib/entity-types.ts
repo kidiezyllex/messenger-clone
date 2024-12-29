@@ -49,6 +49,7 @@ export interface Message {
   replyToId?: string;
   replies?: Message[];
   replyText?: string;
+  taggedUsers?: string[];
 }
 
 export interface StickerImage {

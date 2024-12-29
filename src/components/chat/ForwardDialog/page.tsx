@@ -69,7 +69,7 @@ export function ForwardDialog({
     conversations.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
   return (
-    <DialogContent className="max-w-[1000px] w-[95%] h-[90%] overflow-y-auto flex flex-col gap-4">
+    <DialogContent className="max-w-[800px] w-[95%] h-[90%] overflow-y-auto flex flex-col gap-4">
       <DialogTitle className="h-fit pb-2 m-0 text-lg font-bold text-zinc-600 dark:text-zinc-300 border-b dark:border-b-zinc-700 border-b-zinc-300">
         Chuyển tiếp
       </DialogTitle>
@@ -94,6 +94,8 @@ export function ForwardDialog({
               >
                 <ConversationItem
                   conversation={conversation}
+                  lastMessage={undefined}
+                  index={0}
                 ></ConversationItem>
                 <Button
                   onClick={() => handleSendMessage(conversation?.id)}

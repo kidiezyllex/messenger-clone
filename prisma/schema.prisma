@@ -62,6 +62,7 @@ model Message {
   conversationId String
   pinnedIn       Conversation? @relation("PinnedMessages", fields: [pinnedInId], references: [id])
   pinnedInId     String?
+  taggedUsers    String[]
   sender         User          @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
   senderId       String
   replyTo        Message?      @relation("ReplyToMessage", fields: [replyToId], references: [id], onDelete: Cascade)

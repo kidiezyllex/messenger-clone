@@ -39,7 +39,7 @@ export function ConversationList() {
     setUsers(users);
   };
   useEffect(() => {
-    if (status === "authenticated") {
+    if (status === "authenticated" && selectConversationId) {
       fetchData();
       pusherClient?.subscribe(selectConversationId);
       pusherClient?.bind("message:new", (message: Message) => {
@@ -134,7 +134,7 @@ export function ConversationList() {
           {isSearchMode
             ? filteredUsers.map((user, index) => (
                 <div
-                  key={index + user.id}
+                  key={user?.id + user?.createAt}
                   className="flex items-center gap-3 p-4 rounded-md dark:hover:bg-zinc-700"
                 >
                   <Avatar className="w-11 h-11">

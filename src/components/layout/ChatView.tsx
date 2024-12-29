@@ -88,6 +88,7 @@ export function ChatView() {
         {pinnedMessages[pinnedMessages.length - 1] && (
           <PinnedMessage
             message={pinnedMessages[pinnedMessages.length - 1]}
+            pinnedMessages={pinnedMessages}
           ></PinnedMessage>
         )}
         <ScrollArea className="h-full">
@@ -112,7 +113,7 @@ export function ChatView() {
           userId={userId}
           replyMessage={replyMessage}
           setReplyMessage={setReplyMessage}
-
+          conversation={conversation}
         />
       </div>
       {expanded && (

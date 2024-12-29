@@ -1,5 +1,4 @@
 Chức năng còn thiếu
-1. Gửi file
 2. Ghim tin nhắn, bỏ ghim tin nhắn
 6. [Nhóm] Tag người dùng
 7. Tạo nhóm

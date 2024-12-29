@@ -1,41 +1,37 @@
-import Image from "next/image";
 import React, { useRef, useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import { useUploadThing } from "@/utils/uploadthing";
 import axios from "axios";
 import {
   CirclePlus,
-  FileText,
   ImageIcon,
   Send,
   SmilePlus,
   Sticker,
   ThumbsUp,
   X,
-  FileImage,
-  FileAudio,
-  FileVideo,
-  FileIcon as FilePdf,
-  FileArchive,
-  FileSpreadsheet,
-  File,
 } from "lucide-react";
 import { DropdownMenu, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import StickerBoard from "./StickerBoard/page";
 import { Input } from "../ui/input";
 import { Badge } from "../ui/badge";
-import { Message } from "../../../lib/entity-types";
+import { Conversation, Message, User } from "../../../lib/entity-types";
+import SelectedImage from "./SelectedImage/page";
+import SelectedFile from "./SelectedFile/page";
+import { useChat } from "ai/react";
 
 export default function ChatViewBottom({
   conversationId,
   userId,
   replyMessage,
   setReplyMessage,
+  conversation,
 }: {
   conversationId: string;
   userId: string;
   replyMessage: Message | null;
   setReplyMessage: (message: Message) => void;
+  conversation: Conversation;
 }) {
   const [inputMessage, setInputMessage] = useState("");
   const [sending, setSending] = useState(false);
@@ -47,7 +43,11 @@ export default function ChatViewBottom({
   const inputRef = useRef<HTMLInputElement>(null);
   const { startUpload: startImageUpload } = useUploadThing("imageUploader");
   const { startUpload: startFileUpload } = useUploadThing("productPdf");
-
+  const { input, handleInputChange } = useChat();
+  const [showUserList, setShowUserList] = useState(false);
+  const [filteredUsers, setFilteredUsers] = useState<User[]>(null);
+  const [taggedUsers, setTaggedUsers] = useState<string[]>([]);
+  const userListRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (replyMessage) {
       setIsReplying(true);
@@ -57,6 +57,21 @@ export default function ChatViewBottom({
     }
   }, [replyMessage]);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        userListRef.current &&
+        !userListRef.current.contains(event.target as Node)
+      ) {
+        setShowUserList(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
   const handleSendMessage = async () => {
     if (inputMessage.trim() !== "" || selectedImage || selectedFile) {
       try {
@@ -85,6 +100,7 @@ export default function ChatViewBottom({
           type: fileUrl ? "file" : imageUrl ? "image" : "text",
           replyMessageId: isReplying ? replyMessage?.id : "",
           replyText: isReplying ? replyMessage?.text : "",
+          taggedUsers: taggedUsers,
         });
         setInputMessage("");
         setSelectedImage(null);
@@ -92,9 +108,14 @@ export default function ChatViewBottom({
         setIsReplying(false);
         setSending(false);
         setSelectedFile(null);
+        setShowUserList(false);
+        setFilteredUsers(null);
+        setTaggedUsers([]);
       } catch (error) {
         console.error(error);
         setSending(false);
+        setShowUserList(false);
+        setTaggedUsers([]);
       }
     }
   };
@@ -123,90 +144,74 @@ export default function ChatViewBottom({
     fileInputRef.current?.click();
   };
 
-  const removeSelectedImage = () => {
-    setSelectedImage(null);
-  };
-
-  const removeSelectedFile = () => {
-    setSelectedFile(null);
-  };
-
   const cancelReply = () => {
     setIsReplying(false);
     setReplyMessage(null);
   };
 
-  const renderFileTypeIcon = (fileType: string) => {
-    switch (fileType) {
-      case "text/plain":
-        return <FileText className="h-4 w-4" />;
-      case "image/jpeg":
-      case "image/png":
-      case "image/gif":
-      case "image/webp":
-        return <FileImage className="h-4 w-4" />;
-      case "audio/mpeg":
-      case "audio/wav":
-      case "audio/ogg":
-        return <FileAudio className="h-4 w-4" />;
-      case "video/mp4":
-      case "video/mpeg":
-      case "video/quicktime":
-        return <FileVideo className="h-4 w-4" />;
-      case "application/pdf":
-        return <FilePdf className="h-4 w-4" />;
-      case "application/zip":
-      case "application/x-rar-compressed":
-        return <FileArchive className="h-4 w-4" />;
-      case "application/vnd.ms-excel":
-      case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-        return <FileSpreadsheet className="h-4 w-4" />;
-      case "application/msword":
-      case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-        return <FileText className="h-4 w-4" />;
-      default:
-        return <File className="h-4 w-4" />;
+  const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const cursorPosition = e.currentTarget.selectionStart;
+    const textBeforeCursor = e.currentTarget.value.slice(0, cursorPosition);
+    const lastAtSymbol = textBeforeCursor.lastIndexOf("@");
+
+    if (lastAtSymbol !== -1 && conversation?.isGroup) {
+      const searchTerm = textBeforeCursor.slice(lastAtSymbol + 1).toLowerCase();
+      const filtered = conversation?.users.filter((user) =>
+        user.name.toLowerCase().includes(searchTerm)
+      );
+      setFilteredUsers(filtered);
+      setShowUserList(true);
+    } else {
+      setShowUserList(false);
     }
+  };
+
+  const insertUserTag = (userName: string) => {
+    setTaggedUsers([...taggedUsers, userName]);
+    if (inputRef.current) {
+      const cursorPosition = inputRef.current.selectionStart || 0;
+      const textBeforeCursor = input.slice(0, cursorPosition);
+      const lastAtSymbol = textBeforeCursor.lastIndexOf("@");
+
+      if (lastAtSymbol !== -1) {
+        const newInput =
+          input.slice(0, lastAtSymbol) +
+          `@${userName} ` +
+          input.slice(cursorPosition);
+
+        handleInputChange({
+          target: { value: newInput },
+        } as React.ChangeEvent<HTMLInputElement>);
+
+        // Set cursor position after the inserted tag
+        setTimeout(() => {
+          if (inputRef.current) {
+            const newCursorPosition = lastAtSymbol + userName.length + 2;
+            inputRef.current.setSelectionRange(
+              newCursorPosition,
+              newCursorPosition
+            );
+            inputRef.current.focus();
+          }
+        }, 0);
+      }
+    }
+    setShowUserList(false);
   };
 
   return (
     <div className="flex flex-col p-3 border-t dark:border-t-zinc-700 border-t-zinc-300">
       {selectedImage && (
-        <div className="relative mb-2 dark:bg-zinc-700 p-4 rounded-lg">
-          <Image
-            src={URL.createObjectURL(selectedImage)}
-            alt="Selected image"
-            width={100}
-            height={100}
-            className="rounded-lg"
-          />
-          <Button
-            size="icon"
-            variant="secondary"
-            className="h-6 w-6 absolute top-2 right-2 rounded-full bg-zinc-800 dark:hover:bg-primary-foreground"
-            onClick={removeSelectedImage}
-          >
-            <X className="h-4 w-4 text-white" />
-          </Button>
-        </div>
+        <SelectedImage
+          selectedImage={selectedImage}
+          setSelectedImage={setSelectedImage}
+        ></SelectedImage>
       )}
       {selectedFile && (
-        <div className="relative mb-2 dark:bg-zinc-700 p-4 rounded-lg">
-          <div className="flex flex-row items-center gap-2">
-            {renderFileTypeIcon(selectedFile.type)}
-            <p className="text-sm font-semibold dark:text-slate-300 text-slate-600">
-              {selectedFile.name}
-            </p>
-          </div>
-          <Button
-            size="icon"
-            variant="secondary"
-            className="h-6 w-6 absolute top-2 right-2 rounded-full bg-zinc-800 dark:hover:bg-primary-foreground"
-            onClick={removeSelectedFile}
-          >
-            <X className="h-4 w-4 text-white" />
-          </Button>
-        </div>
+        <SelectedFile
+          selectedFile={selectedFile}
+          setSelectedFile={setSelectedFile}
+        ></SelectedFile>
       )}
       {isReplying && (
         <div className="flex items-center justify-between p-2 rounded-lg mb-2">
@@ -224,6 +229,25 @@ export default function ChatViewBottom({
           >
             <X className="h-4 w-4" />
           </Button>
+        </div>
+      )}
+      {showUserList && (
+        <div
+          ref={userListRef}
+          // className="absolute bottom-full left-0 w-full bg-red-300 border border-gray-300 rounded-md shadow-lg z-10"
+          className="bg-background dark:bg-zinc-900 w-fit rounded-md p-2 border dark:border-zinc-700 mb-4"
+        >
+          {filteredUsers?.map((user) => (
+            <div
+              key={user.id}
+              className="p-2 hover:bg-zinc-700 cursor-pointer rounded-md"
+              onClick={() => insertUserTag(user.name)}
+            >
+              <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">
+                {user.name}
+              </p>
+            </div>
+          ))}
         </div>
       )}
       <div className="flex flex-row relative">
@@ -283,13 +307,36 @@ export default function ChatViewBottom({
             ></StickerBoard>
           </DropdownMenu>
         </div>
-        <div className="flex gap-2 flex-grow relative px-1">
+        <div className="flex gap-2 flex-grow relative px-1 bg-background rounded-full border">
+          {taggedUsers.length > 0 && (
+            <div className="flex flex-wrap gap-1 mb-2 items-center h-full">
+              {taggedUsers.map((user, index) => (
+                <Badge
+                  key={index}
+                  variant="outline"
+                  className="bg-background dark:bg-zinc-900 rounded-full py-1 flex justify-between items-center"
+                >
+                  <p className="text-blue-500">@{user}</p>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="ml-1 p-0 h-4 w-4"
+                    onClick={() =>
+                      setTaggedUsers(taggedUsers.filter((u) => u !== user))
+                    }
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </Badge>
+              ))}
+            </div>
+          )}
           <Input
             ref={inputRef}
             placeholder={
               isReplying ? "Type your reply..." : "Type a message..."
             }
-            className="flex-1 rounded-full"
+            className="flex-1 border-none rounded-full"
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyPress={(e) => {
@@ -297,6 +344,7 @@ export default function ChatViewBottom({
                 handleSendMessage();
               }
             }}
+            onKeyUp={handleKeyUp}
           />
           <SmilePlus className="h-5 w-5 text-blue-500 absolute right-4 top-1/2 transform -translate-y-1/2" />
         </div>

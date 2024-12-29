@@ -142,7 +142,11 @@ export default function MessageCpn({
           )
         ) : null}
         {!revokedMessage && message?.type === "text" && (
-          <TextMessage text={message.text} replyText={message.replyText} />
+          <TextMessage
+            text={message.text}
+            replyText={message.replyText}
+            taggedUsers={message?.taggedUsers}
+          />
         )}
         {!revokedMessage && message?.type === "file" && message?.file ? (
           message?.text ? (
