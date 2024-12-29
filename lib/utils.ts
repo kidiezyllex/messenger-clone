@@ -38,3 +38,16 @@ export const isWithinTwoMinutes = (
   const diff = Math.abs(timeA - timeB);
   return diff < 2 * 60 * 1000;
 };
+
+export const renderBackgroundTheme = (theme: string) => {
+  const themes: { [key: string]: string } = {
+    red: "bg-neutral-950",
+    rose: "bg-stone-900",
+    blue: "bg-slate-950",
+    green: "bg-stone-900",
+    violet: "bg-gray-950",
+    orange: "bg-stone-950",
+    yellow: "bg-stone-950",
+  };
+  return themes[theme] || "";
+};

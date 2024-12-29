@@ -19,6 +19,7 @@ import { Conversation, Message, User } from "../../../lib/entity-types";
 import SelectedImage from "./SelectedImage/page";
 import SelectedFile from "./SelectedFile/page";
 import { useChat } from "ai/react";
+import { renderBackgroundTheme } from "../../../lib/utils";
 
 export default function ChatViewBottom({
   conversationId,
@@ -26,12 +27,14 @@ export default function ChatViewBottom({
   replyMessage,
   setReplyMessage,
   conversation,
+  localTheme,
 }: {
   conversationId: string;
   userId: string;
   replyMessage: Message | null;
   setReplyMessage: (message: Message) => void;
   conversation: Conversation;
+  localTheme: string;
 }) {
   const [inputMessage, setInputMessage] = useState("");
   const [sending, setSending] = useState(false);
@@ -200,7 +203,11 @@ export default function ChatViewBottom({
   };
 
   return (
-    <div className="flex flex-col p-3 border-t dark:border-t-zinc-700 border-t-zinc-300">
+    <div
+      className={`flex flex-col p-3 border-t dark:border-t-zinc-700 border-t-zinc-300 rounded-bl-xl rounded-br-xl ${renderBackgroundTheme(
+        localTheme
+      )}`}
+    >
       {selectedImage && (
         <SelectedImage
           selectedImage={selectedImage}
@@ -258,7 +265,7 @@ export default function ChatViewBottom({
             </Badge>
           </div>
         )}
-        <div className="flex flex-row">
+        <div className="flex flex-row gap-1">
           <Button
             size="icon"
             variant="secondary"
@@ -307,7 +314,7 @@ export default function ChatViewBottom({
             ></StickerBoard>
           </DropdownMenu>
         </div>
-        <div className="flex gap-2 flex-grow relative px-1 bg-background rounded-full border">
+        <div className="flex gap-2 flex-grow relative px-1 bg-background rounded-full border mx-1">
           {taggedUsers.length > 0 && (
             <div className="flex flex-wrap gap-1 mb-2 items-center h-full">
               {taggedUsers.map((user, index) => (

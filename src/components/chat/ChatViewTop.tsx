@@ -10,18 +10,20 @@ import { usePathname } from "next/navigation";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useToast } from "@/hooks/use-toast";
-import { getLastName } from "../../../lib/utils";
+import { getLastName, renderBackgroundTheme } from "../../../lib/utils";
 
 export default function ChatViewTop({
   conversation,
   user2,
   setExpanded,
   expanded,
+  localTheme,
 }: {
   conversation: Conversation;
   user2: User;
   setExpanded: (expanded: boolean) => void;
   expanded: boolean;
+  localTheme: string;
 }) {
   const [isVideoCallActive, setIsVideoCallActive] = useState(false);
   const pathname = usePathname();
@@ -73,11 +75,15 @@ export default function ChatViewTop({
       }
     };
   }, [conversationId]);
+  console.log(renderBackgroundTheme(localTheme));
   return (
     <>
       {conversation?.name || user2?.name ? (
-        <div className="flex items-center justify-between p-3 border-b dark:border-b-zinc-700 border-b-zinc-300">
-          <div className="flex items-center gap-3">
+        <div
+          className={`flex items-center justify-between p-3 border-b dark:border-b-zinc-700 border-b-zinc-300 rounded-tl-xl rounded-tr-xl
+ ${renderBackgroundTheme(localTheme)}`}
+        >
+          <div className={`flex items-center gap-3`}>
             <Avatar className="w-11 h-11">
               <AvatarImage
                 src={

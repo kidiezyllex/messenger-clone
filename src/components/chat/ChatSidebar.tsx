@@ -22,12 +22,15 @@ import {
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import { Conversation, User } from "../../../lib/entity-types";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { ThemeSelectorDialog } from "./ThemeSelectorDialog/page";
 export default function ChatSidebar({
   conversation,
   user2,
+  setLocalTheme,
 }: {
   conversation: Conversation;
   user2: User;
+  setLocalTheme: (val: any) => void;
 }) {
   const [sections, setSections] = useState({
     info: true,
@@ -36,12 +39,16 @@ export default function ChatSidebar({
     files: true,
     privacy: true,
   });
+  const [isThemeDialogOpen, setIsThemeDialogOpen] = useState(false);
 
   const toggleSection = (section: keyof typeof sections) => {
     setSections((prev) => ({
       ...prev,
       [section]: !prev[section],
     }));
+  };
+  const handleSelectTheme = (theme: string) => {
+    setLocalTheme(theme);
   };
   return (
     <ScrollArea className="rounded-tl-xl rounded-bl-xl">
@@ -75,14 +82,14 @@ export default function ChatSidebar({
             <Button
               variant="ghost"
               size="icon"
-              className="rounded-full bg-primary-foreground"
+              className="rounded-full bg-primary-foreground dark:hover:bg-zinc-700"
             >
               <Bell className="h-5 w-5" />
             </Button>
             <Button
               variant="ghost"
               size="icon"
-              className="rounded-full bg-primary-foreground"
+              className="rounded-full bg-primary-foreground dark:hover:bg-zinc-700"
             >
               <Search className="h-5 w-5" />
             </Button>
@@ -131,21 +138,26 @@ export default function ChatSidebar({
           </Button>
           {sections.customize && (
             <div className="px-4 py-2 space-y-1">
+              {conversation?.isGroup && (
+                <>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-slate-600 dark:text-slate-300 hover:bg-zinc-700"
+                  >
+                    <PenSquare className="w-4 h-4 mr-3" />
+                    Đổi tên đoạn chat
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-slate-600 dark:text-slate-300 hover:bg-zinc-700"
+                  >
+                    <ImageIcon className="w-4 h-4 mr-3" />
+                    Thay đổi ảnh
+                  </Button>
+                </>
+              )}
               <Button
-                variant="ghost"
-                className="w-full justify-start text-slate-600 dark:text-slate-300 hover:bg-zinc-700"
-              >
-                <PenSquare className="w-4 h-4 mr-3" />
-                Đổi tên đoạn chat
-              </Button>
-              <Button
-                variant="ghost"
-                className="w-full justify-start text-slate-600 dark:text-slate-300 hover:bg-zinc-700"
-              >
-                <ImageIcon className="w-4 h-4 mr-3" />
-                Thay đổi ảnh
-              </Button>
-              <Button
+                onClick={() => setIsThemeDialogOpen(true)}
                 variant="ghost"
                 className="w-full justify-start text-slate-600 dark:text-slate-300 hover:bg-zinc-700"
               >
@@ -310,6 +322,11 @@ export default function ChatSidebar({
       <ScrollBar
         orientation="vertical"
         className="dark:bg-primary-foreground bg-secondary"
+      />
+      <ThemeSelectorDialog
+        isOpen={isThemeDialogOpen}
+        onClose={() => setIsThemeDialogOpen(false)}
+        onSelectTheme={handleSelectTheme}
       />
     </ScrollArea>
   );

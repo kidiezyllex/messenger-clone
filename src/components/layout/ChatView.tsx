@@ -12,6 +12,7 @@ import ChatViewBottom from "../chat/ChatViewBottom";
 import ChatSidebar from "../chat/ChatSidebar";
 import PinnedMessage from "../chat/PinnedMessage/page";
 import { usePathname } from "next/navigation";
+import { renderBackgroundTheme } from "../../../lib/utils";
 
 export function ChatView() {
   const [conversation, setConversation] = useState<Conversation>();
@@ -25,10 +26,11 @@ export function ChatView() {
   const [expanded, setExpanded] = useState(false);
   const [pinnedMessages, setPinnedMessages] = useState<Message[]>([]);
   const conversationId = usePathname().split("/")[2];
-
+  const [localTheme, setLocalTheme] = useState("light");
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
+
   const fetchData = async () => {
     try {
       const res = await axios.get(`/api/conversations/${conversationId}`);
@@ -75,24 +77,25 @@ export function ChatView() {
       }
     };
   }, [conversationId]);
-
   return (
-    <div className="flex gap-4 flex-1">
+    <div className={`flex gap-4 flex-1`}>
       <div className="flex h-full flex-col flex-grow bg-secondary rounded-xl ml-4 border">
         <ChatViewTop
           conversation={conversation}
           user2={user2}
           setExpanded={setExpanded}
           expanded={expanded}
+          localTheme={localTheme}
         />
         {pinnedMessages[pinnedMessages.length - 1] && (
           <PinnedMessage
             message={pinnedMessages[pinnedMessages.length - 1]}
             pinnedMessages={pinnedMessages}
+            localTheme={localTheme}
           ></PinnedMessage>
         )}
         <ScrollArea className="h-full">
-          <div className="p-4 space-y-4">
+          <div className={`p-4 space-y-4 ${renderBackgroundTheme(localTheme)}`}>
             {messages.map((message) => (
               <MessageCpn
                 key={message.id}
@@ -114,10 +117,15 @@ export function ChatView() {
           replyMessage={replyMessage}
           setReplyMessage={setReplyMessage}
           conversation={conversation}
+          localTheme={localTheme}
         />
       </div>
       {expanded && (
-        <ChatSidebar conversation={conversation} user2={user2}></ChatSidebar>
+        <ChatSidebar
+          conversation={conversation}
+          user2={user2}
+          setLocalTheme={setLocalTheme}
+        ></ChatSidebar>
       )}
     </div>
   );
