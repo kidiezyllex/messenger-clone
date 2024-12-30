@@ -20,13 +20,11 @@ export function TextMessage({
   const [selectedUser, setSelectedUser] = useState<User>();
   const [open, setOpen] = useState(false);
   useEffect(() => {
-    // setSelectedUser(null);
     if (selectedTag) {
       const res = member.filter((user) => user?.name === selectedTag);
       setSelectedUser(res[0]);
     }
     if (selectedUser && selectedTag) setOpen(true);
-    console.log(selectedUser);
     setSelectedTag("");
   }, [selectedTag]);
 

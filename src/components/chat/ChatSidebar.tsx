@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   ChevronDown,
@@ -20,10 +20,15 @@ import {
   Ellipsis,
 } from "lucide-react";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
-import { Conversation, User } from "../../../lib/entity-types";
+import { Conversation, Message, User } from "../../../lib/entity-types";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { ThemeSelectorDialog } from "./ThemeSelectorDialog/page";
 import useStore from "@/store/useStore";
+import { Dialog, DialogTrigger } from "../ui/dialog";
+import { PinnedMessageDialog } from "./PinnedMessageDialog/page";
+import axios from "axios";
+import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 export default function ChatSidebar({
   conversation,
   user2,
@@ -40,6 +45,10 @@ export default function ChatSidebar({
   });
   const { setShowFileSideBar } = useStore();
   const [isThemeDialogOpen, setIsThemeDialogOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const conversationId = usePathname().split("/")[2];
+  const [pinnedMessages, setPinnedMessages] = useState<Message[]>([]);
+  const { data: session, status } = useSession();
 
   const toggleSection = (section: keyof typeof sections) => {
     setSections((prev) => ({
@@ -47,9 +56,28 @@ export default function ChatSidebar({
       [section]: !prev[section],
     }));
   };
+
+  const fetchData = async () => {
+    try {
+      const res = await axios.get(`/api/conversations/${conversationId}`);
+      setPinnedMessages(res.data.pinnedMessages);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    if (
+      conversationId !== "" &&
+      conversationId !== "new-account" &&
+      status === "authenticated"
+    ) {
+      fetchData();
+    }
+  }, [status, conversationId]);
   return (
     <ScrollArea className="rounded-tl-xl rounded-bl-xl">
-      <div className="w-[320px] h-full flex flex-grow flex-col bg-secondary rounded-xl pr-2">
+      <div className="w-[320px] h-full min-h-screen flex flex-grow flex-col bg-secondary rounded-xl pr-2">
         {/* Header */}
         <div className="p-4 border-b border-zinc-700">
           <div className="flex items-center gap-3 mb-4">
@@ -108,13 +136,21 @@ export default function ChatSidebar({
           </Button>
           {sections.info && (
             <div className="px-4 py-2">
-              <Button
-                variant="ghost"
-                className="w-full justify-start text-slate-600 dark:text-slate-300 hover:bg-zinc-700"
-              >
-                <Pin className="w-4 h-4 mr-3" />
-                Xem tin nhắn đã ghim
-              </Button>
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-slate-600 dark:text-slate-300 hover:bg-zinc-700"
+                  >
+                    <Pin className="w-4 h-4 mr-3" />
+                    Xem tin nhắn đã ghim
+                  </Button>
+                </DialogTrigger>
+                <PinnedMessageDialog
+                  pinnedMessages={pinnedMessages}
+                  userId={(session?.user as any)?.id}
+                />
+              </Dialog>
             </div>
           )}
         </div>
@@ -282,7 +318,7 @@ export default function ChatSidebar({
         </div>
 
         {/* Privacy Section */}
-        <div className="border-b border-zinc-700">
+        <div>
           <Button
             variant="ghost"
             className="w-full px-4 py-3 flex items-center justify-between"

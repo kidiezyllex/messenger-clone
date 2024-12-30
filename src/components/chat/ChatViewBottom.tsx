@@ -103,6 +103,9 @@ export default function ChatViewBottom({
           replyText: isReplying ? replyMessage?.text : "",
           taggedUsers: taggedUsers,
         });
+      } catch (error) {
+        console.error(error);
+      } finally {
         setInputMessage("");
         setSelectedImage(null);
         setSelectedFile(null);
@@ -111,11 +114,6 @@ export default function ChatViewBottom({
         setSelectedFile(null);
         setShowUserList(false);
         setFilteredUsers(null);
-        setTaggedUsers([]);
-      } catch (error) {
-        console.error(error);
-        setSending(false);
-        setShowUserList(false);
         setTaggedUsers([]);
       }
     }
