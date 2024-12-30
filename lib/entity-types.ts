@@ -22,6 +22,8 @@ export interface Conversation {
   name?: string;
   groupImage?: string;
   isGroup?: boolean;
+  groupCreator?: User;
+  groupCreatorId?: string;
   groupName?: string;
   messages: Message[];
   users: User[];

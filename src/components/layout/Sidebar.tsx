@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   MessageCircle,
   Archive,
@@ -30,6 +30,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
 const navItems = [
   { icon: MessageCircle, label: "Đoạn chat" },
   { icon: Store, label: "Marketplace" },
@@ -39,11 +40,43 @@ const navItems = [
 
 export function Sidebar() {
   const [expanded, setExpanded] = useState(false);
+  const sidebarRef = useRef<HTMLDivElement>(null);
   const { data: session, status } = useSession();
   const router = useRouter();
+
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (
+        expanded &&
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target as Node) &&
+        !(event.target as Element).closest('[role="menuitem"]')
+      ) {
+        setExpanded(false);
+      }
+    };
+
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setExpanded(false);
+      }
+    };
+
+    // Use mouseup instead of mousedown
+    document.addEventListener("mouseup", handleOutsideClick);
+    document.addEventListener("keydown", handleEscapeKey);
+
+    return () => {
+      document.removeEventListener("mouseup", handleOutsideClick);
+      document.removeEventListener("keydown", handleEscapeKey);
+    };
+  }, [expanded]);
+
   if (!session && status === "unauthenticated") router.push("/");
+
   return (
     <div
+      ref={sidebarRef}
       className={cn(
         "h-full flex flex-col justify-between transition-all duration-100",
         expanded ? "w-72" : "w-16"
@@ -81,7 +114,7 @@ export function Sidebar() {
         ))}
       </div>
       <div className="flex flex-col gap-2 items-start w-full transition-all">
-        {expanded ? null : <ModeToggle></ModeToggle>}
+        {expanded ? null : <ModeToggle />}
         <div className={cn("flex items-center w-full pr-4", expanded)}>
           <Avatar
             className="w-10 h-10 cursor-pointer"
@@ -89,7 +122,7 @@ export function Sidebar() {
           >
             <AvatarImage src={session?.user?.image} />
             <AvatarFallback className="bg-blue-400 text-white border-2 border-blue-300 dark:border-secondary">
-              {session?.user?.name[0]}
+              {session?.user?.name?.[0]}
             </AvatarFallback>
           </Avatar>
           {expanded && (
@@ -116,13 +149,7 @@ export function Sidebar() {
                     <Settings className="h-4 w-4" />
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    className="p-2 flex justify-between"
-                    onClick={() => {
-                      signOut();
-                      router.push("/");
-                    }}
-                  >
+                  <DropdownMenuItem className="p-2 flex justify-between">
                     <span className="font-semibold text-sm">
                       Cập nhật hồ sơ
                     </span>

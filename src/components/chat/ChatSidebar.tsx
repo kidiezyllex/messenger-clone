@@ -31,8 +31,6 @@ export default function ChatSidebar({
   conversation: Conversation;
   user2: User;
 }) {
-  const { theme, setTheme } = useStore();
-
   const [sections, setSections] = useState({
     info: true,
     customize: true,
@@ -209,7 +207,18 @@ export default function ChatSidebar({
                             : user2?.name[0]}
                         </AvatarFallback>
                       </Avatar>
-                      <p className="text-sm font-semibold">{member.name}</p>
+                      <div className="flex flex-col gap-1">
+                        <p className="text-sm font-semibold">{member?.name}</p>
+                        <p className="text-xs font-semibold">
+                          {member?.id === conversation?.groupCreator?.id ? (
+                            <span className="text-blue-500">Trưởng nhóm</span>
+                          ) : (
+                            <span className="text-muted-foreground">
+                              Thành viên
+                            </span>
+                          )}
+                        </p>
+                      </div>
                     </div>
                     <Button variant="ghost" size="icon">
                       <Ellipsis className="w-4 h-4" />
@@ -310,13 +319,15 @@ export default function ChatSidebar({
                   </span>
                 </div>
               </Button>
-              <Button
-                variant="ghost"
-                className="w-full justify-start text-red-500 hover:bg-zinc-700"
-              >
-                <LogOut className="w-4 h-4 mr-3" />
-                Rời nhóm
-              </Button>
+              {conversation?.isGroup && (
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-red-500 hover:bg-zinc-700"
+                >
+                  <LogOut className="w-4 h-4 mr-3" />
+                  Rời nhóm
+                </Button>
+              )}
             </div>
           )}
         </div>

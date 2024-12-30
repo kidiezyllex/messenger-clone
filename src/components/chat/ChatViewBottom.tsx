@@ -204,7 +204,7 @@ export default function ChatViewBottom({
 
   return (
     <div
-      className={`flex flex-col p-3 border-t dark:border-t-zinc-700 border-t-zinc-300 rounded-bl-xl rounded-br-xl`}
+      className={`bg-background dark:bg-secondary flex flex-col p-3 border-t dark:border-t-zinc-700 border-t-zinc-300 rounded-bl-xl rounded-br-xl`}
     >
       {selectedImage && (
         <SelectedImage

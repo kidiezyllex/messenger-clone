@@ -20,6 +20,7 @@ export async function GET(
         id: conversationId,
       },
       include: {
+        groupCreator: true,
         users: true,
         messages: {
           include: {

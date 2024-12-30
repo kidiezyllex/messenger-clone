@@ -13,7 +13,6 @@ export default function UserSuggestions() {
   const { data: session, status } = useSession();
   const { toast } = useToast();
   const userId = (session?.user as any)?.id;
-  console.log(status);
   const fecthData = async () => {
     setLoading(true);
     // Fetch danh sách lời mời kết bạn
@@ -73,11 +72,13 @@ export default function UserSuggestions() {
           >
             <Avatar className="w-11 h-11">
               <AvatarImage src={user?.image} />
-              <AvatarFallback className="bg-blue-400 text-white border-2 border-blue-300 dark:border-secondary">
+              <AvatarFallback className="bg-blue-400 text-slate-600 dark:text-slate-300 border-2 border-blue-300 dark:border-secondary">
                 {user?.name[0]}
               </AvatarFallback>
             </Avatar>
-            <p className="font-medium text-sm flex-grow">{user?.name}</p>
+            <p className="font-medium text-sm flex-grow text-slate-600 dark:text-slate-300">
+              {user?.name}
+            </p>
             <Button
               onClick={() => handleSendFriendRequest(userId, user?.id)}
               className="bg-blue-400 hover:bg-blue-400 text-white border-2 border-blue-300 hover:border-blue-300 dark:border-secondary"

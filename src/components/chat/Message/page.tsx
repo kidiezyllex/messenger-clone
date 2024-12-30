@@ -38,7 +38,6 @@ import useStore from "@/store/useStore";
 import { StickerMessage } from "../StickerMessage/page";
 import { ImageMessage } from "../ImageMessage/page";
 import { TextMessage } from "../TextMessage/page";
-// import { FileMessage }
 import { CallMessage } from "../CallMessage/page";
 import { FileMessage } from "../FileMessage/page";
 import { pusherClient } from "@/lib/pusher";
@@ -59,7 +58,7 @@ export default function MessageCpn({
   const [reaction, setReaction] = useState<string | null>(null);
   const [isVideoCallActive, setIsVideoCallActive] = useState(false);
   const { data: session } = useSession();
-  const { setSelectConversationId, selectConversationId } = useStore();
+  const { selectConversationId } = useStore();
   const [revokedMessage, setRevokedMessage] = useState<Message | null>(null);
 
   const handleReply = (message: Message) => {
@@ -119,7 +118,7 @@ export default function MessageCpn({
         className={
           !revokedMessage && message?.type === "sticker"
             ? ""
-            : "relative rounded-lg bg-background dark:bg-zinc-700 py-2 px-4 max-w-[70%] space-y-2"
+            : "relative border rounded-lg bg-background dark:bg-zinc-700 py-2 px-4 max-w-[70%] space-y-2"
         }
       >
         {(revokedMessage || message)?.type === "revoke" && (

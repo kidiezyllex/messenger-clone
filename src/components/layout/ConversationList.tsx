@@ -21,7 +21,7 @@ import useStore from "@/store/useStore";
 import { pusherClient } from "@/lib/pusher";
 
 export function ConversationList() {
-  const { selectConversationId } = useStore();
+  const { selectConversationId, setSelectConversationId } = useStore();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [isSearchMode, setIsSearchMode] = useState(false);
@@ -113,6 +113,7 @@ export function ConversationList() {
                 className="dark:bg-primary-foreground dark:hover:bg-background"
                 onClick={() => {
                   window.history.pushState(null, "", "/t/user-suggested");
+                  setSelectConversationId("user-suggested");
                 }}
               >
                 <UserRoundPlus className="h-4 w-4" />

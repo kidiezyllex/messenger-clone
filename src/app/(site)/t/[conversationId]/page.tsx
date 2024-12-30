@@ -19,7 +19,8 @@ export default function ChatPage({
   return (
     <div className="flex flex-row w-full p-4 bg-primary-foreground min-h-screen h-screen overflow-hidden">
       <Sidebar />
-      {params.conversationId !== "user-suggested" ? (
+      {params.conversationId !== "user-suggested" &&
+      selectConversationId !== "user-suggested" ? (
         <>
           <ConversationList />
           <ChatView />

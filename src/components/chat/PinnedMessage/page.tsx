@@ -15,7 +15,7 @@ export default function PinnedMessage({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   return (
     <div
-      className={`flex flex-row justify-between border-b border-b-zinc-700 p-2 px-3 items-center`}
+      className={`flex flex-row justify-between border-b dark:border-b-zinc-700 border-b-zinc-300 p-2 px-3 items-center`}
     >
       <div className="flex gap-2">
         <div className="h-10 w-10 dark:bg-zinc-700 bg-background rounded-full flex items-center justify-center">
