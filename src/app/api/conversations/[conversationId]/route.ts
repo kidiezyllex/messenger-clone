@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prismadb from "../../../../../lib/prismadb";
+import { pusherServer } from "@/lib/pusher";
 
 export async function GET(
   req: Request,
@@ -91,7 +92,6 @@ export async function PATCH(
     let updatedPinnedMessages;
 
     if (action === "pin") {
-      // Check if the message is already pinned
       const isAlreadyPinned = conversation.pinnedMessages.some(
         (pinnedMessage) => pinnedMessage.id === message.id
       );
@@ -100,6 +100,7 @@ export async function PATCH(
         updatedPinnedMessages = {
           connect: { id: message.id },
         };
+        await pusherServer.trigger(conversationId, "message:pin", message);
       } else {
         return NextResponse.json(
           { message: "Message is already pinned" },

@@ -33,7 +33,6 @@ export default function UserSuggestions() {
       )
         return item;
     });
-    console.log(users);
     setUsers(users);
     setLoading(false);
   };

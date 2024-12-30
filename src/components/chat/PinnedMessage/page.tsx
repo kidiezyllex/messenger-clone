@@ -1,18 +1,60 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Message } from "../../../../lib/entity-types";
 import { formatDate2 } from "../../../../lib/utils";
 import { ChevronDown, Pin } from "lucide-react";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { PinnedMessageDialog } from "../PinnedMessageDialog/page";
+import axios from "axios";
+import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { pusherClient } from "@/lib/pusher";
 
-export default function PinnedMessage({
-  message,
-  pinnedMessages,
-}: {
-  message: Message;
-  pinnedMessages: Message[];
-}) {
+export default function PinnedMessage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const conversationId = usePathname().split("/")[2];
+  const [pinnedMessages, setPinnedMessages] = useState<Message[]>([]);
+  const { data: session, status } = useSession();
+  const pusherInitialized = useRef(false);
+  const [pinnedMessageRT, setPinnedMessageRT] = useState<Message>();
+
+  const fetchData = async () => {
+    try {
+      const res = await axios.get(`/api/conversations/${conversationId}`);
+      setPinnedMessages(res.data.pinnedMessages);
+      setPinnedMessageRT(res.data.pinnedMessages[0]);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    if (
+      conversationId !== "" &&
+      conversationId !== "new-account" &&
+      status === "authenticated"
+    ) {
+      fetchData();
+    }
+  }, [status, conversationId]);
+
+  useEffect(() => {
+    if (!pusherInitialized.current) {
+      pusherClient.subscribe(conversationId);
+      pusherClient.bind("message:pin", (message: Message) => {
+        setPinnedMessageRT(message);
+        setPinnedMessages((prev) => [message, ...prev]);
+      });
+      pusherInitialized.current = true;
+    }
+
+    return () => {
+      if (pusherInitialized.current) {
+        pusherClient.unsubscribe(conversationId);
+        pusherClient.unbind("message:pin");
+        pusherInitialized.current = false;
+      }
+    };
+  }, [conversationId]);
   return (
     <div
       className={`flex flex-row justify-between border-b dark:border-b-zinc-700 border-b-zinc-300 p-2 px-3 items-center`}
@@ -23,18 +65,18 @@ export default function PinnedMessage({
         </div>
         <div className="space-y-1">
           <p className="text-slate-600 dark:text-slate-300 text-sm font-semibold">
-            {message?.sender?.name}
+            {pinnedMessageRT?.sender?.name}
           </p>
           <p className="text-slate-600 dark:text-slate-300 text-sm font-semibold">
-            {message?.image || message?.file
+            {pinnedMessageRT?.image || pinnedMessageRT?.file
               ? "File phương tiện"
-              : message?.text}
+              : pinnedMessageRT?.text}
           </p>
         </div>
       </div>
       <div className="flex flex-row gap-2 items-center">
         <p className="text-xs text-muted-foreground">
-          {formatDate2(message?.createdAt)}
+          {formatDate2(pinnedMessageRT?.createdAt)}
         </p>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger>
@@ -43,8 +85,8 @@ export default function PinnedMessage({
             </div>
           </DialogTrigger>
           <PinnedMessageDialog
-            setIsDialogOpen={setIsDialogOpen}
             pinnedMessages={pinnedMessages}
+            userId={(session?.user as any)?.id}
           />
         </Dialog>
       </div>

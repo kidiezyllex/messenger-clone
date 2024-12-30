@@ -40,7 +40,7 @@ export interface Message {
   image?: string;
   file?: string;
   fileName?: string;
-  createdAt: Date;
+  createdAt?: Date;
   seen: User[];
   conversation: Conversation;
   conversationId: string;

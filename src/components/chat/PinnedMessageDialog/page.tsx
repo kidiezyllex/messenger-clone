@@ -8,13 +8,19 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import MessageCpn from "../Message/page";
 
 export function PinnedMessageDialog({
-  setIsDialogOpen,
   pinnedMessages,
+  userId,
 }: {
-  setIsDialogOpen: (isDialogOpen: boolean) => void;
   pinnedMessages: Message[];
+  userId: string;
 }) {
-  const { data: session, status } = useSession();
+  const sortByCreatedAt = (array: Message[]) => {
+    return array.sort((a: Message, b: Message) => {
+      const timeA = new Date(a?.createdAt).getTime();
+      const timeB = new Date(b?.createdAt).getTime();
+      return timeA - timeB;
+    });
+  };
   return (
     <DialogContent className="max-w-[800px] w-[95%] h-[90%] overflow-y-auto flex flex-col gap-4">
       <DialogTitle className="h-fit pb-2 m-0 text-lg font-bold text-zinc-600 dark:text-zinc-300 border-b dark:border-b-zinc-700 border-b-zinc-300">
@@ -23,11 +29,11 @@ export function PinnedMessageDialog({
       <div className="flex flex-col space-y-4 mr-4">
         <ScrollArea className="h-full">
           <div className="p-4 space-y-4">
-            {pinnedMessages.map((message) => (
+            {sortByCreatedAt(pinnedMessages).map((message) => (
               <MessageCpn
                 key={message.id}
                 message={message}
-                userId={(session?.user as any)?.id}
+                userId={userId}
                 setReplyMessage={null}
               />
             ))}

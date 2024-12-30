@@ -24,10 +24,8 @@ export function ChatView() {
   const { data: session, status } = useSession();
   const userId = (session?.user as any)?.id;
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const pusherInitialized = useRef(false);
   const [expanded, setExpanded] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [pinnedMessages, setPinnedMessages] = useState<Message[]>([]);
   const conversationId = usePathname().split("/")[2];
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -41,7 +39,6 @@ export function ChatView() {
       setConversation(res.data);
       setMessages(res.data.messages);
       setUser2(user2[0]);
-      setPinnedMessages(res.data.pinnedMessages);
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -58,11 +55,6 @@ export function ChatView() {
       fetchData().then(() => {
         setTimeout(scrollToBottom, 0);
       });
-    }
-  }, [status, conversationId]);
-
-  useEffect(() => {
-    if (!pusherInitialized.current) {
       pusherClient.subscribe(conversationId);
       pusherClient.bind("message:new", (message: Message) => {
         setMessages((current) => {
@@ -70,18 +62,14 @@ export function ChatView() {
           setTimeout(scrollToBottom, 0);
           return updatedMessages;
         });
+        console.log(message);
       });
-      pusherInitialized.current = true;
     }
-
     return () => {
-      if (pusherInitialized.current) {
-        pusherClient.unsubscribe(conversationId);
-        pusherClient.unbind("message:new");
-        pusherInitialized.current = false;
-      }
+      pusherClient.unsubscribe(conversationId);
+      pusherClient.unbind("message:new");
     };
-  }, [conversationId]);
+  }, [status, conversationId]);
   return (
     <div className="flex gap-4 flex-1">
       <div className="flex h-full flex-col flex-grow bg-secondary rounded-xl ml-4 border">
@@ -95,12 +83,7 @@ export function ChatView() {
               setExpanded={setExpanded}
               expanded={expanded}
             />
-            {pinnedMessages[pinnedMessages.length - 1] && (
-              <PinnedMessage
-                message={pinnedMessages[pinnedMessages.length - 1]}
-                pinnedMessages={pinnedMessages}
-              ></PinnedMessage>
-            )}
+            {conversation?.pinnedMessages && <PinnedMessage></PinnedMessage>}
             <ScrollArea className="h-full">
               <div className={`p-4 space-y-4`}>
                 {messages.map((message) => (
