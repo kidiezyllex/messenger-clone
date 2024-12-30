@@ -5,10 +5,10 @@ const nextConfig = {
       "utfs.io",
       "static.designboom.com",
       "res.cloudinary.com",
-      "benhvienjw.vn",
       "upload.wikimedia.org",
       "https://zalo-api.zadn.vn",
       "unsplash.com",
+      "picsum.photos",
     ],
   },
   eslint: {

@@ -17,13 +17,11 @@ export default function ChatViewTop({
   user2,
   setExpanded,
   expanded,
-  localTheme,
 }: {
   conversation: Conversation;
   user2: User;
   setExpanded: (expanded: boolean) => void;
   expanded: boolean;
-  localTheme: string;
 }) {
   const [isVideoCallActive, setIsVideoCallActive] = useState(false);
   const pathname = usePathname();

@@ -18,7 +18,6 @@ export default function UserPendingRequest() {
     setLoading(true);
     const res = await axios.get(`/api/friend-requests/pending/${userId}`);
     setUsers(res?.data);
-    console.log(res?.data);
     setLoading(false);
   };
   useEffect(() => {

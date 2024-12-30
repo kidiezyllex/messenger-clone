@@ -13,6 +13,7 @@ export interface User {
   seenMessages: Message[];
   messages: Message[];
   sentMessages: Message[];
+  friends: User[];
 }
 
 export interface Conversation {

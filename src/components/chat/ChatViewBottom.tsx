@@ -27,14 +27,12 @@ export default function ChatViewBottom({
   replyMessage,
   setReplyMessage,
   conversation,
-  localTheme,
 }: {
   conversationId: string;
   userId: string;
   replyMessage: Message | null;
   setReplyMessage: (message: Message) => void;
   conversation: Conversation;
-  localTheme: string;
 }) {
   const [inputMessage, setInputMessage] = useState("");
   const [sending, setSending] = useState(false);

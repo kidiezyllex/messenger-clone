@@ -12,10 +12,9 @@ import ChatViewBottom from "../chat/ChatViewBottom";
 import ChatSidebar from "../chat/ChatSidebar";
 import PinnedMessage from "../chat/PinnedMessage/page";
 import { usePathname } from "next/navigation";
-import { renderBackgroundTheme } from "../../../lib/utils";
 import useStore from "@/store/useStore";
-import clsx from "clsx";
 import FileSidebar from "../chat/FileSideBar/FileSideBar";
+import Loading from "../animation/Loading";
 
 export function ChatView() {
   const [conversation, setConversation] = useState<Conversation>();
@@ -27,22 +26,25 @@ export function ChatView() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const pusherInitialized = useRef(false);
   const [expanded, setExpanded] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [pinnedMessages, setPinnedMessages] = useState<Message[]>([]);
   const conversationId = usePathname().split("/")[2];
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
-  const { theme, setTheme, showFileSideBar } = useStore();
+  const { showFileSideBar } = useStore();
   const fetchData = async () => {
     try {
+      setLoading(true);
       const res = await axios.get(`/api/conversations/${conversationId}`);
       const user2 = res.data.users.filter((item: any) => item.id !== userId);
       setConversation(res.data);
       setMessages(res.data.messages);
       setUser2(user2[0]);
       setPinnedMessages(res.data.pinnedMessages);
-      setTheme(res?.data?.theme);
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       console.error(error);
     }
   };
@@ -83,44 +85,48 @@ export function ChatView() {
   return (
     <div className="flex gap-4 flex-1">
       <div className="flex h-full flex-col flex-grow bg-secondary rounded-xl ml-4 border">
-        <ChatViewTop
-          conversation={conversation}
-          user2={user2}
-          setExpanded={setExpanded}
-          expanded={expanded}
-          localTheme={theme}
-        />
-        {pinnedMessages[pinnedMessages.length - 1] && (
-          <PinnedMessage
-            message={pinnedMessages[pinnedMessages.length - 1]}
-            pinnedMessages={pinnedMessages}
-          ></PinnedMessage>
-        )}
-        <ScrollArea className="h-full">
-          <div className={`p-4 space-y-4`}>
-            {messages.map((message) => (
-              <MessageCpn
-                key={message.id}
-                message={message}
-                userId={userId}
-                setReplyMessage={setReplyMessage}
+        {loading ? (
+          <Loading></Loading>
+        ) : (
+          <>
+            <ChatViewTop
+              conversation={conversation}
+              user2={user2}
+              setExpanded={setExpanded}
+              expanded={expanded}
+            />
+            {pinnedMessages[pinnedMessages.length - 1] && (
+              <PinnedMessage
+                message={pinnedMessages[pinnedMessages.length - 1]}
+                pinnedMessages={pinnedMessages}
+              ></PinnedMessage>
+            )}
+            <ScrollArea className="h-full">
+              <div className={`p-4 space-y-4`}>
+                {messages.map((message) => (
+                  <MessageCpn
+                    key={message.id}
+                    message={message}
+                    userId={userId}
+                    setReplyMessage={setReplyMessage}
+                  />
+                ))}
+                <div ref={messagesEndRef} />
+              </div>
+              <ScrollBar
+                orientation="vertical"
+                className="dark:bg-primary-foreground bg-secondary"
               />
-            ))}
-            <div ref={messagesEndRef} />
-          </div>
-          <ScrollBar
-            orientation="vertical"
-            className="dark:bg-primary-foreground bg-secondary"
-          />
-        </ScrollArea>
-        <ChatViewBottom
-          conversationId={conversationId}
-          userId={userId}
-          replyMessage={replyMessage}
-          setReplyMessage={setReplyMessage}
-          conversation={conversation}
-          localTheme={theme}
-        />
+            </ScrollArea>
+            <ChatViewBottom
+              conversationId={conversationId}
+              userId={userId}
+              replyMessage={replyMessage}
+              setReplyMessage={setReplyMessage}
+              conversation={conversation}
+            />
+          </>
+        )}
       </div>
       {expanded ? (
         showFileSideBar ? (
