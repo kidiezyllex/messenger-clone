@@ -67,20 +67,24 @@ export default function UserProfileDialog({
           <div className="grid gap-2 text-sm">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Email:</span>
-              <span>{user?.email}</span>
+              <span className="text-muted-foreground">{user?.email}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">
                 Đã tham gia vào lúc:
               </span>
-              <span>{formatDate2(user?.createAt)}</span>
+              <span className="text-muted-foreground">
+                {formatDate2(user?.createAt)}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Bạn bè:</span>
-              <span>{user?.friends?.length || 0} người bạn</span>
+              <span className="text-muted-foreground">
+                {user?.friends?.length || 0} người bạn
+              </span>
             </div>
           </div>
-          <Button className="w-full flex flex-row gap-2 bg-blue-500 hover:bg-blue-500 text-white border-2 border-blue-300 hover:border-blue-300 dark:border-secondary">
+          <Button className="mt-4 w-full flex flex-row gap-2 bg-blue-500 hover:bg-blue-500 text-white border-2 border-blue-300 hover:border-blue-300 dark:border-secondary">
             Nhắn tin
             <MessageCircleMore className="h-4 w-4" />
           </Button>

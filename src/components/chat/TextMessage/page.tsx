@@ -1,4 +1,8 @@
+import UserProfileDialog from "@/components/user/UserProfileDialog/page";
+import useStore from "@/store/useStore";
 import { Quote } from "lucide-react";
+import { useEffect, useState } from "react";
+import { User } from "../../../../lib/entity-types";
 
 interface TextMessageProps {
   text: string;
@@ -11,6 +15,21 @@ export function TextMessage({
   replyText,
   taggedUsers,
 }: TextMessageProps) {
+  const { member } = useStore();
+  const [selectedTag, setSelectedTag] = useState("");
+  const [selectedUser, setSelectedUser] = useState<User>();
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    // setSelectedUser(null);
+    if (selectedTag) {
+      const res = member.filter((user) => user?.name === selectedTag);
+      setSelectedUser(res[0]);
+    }
+    if (selectedUser && selectedTag) setOpen(true);
+    console.log(selectedUser);
+    setSelectedTag("");
+  }, [selectedTag]);
+
   return (
     <div className="flex flex-col gap-2 relative">
       {replyText && (
@@ -23,11 +42,19 @@ export function TextMessage({
       )}
       {taggedUsers &&
         taggedUsers.map((tag) => (
-          <p className="text-sm text-blue-500 font-semibold cursor-pointer">
+          <p
+            className="text-sm text-blue-500 font-semibold cursor-pointer hover:underline"
+            onClick={() => setSelectedTag(tag)}
+          >
             @{tag}
           </p>
         ))}
       <p className="text-base text-zinc-600 dark:text-zinc-300">{text}</p>
+      <UserProfileDialog
+        user={selectedUser}
+        open={open}
+        setOpen={setOpen}
+      ></UserProfileDialog>
     </div>
   );
 }

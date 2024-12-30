@@ -30,7 +30,7 @@ export function ChatView() {
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
-  const { showFileSideBar } = useStore();
+  const { showFileSideBar, setMember } = useStore();
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -39,6 +39,7 @@ export function ChatView() {
       setConversation(res.data);
       setMessages(res.data.messages);
       setUser2(user2[0]);
+      if (res.data?.isGroup) setMember(res.data.users);
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -83,7 +84,9 @@ export function ChatView() {
               setExpanded={setExpanded}
               expanded={expanded}
             />
-            {conversation?.pinnedMessages && <PinnedMessage></PinnedMessage>}
+            {conversation?.pinnedMessages.length !== 0 && (
+              <PinnedMessage></PinnedMessage>
+            )}
             <ScrollArea className="h-full">
               <div className={`p-4 space-y-4`}>
                 {messages.map((message) => (
