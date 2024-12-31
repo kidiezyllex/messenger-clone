@@ -89,13 +89,18 @@ export async function POST(req: Request) {
       }),
     ]);
 
-    await pusherServer.trigger(conversationId, "message:new", message);
+    try {
+      await pusherServer.trigger(conversationId, "message:new", message);
+      console.log("Pusher event triggered successfully");
+    } catch (pusherError) {
+      console.error("Error triggering Pusher event:", pusherError);
+    }
 
     return NextResponse.json(message);
   } catch (error) {
     console.error("Error creating message:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Internal server error", pusherStatus: "error" },
       { status: 500 }
     );
   }

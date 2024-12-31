@@ -15,19 +15,20 @@ import { Conversation, Message, User } from "../../../lib/entity-types";
 import { useSession } from "next-auth/react";
 import { ConversationItem } from "../conversation/ConversationItem";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { CreateGroupDialog } from "../group/CreateGroupDialog";
 import useStore from "@/store/useStore";
 import { pusherClient } from "@/lib/pusher";
-import io, { Socket } from 'socket.io-client';
+import io, { Socket } from "socket.io-client";
 export function ConversationList() {
   const [socket, setSocket] = useState<Socket | null>(null);
-  const { selectConversationId, setSelectConversationId } = useStore();
+  const { setSelectConversationId } = useStore();
+  const conversationId = usePathname().split("/")[2];
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [isSearchMode, setIsSearchMode] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const { data: session, status } = useSession();
   const userId = (session?.user as any)?.id;
   const router = useRouter();
@@ -41,19 +42,23 @@ export function ConversationList() {
   };
 
   useEffect(() => {
-    if (status === "authenticated" && selectConversationId) {
+    if (
+      conversationId !== "" &&
+      conversationId !== "user-suggested" &&
+      status === "authenticated"
+    ) {
       fetchData();
-      pusherClient?.subscribe(selectConversationId);
-      pusherClient?.bind("message:new", (message: Message) => {
+      pusherClient.subscribe(conversationId);
+      pusherClient.bind("message:new", (message: Message) => {
         setLastMessage(message);
         fetchData();
       });
+      return () => {
+        pusherClient.unsubscribe(conversationId);
+        pusherClient.unbind("message:new");
+      };
     }
-    return () => {
-      pusherClient.unsubscribe(selectConversationId);
-      pusherClient.unbind("message:new");
-    };
-  }, [status, selectConversationId]);
+  }, [status, conversationId]);
 
   const handleCreateConversation = async (user: User) => {
     try {
@@ -77,7 +82,7 @@ export function ConversationList() {
   );
 
   return (
-    <div className="flex flex-col h-full w-[350px] p-2 py-4 bg-secondary rounded-xl gap-3 border ">
+    <div className="flex flex-col h-full w-[300px] sm:w-[320px] md:w-[350px] p-2 py-4 bg-secondary rounded-xl gap-3 border ">
       <div className="flex flex-col mx-2 gap-2">
         <h1 className="text-lg font-bold text-zinc-600 dark:text-zinc-300">
           {isSearchMode ? "Tìm kiếm người dùng" : "Đoạn chat"}

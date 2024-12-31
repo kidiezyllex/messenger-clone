@@ -17,6 +17,7 @@ import FileSidebar from "../chat/FileSideBar/FileSideBar";
 import Loading from "../animation/Loading";
 
 export function ChatView() {
+  const conversationId = usePathname().split("/")[2];
   const [conversation, setConversation] = useState<Conversation>();
   const [messages, setMessages] = useState<Message[]>([]);
   const [user2, setUser2] = useState<User>();
@@ -26,7 +27,6 @@ export function ChatView() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [expanded, setExpanded] = useState(false);
   const [loading, setLoading] = useState(false);
-  const conversationId = usePathname().split("/")[2];
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
@@ -50,7 +50,7 @@ export function ChatView() {
   useEffect(() => {
     if (
       conversationId !== "" &&
-      conversationId !== "new-account" &&
+      conversationId !== "user-suggested" &&
       status === "authenticated"
     ) {
       fetchData().then(() => {
@@ -64,11 +64,11 @@ export function ChatView() {
           return updatedMessages;
         });
       });
+      return () => {
+        pusherClient.unsubscribe(conversationId);
+        pusherClient.unbind("message:new");
+      };
     }
-    return () => {
-      pusherClient.unsubscribe(conversationId);
-      pusherClient.unbind("message:new");
-    };
   }, [status, conversationId]);
 
   return (
