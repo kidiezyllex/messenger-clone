@@ -11,8 +11,8 @@ import UserProfileDialog from "@/components/user/UserProfileDialog/page";
 export default function UserSuggestions() {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
-  const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User>();
+  const [users, setUsers] = useState<User[]>([]);
   const { data: session, status } = useSession();
   const { toast } = useToast();
   const userId = (session?.user as any)?.id;
@@ -72,13 +72,13 @@ export default function UserSuggestions() {
     <ScrollArea className="rounded-md">
       <div
         className={
-          status === "loading" ? "hidden" : "flex flex-col gap-3 p-3 rounded-md"
+          status === "loading" ? "hidden" : "flex flex-col px-2 gap-2 rounded-md"
         }
-      >
+      > 
         {users.map((user, index) => (
           <div
             key={index + user.id}
-            className="flex items-center gap-3 p-4 rounded-md dark:bg-primary-foreground"
+            className="border dark:bg-zinc-700 dark:hover:bg-zinc-700 bg-background flex items-center gap-3 p-4 rounded-md cursor-pointer flex-grow"
           >
             <Avatar
               className="w-11 h-11 cursor-pointer"
@@ -92,7 +92,10 @@ export default function UserSuggestions() {
                 {user?.name[0]}
               </AvatarFallback>
             </Avatar>
-            <p className="font-medium text-sm flex-grow text-slate-600 dark:text-slate-300">
+            <p className="font-semibold text-sm flex-grow text-slate-600 dark:text-slate-300" onClick={() => {
+                setSelectedUser(user);
+                setOpen(true);
+              }}>
               {user?.name}
             </p>
             <Button

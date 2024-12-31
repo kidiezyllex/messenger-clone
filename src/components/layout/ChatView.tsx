@@ -71,6 +71,21 @@ export function ChatView() {
       pusherClient.unbind("message:new");
     };
   }, [status, conversationId]);
+
+  // useEffect(() => {
+  //   if (status === "authenticated" && selectConversationId) {
+  //     fetchData();
+  //     pusherClient?.subscribe(selectConversationId);
+  //     pusherClient?.bind("message:new", (message: Message) => {
+  //       setLastMessage(message);
+  //       fetchData();
+  //     });
+  //   }
+  //   return () => {
+  //     pusherClient.unsubscribe(selectConversationId);
+  //     pusherClient.unbind("message:new");
+  //   };
+  // }, [status, selectConversationId]);
   return (
     <div className="flex gap-4 flex-1">
       <div className="flex h-full flex-col flex-grow bg-secondary rounded-xl ml-4 border">

@@ -24,6 +24,8 @@ export async function GET(
             name: true,
             email: true,
             image: true,
+            createAt: true,
+            friends: true,
           },
         },
       },

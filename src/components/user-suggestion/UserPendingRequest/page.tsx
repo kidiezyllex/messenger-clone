@@ -7,8 +7,11 @@ import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import { useToast } from "@/hooks/use-toast";
 import Loading from "@/components/animation/Loading";
+import UserProfileDialog from "@/components/user/UserProfileDialog/page";
 
 export default function UserPendingRequest() {
+  const [open, setOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User>();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const { data: session, status } = useSession();
@@ -57,8 +60,8 @@ export default function UserPendingRequest() {
         }
       >
         {users.length === 0 ? (
-          <div className="flex items-center gap-3 p-4 rounded-md dark:bg-primary-foreground">
-            <p className="font-medium text-sm text-slate-600 dark:text-slate-300">
+          <div className="flex items-center gap-3 p-4 rounded-md dark:bg-primary-foreground bg-background">
+            <p className="font-medium text-sm text-slate-600 dark:text-slate-300 italic">
               Chưa có lời mời kết bạn.
             </p>
           </div>
@@ -67,15 +70,21 @@ export default function UserPendingRequest() {
           users.map((user, index) => (
             <div
               key={index + user.id}
-              className="flex items-center gap-3 p-4 rounded-md dark:bg-primary-foreground"
+              className="border dark:bg-zinc-700 dark:hover:bg-zinc-700 bg-background flex items-center gap-3 p-4 rounded-md cursor-pointer flex-grow"
             >
-              <Avatar className="w-11 h-11">
+              <Avatar className="w-11 h-11" onClick={() => {
+                setSelectedUser(user);
+                setOpen(true);
+              }}>
                 <AvatarImage src={user?.image} />
                 <AvatarFallback className="bg-blue-400 text-slate-600 dark:text-slate-300 border-2 border-blue-300 dark:border-secondary">
                   {user?.name[0]}
                 </AvatarFallback>
               </Avatar>
-              <p className="font-medium text-sm flex-grow text-slate-600 dark:text-slate-300">
+              <p className="font-semibold text-sm flex-grow text-slate-600 dark:text-slate-300" onClick={() => {
+                setSelectedUser(user);
+                setOpen(true);
+              }}>
                 {user?.name}
               </p>
               <Button
@@ -88,6 +97,11 @@ export default function UserPendingRequest() {
           ))}
       </div>
       <ScrollBar orientation="vertical" />
+      <UserProfileDialog
+        user={selectedUser}
+        open={open}
+        setOpen={setOpen}
+      ></UserProfileDialog>
     </ScrollArea>
   );
 }

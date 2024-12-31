@@ -84,10 +84,10 @@ export default function UserProfileDialog({
               </span>
             </div>
           </div>
-          <Button className="mt-4 w-full flex flex-row gap-2 bg-blue-500 hover:bg-blue-500 text-white border-2 border-blue-300 hover:border-blue-300 dark:border-secondary">
+          {/* <Button className="mt-4 w-full flex flex-row gap-2 bg-blue-500 hover:bg-blue-500 text-white border-2 border-blue-300 hover:border-blue-300 dark:border-secondary">
             Nhắn tin
             <MessageCircleMore className="h-4 w-4" />
-          </Button>
+          </Button> */}
         </div>
       </DialogContent>
     </Dialog>

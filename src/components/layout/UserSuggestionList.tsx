@@ -26,7 +26,13 @@ export function UserSuggestionList() {
     <div className="flex flex-col h-full w-[350px] p-2 py-4 bg-secondary rounded-xl gap-3 border">
       <div className="flex flex-col mx-2 gap-2">
         <h1 className="text-lg font-bold text-zinc-600 dark:text-zinc-300">
-          Người dùng đề xuất
+          {activated === "suggestion"
+            ? "Người dùng đề xuất"
+            : activated === "requested"
+            ? "Đã gửi yêu cầu"
+            : activated === "pendingRequest"
+            ? "Yêu cầu kết bạn"
+            : "Danh sách bạn bè"}
         </h1>
         <div className="flex flex-row gap-1 justify-center items-center">
           <div className="relative rounded-full flex-grow">
@@ -38,13 +44,13 @@ export function UserSuggestionList() {
           </div>
         </div>
       </div>
-      <div className="flex flex-row gap-4 w-full justify-center px-4">
+      <div className="flex flex-row gap-4 w-full justify-center px-4 text-slate-600 dark:text-slate-300">
         <p
           onClick={() => setActivated("suggestion")}
           className={
             activated === "suggestion"
-              ? "border-b-2 border-blue-500 cursor-pointer text-sm font-semibold"
-              : "border-b-2 border-secondary cursor-pointer text-sm font-semibold"
+              ? "border-b-2 border-blue-500 cursor-pointer text-sm font-semibold "
+              : "border-b-2 border-secondary cursor-pointer text-sm font-semibold "
           }
         >
           Đề xuất
