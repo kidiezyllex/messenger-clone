@@ -51,7 +51,7 @@ export default function SelectedFile({
     }
   };
   return (
-    <div className="relative mb-2 dark:bg-zinc-700 p-4 rounded-lg">
+    <div className="relative mb-2 dark:bg-zinc-700 p-4 rounded-lg bg-secondary border">
       <div className="flex flex-row items-center gap-2">
         {renderFileTypeIcon(selectedFile.type)}
         <p className="text-sm font-semibold dark:text-slate-300 text-slate-600">

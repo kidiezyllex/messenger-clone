@@ -19,8 +19,9 @@ import { useRouter } from "next/navigation";
 import { CreateGroupDialog } from "../group/CreateGroupDialog";
 import useStore from "@/store/useStore";
 import { pusherClient } from "@/lib/pusher";
-
+import io, { Socket } from 'socket.io-client';
 export function ConversationList() {
+  const [socket, setSocket] = useState<Socket | null>(null);
   const { selectConversationId, setSelectConversationId } = useStore();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [users, setUsers] = useState<User[]>([]);
@@ -38,6 +39,7 @@ export function ConversationList() {
     const users = res2.data.filter((item: any) => item.id !== userId);
     setUsers(users);
   };
+
   useEffect(() => {
     if (status === "authenticated" && selectConversationId) {
       fetchData();
@@ -135,7 +137,7 @@ export function ConversationList() {
           {isSearchMode
             ? filteredUsers.map((user, index) => (
                 <div
-                  key={user?.id + user?.createAt}
+                  key={index}
                   className="flex items-center gap-3 p-4 rounded-md dark:hover:bg-zinc-700"
                 >
                   <Avatar className="w-11 h-11">
@@ -158,6 +160,7 @@ export function ConversationList() {
                 <ConversationItem
                   conversation={conversation}
                   index={index}
+                  key={index}
                   lastMessage={lastMessage}
                 />
               ))}

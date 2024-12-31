@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Download, Eye, View } from "lucide-react";
+import { Download, Eye, FileText, View } from "lucide-react";
 import Link from "next/link";
 
 interface FileMessageProps {
@@ -16,7 +16,7 @@ export function FileMessage({ file, fileName }: FileMessageProps) {
           variant="secondary"
           className="hover:bg-primary-foreground rounded-full"
         >
-          <Eye className="h-5 w-5 text-blue-500" />
+          <FileText className="h-5 w-5 text-blue-500" />
         </Button>
       </Link>
 

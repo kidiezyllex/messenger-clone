@@ -39,10 +39,11 @@ export function TextMessage({
         </div>
       )}
       {taggedUsers &&
-        taggedUsers.map((tag) => (
+        taggedUsers.map((tag, index) => (
           <p
             className="text-sm text-blue-500 font-semibold cursor-pointer hover:underline"
             onClick={() => setSelectedTag(tag)}
+            key={index}
           >
             @{tag}
           </p>

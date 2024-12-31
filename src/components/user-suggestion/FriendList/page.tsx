@@ -11,14 +11,14 @@ import { useRouter } from "next/navigation";
 import UserProfileDialog from "@/components/user/UserProfileDialog/page";
 import useStore from "@/store/useStore";
 export default function FriendList() {
-    const [open, setOpen] = useState(false);
-    const [selectedUser, setSelectedUser] = useState<User>();
+  const [open, setOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User>();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const { data: session, status } = useSession();
   const userId = (session?.user as any)?.id;
   const router = useRouter();
-  const {setSelectConversationId} = useStore()
+  const { setSelectConversationId } = useStore();
   const fecthData = async () => {
     setLoading(true);
     const res = await axios.get(`/api/users/${userId}/friends`);
@@ -41,7 +41,7 @@ export default function FriendList() {
         members: [userId, user?.id],
       });
       if (res?.status === 200) {
-        setSelectConversationId(res.data.id)
+        setSelectConversationId(res.data.id);
         router.push(`/t/${res.data.id}`);
       }
     } catch (err) {
@@ -68,21 +68,27 @@ export default function FriendList() {
           users.map((user, index) => (
             <div
               key={index + user.id}
-               className="border dark:bg-zinc-700 dark:hover:bg-zinc-700 bg-background flex items-center gap-3 p-4 rounded-md cursor-pointer flex-grow"
+              className="border dark:bg-zinc-700 dark:hover:bg-zinc-700 bg-background flex items-center gap-3 p-4 rounded-md cursor-pointer flex-grow"
             >
-              <Avatar className="w-11 h-11" onClick={() => {
-                setSelectedUser(user);
-                setOpen(true);
-              }}>
+              <Avatar
+                className="w-11 h-11"
+                onClick={() => {
+                  setSelectedUser(user);
+                  setOpen(true);
+                }}
+              >
                 <AvatarImage src={user?.image} />
                 <AvatarFallback className="bg-blue-400 text-slate-600 dark:text-slate-300 border-2 border-blue-300 dark:border-secondary">
                   {user?.name[0]}
                 </AvatarFallback>
               </Avatar>
-              <p className="font-semibold text-sm flex-grow text-slate-600 dark:text-slate-300" onClick={() => {
-                setSelectedUser(user);
-                setOpen(true);
-              }}>
+              <p
+                className="font-semibold text-sm flex-grow text-slate-600 dark:text-slate-300"
+                onClick={() => {
+                  setSelectedUser(user);
+                  setOpen(true);
+                }}
+              >
                 {user?.name}
               </p>
               <Button
@@ -96,11 +102,11 @@ export default function FriendList() {
           ))}
       </div>
       <ScrollBar orientation="vertical" />
-        <UserProfileDialog
-              user={selectedUser}
-              open={open}
-              setOpen={setOpen}
-            ></UserProfileDialog>
+      <UserProfileDialog
+        user={selectedUser}
+        open={open}
+        setOpen={setOpen}
+      ></UserProfileDialog>
     </ScrollArea>
   );
 }

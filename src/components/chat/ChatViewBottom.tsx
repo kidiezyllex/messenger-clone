@@ -20,6 +20,7 @@ import SelectedImage from "./SelectedImage/page";
 import SelectedFile from "./SelectedFile/page";
 import { useChat } from "ai/react";
 import { renderBackgroundTheme } from "../../../lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export default function ChatViewBottom({
   conversationId,
@@ -235,15 +236,20 @@ export default function ChatViewBottom({
       {showUserList && (
         <div
           ref={userListRef}
-          // className="absolute bottom-full left-0 w-full bg-red-300 border border-gray-300 rounded-md shadow-lg z-10"
           className="bg-background dark:bg-zinc-900 w-fit rounded-md p-2 border dark:border-zinc-700 mb-4"
         >
           {filteredUsers?.map((user) => (
             <div
               key={user.id}
-              className="p-2 hover:bg-zinc-700 cursor-pointer rounded-md"
+              className="p-2 dark:hover:bg-zinc-700 hover:bg-secondary cursor-pointer rounded-md flex gap-2 items-center"
               onClick={() => insertUserTag(user.name)}
             >
+              <Avatar className="w-9 h-9">
+                <AvatarImage src={user?.image} />
+                <AvatarFallback className="bg-blue-400 text-white border-2 border-blue-300 dark:border-secondary">
+                  {user?.name[0]}
+                </AvatarFallback>
+              </Avatar>
               <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">
                 {user.name}
               </p>
@@ -322,9 +328,9 @@ export default function ChatViewBottom({
                     size="sm"
                     variant="ghost"
                     className="ml-1 p-0 h-4 w-4"
-                    onClick={() =>
-                      setTaggedUsers(taggedUsers.filter((u) => u !== user))
-                    }
+                    onClick={() => {
+                      setTaggedUsers(taggedUsers.filter((u) => u !== user));
+                    }}
                   >
                     <X className="h-4 w-4" />
                   </Button>

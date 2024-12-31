@@ -79,7 +79,7 @@ export default function ChatSidebar({
     <ScrollArea className="rounded-tl-xl rounded-bl-xl">
       <div className="w-[320px] h-full min-h-screen flex flex-grow flex-col bg-secondary rounded-xl pr-2">
         {/* Header */}
-        <div className="p-4 border-b border-zinc-700">
+        <div className="p-4 border-b dark:border-b-zinc-700 border-b-zinc-300">
           <div className="flex items-center gap-3 mb-4">
             <Avatar className="w-12 h-12">
               <AvatarImage
@@ -91,7 +91,7 @@ export default function ChatSidebar({
               />
 
               <AvatarFallback className="bg-blue-400 text-white border-2 border-blue-300 dark:border-secondary">
-                {conversation?.isGroup ? conversation?.name : user2?.name[0]}
+                {conversation?.isGroup ? conversation?.name[0] : user2?.name[0]}
               </AvatarFallback>
             </Avatar>
             <div>
@@ -107,21 +107,21 @@ export default function ChatSidebar({
             <Button
               variant="ghost"
               size="icon"
-              className="rounded-full bg-primary-foreground dark:hover:bg-zinc-700"
+              className="rounded-full bg-primary-foreground dark:hover:bg-zinc-700 border"
             >
-              <Bell className="h-5 w-5" />
+              <Bell className="h-4 w-4" />
             </Button>
             <Button
               variant="ghost"
               size="icon"
-              className="rounded-full bg-primary-foreground dark:hover:bg-zinc-700"
+              className="rounded-full bg-primary-foreground dark:hover:bg-zinc-700 border"
             >
-              <Search className="h-5 w-5" />
+              <Search className="h-4 w-4" />
             </Button>
           </div>
         </div>
         {/* Chat Info Section */}
-        <div className="border-b border-zinc-700">
+        <div className="border-b dark:border-b-zinc-700 border-b-zinc-300">
           <Button
             variant="ghost"
             className="w-full px-4 py-3 flex items-center justify-between"
@@ -137,10 +137,10 @@ export default function ChatSidebar({
           {sections.info && (
             <div className="px-4 py-2">
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogTrigger>
+                <DialogTrigger className="w-full">
                   <Button
                     variant="ghost"
-                    className="w-full justify-start text-slate-600 dark:text-slate-300 hover:bg-zinc-700"
+                    className="w-full justify-start text-slate-600 dark:text-slate-300 dark:hover:bg-zinc-700 hover:bg-white"
                   >
                     <Pin className="w-4 h-4 mr-3" />
                     Xem tin nhắn đã ghim
@@ -156,7 +156,7 @@ export default function ChatSidebar({
         </div>
 
         {/* Customize Section */}
-        <div className="border-b border-zinc-700">
+        <div className="border-b dark:border-b-zinc-700 border-b-zinc-300">
           <Button
             variant="ghost"
             className="w-full px-4 py-3 flex items-center justify-between"
@@ -175,14 +175,14 @@ export default function ChatSidebar({
                 <>
                   <Button
                     variant="ghost"
-                    className="w-full justify-start text-slate-600 dark:text-slate-300 hover:bg-zinc-700"
+                    className="w-full justify-start text-slate-600 dark:text-slate-300 dark:hover:bg-zinc-700 hover:bg-white"
                   >
                     <PenSquare className="w-4 h-4 mr-3" />
                     Đổi tên đoạn chat
                   </Button>
                   <Button
                     variant="ghost"
-                    className="w-full justify-start text-slate-600 dark:text-slate-300 hover:bg-zinc-700"
+                    className="w-full justify-start text-slate-600 dark:text-slate-300 dark:hover:bg-zinc-700 hover:bg-white"
                   >
                     <ImageIcon className="w-4 h-4 mr-3" />
                     Thay đổi ảnh
@@ -192,14 +192,14 @@ export default function ChatSidebar({
               <Button
                 onClick={() => setIsThemeDialogOpen(true)}
                 variant="ghost"
-                className="w-full justify-start text-slate-600 dark:text-slate-300 hover:bg-zinc-700"
+                className="w-full justify-start text-slate-600 dark:text-slate-300 dark:hover:bg-zinc-700 hover:bg-white"
               >
                 <Palette className="w-4 h-4 mr-3" />
                 Đổi chủ đề
               </Button>
               <Button
                 variant="ghost"
-                className="w-full justify-start text-slate-600 dark:text-slate-300 hover:bg-zinc-700"
+                className="w-full justify-start text-slate-600 dark:text-slate-300 dark:hover:bg-zinc-700 hover:bg-white"
               >
                 <Smile className="w-4 h-4 mr-3" />
                 Thay đổi biểu tượng cảm xúc
@@ -209,7 +209,7 @@ export default function ChatSidebar({
         </div>
 
         {conversation?.isGroup && (
-          <div className="border-b border-zinc-700">
+          <div className="border-b dark:border-b-zinc-700 border-b-zinc-300">
             <Button
               variant="ghost"
               className="w-full px-4 py-3 flex items-center justify-between"
@@ -239,7 +239,7 @@ export default function ChatSidebar({
 
                         <AvatarFallback className="bg-blue-400 border-2 border-blue-300 dark:border-secondary">
                           {conversation?.isGroup
-                            ? member?.name
+                            ? member?.name[0]
                             : user2?.name[0]}
                         </AvatarFallback>
                       </Avatar>
@@ -263,7 +263,7 @@ export default function ChatSidebar({
                 ))}
                 <Button
                   variant="ghost"
-                  className="w-full justify-start text-slate-600 dark:text-slate-300 hover:bg-zinc-700"
+                  className="w-full justify-start text-slate-600 dark:text-slate-300 dark:hover:bg-zinc-700 hover:bg-white"
                 >
                   <Users className="w-4 h-4 mr-3" />
                   Thêm người
@@ -274,7 +274,7 @@ export default function ChatSidebar({
         )}
 
         {/* Files Section */}
-        <div className="border-b border-zinc-700">
+        <div className="border-b dark:border-b-zinc-700 border-b-zinc-300">
           <Button
             variant="ghost"
             className="w-full px-4 py-3 flex items-center justify-between"
@@ -291,7 +291,7 @@ export default function ChatSidebar({
             <div className="px-4 py-2 space-y-1">
               <Button
                 variant="ghost"
-                className="w-full justify-start text-slate-600 dark:text-slate-300 hover:bg-zinc-700"
+                className="w-full justify-start text-slate-600 dark:text-slate-300 dark:hover:bg-zinc-700 hover:bg-white"
                 onClick={() => setShowFileSideBar(true)}
               >
                 <ImageIcon className="w-4 h-4 mr-3" />
@@ -299,7 +299,7 @@ export default function ChatSidebar({
               </Button>
               <Button
                 variant="ghost"
-                className="w-full justify-start text-slate-600 dark:text-slate-300 hover:bg-zinc-700"
+                className="w-full justify-start text-slate-600 dark:text-slate-300 dark:hover:bg-zinc-700 hover:bg-white"
                 onClick={() => setShowFileSideBar(true)}
               >
                 <FileIcon className="w-4 h-4 mr-3" />
@@ -307,7 +307,7 @@ export default function ChatSidebar({
               </Button>
               <Button
                 variant="ghost"
-                className="w-full justify-start text-slate-600 dark:text-slate-300 hover:bg-zinc-700"
+                className="w-full justify-start text-slate-600 dark:text-slate-300 dark:hover:bg-zinc-700 hover:bg-white"
                 onClick={() => setShowFileSideBar(true)}
               >
                 <Link2 className="w-4 h-4 mr-3" />
@@ -335,7 +335,7 @@ export default function ChatSidebar({
             <div className="px-4 py-2 space-y-1">
               <Button
                 variant="ghost"
-                className="w-full justify-start text-slate-600 dark:text-slate-300 hover:bg-zinc-700"
+                className="w-full justify-start text-slate-600 dark:text-slate-300 dark:hover:bg-zinc-700 hover:bg-white"
               >
                 <BellOff className="w-4 h-4 mr-3" />
                 <div className="flex flex-col items-start">
@@ -345,7 +345,7 @@ export default function ChatSidebar({
               </Button>
               <Button
                 variant="ghost"
-                className="w-full justify-start text-slate-600 dark:text-slate-300 hover:bg-zinc-700"
+                className="w-full justify-start text-slate-600 dark:text-slate-300 dark:hover:bg-zinc-700 hover:bg-white"
               >
                 <Flag className="w-4 h-4 mr-3" />
                 <div className="flex flex-col items-start">
@@ -358,7 +358,7 @@ export default function ChatSidebar({
               {conversation?.isGroup && (
                 <Button
                   variant="ghost"
-                  className="w-full justify-start text-red-500 hover:bg-zinc-700"
+                  className="w-full justify-start text-red-500 dark:hover:bg-zinc-700 hover:bg-white"
                 >
                   <LogOut className="w-4 h-4 mr-3" />
                   Rời nhóm

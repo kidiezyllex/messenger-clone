@@ -127,7 +127,7 @@ export function CreateGroupDialog({
                   alt="Selected image"
                   width={100}
                   height={100}
-                  className="rounded-lg"
+                  className="rounded-full"
                   quality={70}
                 />
               ) : (
@@ -164,7 +164,7 @@ export function CreateGroupDialog({
               filteredUsers.map((user) => (
                 <div
                   key={user.id}
-                  className="dark:bg-zinc-700 dark:hover:bg-zinc-700 bg-background flex items-center gap-3 p-4 rounded-md cursor-pointer mb-2"
+                  className="dark:bg-zinc-700 dark:hover:bg-zinc-700 bg-secondary border flex items-center gap-3 p-4 rounded-md cursor-pointer mb-2"
                 >
                   <Checkbox
                     id={user.id}
@@ -197,14 +197,14 @@ export function CreateGroupDialog({
           </ScrollArea>
           {userIdList.length > 0 && (
             <div>
-              <h3 className="font-semibold mb-2">Đã chọn:</h3>
+              <h3 className="font-semibold mb-2 text-slate-600 dark:text-slate-300">Đã chọn:</h3>
               <div className="flex flex-wrap gap-2">
                 {userIdList.map((id) => {
                   const user = users.find((u) => u.id === id);
                   return user ? (
                     <div
                       key={id}
-                      className="dark:bg-zinc-700 dark:hover:bg-zinc-700 bg-background text-primary-foreground rounded-full p-1 text-sm flex flex-row items-center gap-2"
+                      className="dark:bg-zinc-700 dark:hover:bg-zinc-700 bg-secondary border text-primary-foreground rounded-full p-1 text-sm flex flex-row items-center gap-2"
                     >
                       <Avatar className="w-9 h-9">
                         <AvatarImage src={user?.image} />

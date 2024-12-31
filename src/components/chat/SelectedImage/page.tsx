@@ -11,7 +11,7 @@ export default function SelectedImage({
   setSelectedImage: (val: any) => void;
 }) {
   return (
-    <div className="relative mb-2 dark:bg-zinc-700 p-4 rounded-lg">
+    <div className="relative mb-2 dark:bg-zinc-700 p-4 rounded-lg bg-secondary border">
       <Image
         src={URL.createObjectURL(selectedImage)}
         alt="Selected image"

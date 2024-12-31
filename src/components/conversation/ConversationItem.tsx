@@ -46,8 +46,10 @@ export function ConversationItem({
   }, [lastMessage]);
   const renderLatestMessage = () => {
     if (messages?.senderId === userId) {
-      if (messages?.image) return "Bạn: Đã gửi 1 ảnh";
+      if (messages?.image && messages?.type==="image") return "Bạn: Đã gửi 1 ảnh";
       else if (messages?.type === "call") return "Bạn: Đã gọi đến...";
+      else if (messages?.type === "file") return "Bạn: Đã gửi 1 file";
+      else if (messages?.type === "sticker") return "Bạn: Đã gửi sticker";
       else
         return `Bạn: ${
           messages?.text?.length > 20
@@ -55,10 +57,14 @@ export function ConversationItem({
             : messages?.text
         }`;
     } else {
-      if (messages?.image)
+      if (messages?.image && messages?.type==="image")
         return `${getLastName(messages?.sender?.name)}: Đã gửi 1 ảnh`;
       else if (messages?.type === "call")
         return `${getLastName(messages?.sender?.name)}: Đã gọi đến...`;
+      else if (messages?.type === "file") 
+        return `${getLastName(messages?.sender?.name)}: Đã gửi 1 file`;
+      else if (messages?.type === "sticker") 
+        return `${getLastName(messages?.sender?.name)}: Đã gửi sticker`;
       else return `${getLastName(messages?.sender?.name)}: ${messages?.text}`;
     }
   };
@@ -82,7 +88,7 @@ export function ConversationItem({
           }
         />
         <AvatarFallback className="bg-blue-400 text-white border-2 border-blue-300 dark:border-secondary">
-          {conversation?.isGroup ? conversation?.name : conversation?.name[0]}
+          {conversation?.name[0]}
         </AvatarFallback>
       </Avatar>
       <div className="flex flex-col justify-between flex-1">
