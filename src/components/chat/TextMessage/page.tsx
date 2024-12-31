@@ -31,7 +31,7 @@ export function TextMessage({
   return (
     <div className="flex flex-col gap-2 relative">
       {replyText && (
-        <div className="flex flex-row gap-2 items-center text-sm text-zinc-600 dark:text-zinc-300 p-2 rounded-md bg-background dark:bg-zinc-900 italic">
+        <div className="flex flex-row gap-2 items-center text-sm text-zinc-600 dark:text-zinc-300 p-2 rounded-md dark:bg-zinc-900 italic border bg-secondary">
           <Quote className="h-4 w-4 text-zinc-600 dark:text-zinc-300 italic" />
           <p className="text-sm text-zinc-600 dark:text-zinc-300">
             {replyText}
