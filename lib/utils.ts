@@ -36,7 +36,7 @@ export const isWithinTwoMinutes = (
   const timeA = new Date(a).getTime();
   const timeB = new Date(b).getTime();
   const diff = Math.abs(timeA - timeB);
-  return diff < 2 * 60 * 1000;
+  return diff < 30 * 1000;
 };
 
 export const renderBackgroundTheme = (theme: any) => {

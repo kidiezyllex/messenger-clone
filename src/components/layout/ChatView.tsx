@@ -25,15 +25,15 @@ export function ChatView() {
   const { data: session, status } = useSession();
   const userId = (session?.user as any)?.id;
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatViewRef = useRef<HTMLDivElement>(null);
   const [expanded, setExpanded] = useState(false);
   const [loading, setLoading] = useState(false);
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
-  const { showFileSideBar, setMember } = useStore();
+  const { showFileSideBar, setMember, triggerMessage } = useStore();
   const fetchData = async () => {
     try {
-      setLoading(true);
       const res = await axios.get(`/api/conversations/${conversationId}`);
       const user2 = res.data.users.filter((item: any) => item.id !== userId);
       setConversation(res.data);
@@ -48,31 +48,51 @@ export function ChatView() {
   };
 
   useEffect(() => {
-    if (
-      conversationId !== "" &&
-      conversationId !== "user-suggested" &&
-      status === "authenticated"
-    ) {
+    if (conversationId !== "" && conversationId !== "user-suggested") {
+      setLoading(true);
       fetchData().then(() => {
         setTimeout(scrollToBottom, 0);
       });
       pusherClient.subscribe(conversationId);
       pusherClient.bind("message:new", (message: Message) => {
-        setMessages((current) => {
-          const updatedMessages = [...current, message];
-          setTimeout(scrollToBottom, 0);
-          return updatedMessages;
-        });
+        setMessages((current) => [...current, message]);
+        setTimeout(scrollToBottom, 0);
       });
       return () => {
         pusherClient.unsubscribe(conversationId);
         pusherClient.unbind("message:new");
       };
     }
-  }, [status, conversationId]);
+  }, [conversationId]);
 
+  useEffect(() => {
+    fetchData().then(() => {
+      setTimeout(scrollToBottom, 0);
+    });
+  }, [triggerMessage]);
+
+  const handleInsideClick = useCallback(
+    async (event: MouseEvent) => {
+      if (
+        chatViewRef.current &&
+        chatViewRef.current.contains(event.target as Node) &&
+        conversationId
+      ) {
+        const res = await axios.get(`/api/conversations/${conversationId}`);
+        setMessages(res.data.messages);
+      }
+    },
+    [conversationId]
+  );
+
+  useEffect(() => {
+    document.addEventListener("mouseup", handleInsideClick);
+    return () => {
+      document.removeEventListener("mouseup", handleInsideClick);
+    };
+  }, [handleInsideClick]);
   return (
-    <div className="flex gap-4 flex-1">
+    <div className="flex gap-4 flex-1" ref={chatViewRef}>
       <div className="flex h-full flex-col flex-grow bg-secondary rounded-xl ml-4 border">
         {loading ? (
           <Loading></Loading>
@@ -84,9 +104,10 @@ export function ChatView() {
               setExpanded={setExpanded}
               expanded={expanded}
             />
-            {conversation?.pinnedMessages.length !== 0 && (
-              <PinnedMessage></PinnedMessage>
-            )}
+            {!(
+              conversation?.pinnedMessages.length === 0 ||
+              conversation?.pinnedMessages === undefined
+            ) && <PinnedMessage></PinnedMessage>}
             <ScrollArea className="h-full">
               <div className={`p-4 space-y-4`}>
                 {messages.map((message) => (

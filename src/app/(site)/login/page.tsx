@@ -11,6 +11,7 @@ import { usePathname } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import useStore from "@/store/useStore";
 
 export default function LoginForm() {
   const { toast } = useToast();
@@ -21,6 +22,7 @@ export default function LoginForm() {
   const [trigger, setTrigger] = useState(false);
   const isHomePage = usePathname() === "/";
   const { data: session } = useSession();
+  const { setCurrentUserId } = useStore();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -57,6 +59,7 @@ export default function LoginForm() {
   };
   useEffect(() => {
     if (trigger) {
+      setCurrentUserId((session?.user as any)?.id);
       if ((session?.user as any)?.lastConversationId) {
         router.push(`/t/${(session?.user as any)?.lastConversationId}`);
       } else router.push("/t/user-suggested");

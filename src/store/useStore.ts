@@ -4,10 +4,11 @@ import { User } from "../../lib/entity-types";
 // Define the store state type
 type StoreState = {
   selectConversationId: string | null;
-  theme: string | null;
+  currentUserId: string | null;
   calling: boolean;
   showFileSideBar: boolean;
   member: User[];
+  triggerMessage: boolean;
 
   getSelectConversationId: () => string | null;
   setSelectConversationId: (id: string) => void;
@@ -15,8 +16,8 @@ type StoreState = {
   getCalling: () => boolean;
   setCalling: (status: boolean) => void;
 
-  getTheme: () => string | null;
-  setTheme: (id: string) => void;
+  getCurrentUserId: () => string | null;
+  setCurrentUserId: (id: string) => void;
 
   getShowFileSideBar: () => boolean;
   setShowFileSideBar: (val: boolean) => void;
@@ -25,15 +26,19 @@ type StoreState = {
   setMember: (members: User[]) => void;
   addMember: (member: User) => void;
   removeMember: (memberId: string) => void;
+
+  getTriggerMessage: () => boolean;
+  setTriggerMessage: (val: boolean) => void;
 };
 
 // Create the store
 const useStore = create<StoreState>((set, get) => ({
   selectConversationId: null,
-  theme: "",
+  currentUserId: "",
   calling: false,
   showFileSideBar: false,
   member: [],
+  triggerMessage: false,
 
   // Select Conversation ID methods
   getSelectConversationId: () => get().selectConversationId,
@@ -44,8 +49,8 @@ const useStore = create<StoreState>((set, get) => ({
   setCalling: (status: boolean) => set({ calling: status }),
 
   // Theme methods
-  getTheme: () => get().theme,
-  setTheme: (themeColor: string) => set({ theme: themeColor }),
+  getCurrentUserId: () => get().currentUserId,
+  setCurrentUserId: (id: string) => set({ currentUserId: id }),
 
   // File Sidebar methods
   getShowFileSideBar: () => get().showFileSideBar,
@@ -57,6 +62,10 @@ const useStore = create<StoreState>((set, get) => ({
   addMember: (member: User) => set({ member: [...get().member, member] }),
   removeMember: (memberId: string) =>
     set({ member: get().member.filter((m) => m.id !== memberId) }),
+
+  // Trigger Message methods
+  getTriggerMessage: () => get().triggerMessage,
+  setTriggerMessage: (val: boolean) => set({ triggerMessage: val }),
 }));
 
 export default useStore;

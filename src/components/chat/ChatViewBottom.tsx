@@ -21,6 +21,7 @@ import SelectedFile from "./SelectedFile/page";
 import { useChat } from "ai/react";
 import { renderBackgroundTheme } from "../../../lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import useStore from "@/store/useStore";
 
 export default function ChatViewBottom({
   conversationId,
@@ -37,6 +38,7 @@ export default function ChatViewBottom({
 }) {
   const [inputMessage, setInputMessage] = useState("");
   const [sending, setSending] = useState(false);
+  const { triggerMessage, setTriggerMessage } = useStore();
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isReplying, setIsReplying] = useState(false);
@@ -77,6 +79,7 @@ export default function ChatViewBottom({
   const handleSendMessage = async () => {
     if (inputMessage.trim() !== "" || selectedImage || selectedFile) {
       try {
+        setTriggerMessage(false);
         setSending(true);
         let imageUrl = "";
         let fileUrl = "";
@@ -107,6 +110,7 @@ export default function ChatViewBottom({
       } catch (error) {
         console.error(error);
       } finally {
+        setTriggerMessage(true);
         setInputMessage("");
         setSelectedImage(null);
         setSelectedFile(null);
@@ -218,8 +222,10 @@ export default function ChatViewBottom({
       {isReplying && (
         <div className="flex items-center justify-between p-2 rounded-lg mb-2">
           <div className="flex flex-col gap-1">
-            <p className="text-sm text-white font-semibold">Trả lời tin nhắn</p>
-            <p className="text-sm text-slate-600 dark:text-slate-300 truncate">
+            <p className="text-sm text-slate-600 dark:text-slate-300 font-semibold">
+              Trả lời tin nhắn
+            </p>
+            <p className="text-base text-slate-600 dark:text-slate-300 truncate">
               {replyMessage?.text}
             </p>
           </div>

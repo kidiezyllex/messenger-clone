@@ -9,7 +9,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "../ui/button";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { Conversation, Message, User } from "../../../lib/entity-types";
 import { useSession } from "next-auth/react";
@@ -19,10 +19,9 @@ import { usePathname, useRouter } from "next/navigation";
 import { CreateGroupDialog } from "../group/CreateGroupDialog";
 import useStore from "@/store/useStore";
 import { pusherClient } from "@/lib/pusher";
-import io, { Socket } from "socket.io-client";
 export function ConversationList() {
-  const [socket, setSocket] = useState<Socket | null>(null);
-  const { setSelectConversationId } = useStore();
+  const conversationListRef = useRef<HTMLDivElement>(null);
+  const { setSelectConversationId, triggerMessage } = useStore();
   const conversationId = usePathname().split("/")[2];
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [users, setUsers] = useState<User[]>([]);
@@ -33,20 +32,17 @@ export function ConversationList() {
   const userId = (session?.user as any)?.id;
   const router = useRouter();
   const [lastMessage, setLastMessage] = useState<Message>(null);
+
   const fetchData = async () => {
     const res = await axios.get(`/api/conversations/user/${userId}`);
-    setConversations(res.data);
     const res2 = await axios.get(`/api/users`);
     const users = res2.data.filter((item: any) => item.id !== userId);
+    setConversations(res.data);
     setUsers(users);
   };
 
   useEffect(() => {
-    if (
-      conversationId !== "" &&
-      conversationId !== "user-suggested" &&
-      status === "authenticated"
-    ) {
+    if (conversationId !== "" && conversationId !== "user-suggested") {
       fetchData();
       pusherClient.subscribe(conversationId);
       pusherClient.bind("message:new", (message: Message) => {
@@ -58,7 +54,7 @@ export function ConversationList() {
         pusherClient.unbind("message:new");
       };
     }
-  }, [status, conversationId]);
+  }, [triggerMessage, conversationId]);
 
   const handleCreateConversation = async (user: User) => {
     try {
@@ -80,9 +76,32 @@ export function ConversationList() {
   const filteredUsers = users.filter((user) =>
     user.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+  const handleInsideClick = useCallback(
+    async (event: MouseEvent) => {
+      if (
+        conversationListRef.current &&
+        !conversationListRef.current.contains(event.target as Node) &&
+        userId
+      ) {
+        const res = await axios.get(`/api/conversations/user/${userId}`);
+        setLastMessage(res.data[0]?.messages[0]);
+        setConversations(res.data);
+      }
+    },
+    [userId]
+  );
 
+  useEffect(() => {
+    document.addEventListener("mouseup", handleInsideClick);
+    return () => {
+      document.removeEventListener("mouseup", handleInsideClick);
+    };
+  }, [handleInsideClick]);
   return (
-    <div className="flex flex-col h-full w-[300px] sm:w-[320px] md:w-[350px] p-2 py-4 bg-secondary rounded-xl gap-3 border ">
+    <div
+      ref={conversationListRef}
+      className="flex flex-col h-full w-[300px] sm:w-[320px] md:w-[350px] p-2 py-4 bg-secondary rounded-xl gap-3 border "
+    >
       <div className="flex flex-col mx-2 gap-2">
         <h1 className="text-lg font-bold text-zinc-600 dark:text-zinc-300">
           {isSearchMode ? "Tìm kiếm người dùng" : "Đoạn chat"}

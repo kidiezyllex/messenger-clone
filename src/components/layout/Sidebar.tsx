@@ -43,7 +43,6 @@ export function Sidebar() {
   const sidebarRef = useRef<HTMLDivElement>(null);
   const { data: session, status } = useSession();
   const router = useRouter();
-
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
       if (

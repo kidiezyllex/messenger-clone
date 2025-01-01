@@ -30,14 +30,14 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <main className="flex flex-col min-h-screen bg-secondary">
-            <div className="max-w-[1920px] w-full flex items-center min-h-screen">
-              <AuthContext>
+          <AuthContext>
+            <main className="flex flex-col min-h-screen bg-secondary">
+              <div className="max-w-[1920px] w-full flex items-center min-h-screen">
                 <LoginForm></LoginForm>
                 {children}
-              </AuthContext>
-            </div>
-          </main>
+              </div>
+            </main>
+          </AuthContext>
           <Toaster />
         </ThemeProvider>
       </body>
