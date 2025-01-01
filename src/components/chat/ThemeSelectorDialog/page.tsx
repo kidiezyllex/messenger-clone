@@ -7,9 +7,6 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useTheme } from "next-themes";
-import useStore from "@/store/useStore";
-
 const themes = [
   { name: "Light", value: "light", color: "#FFFFFF" },
   { name: "Dark", value: "dark", color: "#1F2937" },
@@ -32,7 +29,6 @@ export function ThemeSelectorDialog({
   onClose,
 }: ThemeSelectorDialogProps) {
   const [selectedTheme, setSelectedTheme] = useState("light");
-  const { setTheme } = useStore();
   const handleSave = () => {
     // setTheme(selectedTheme);
     onClose();
