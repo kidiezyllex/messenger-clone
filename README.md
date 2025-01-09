@@ -1,5 +1,5 @@
 <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; margin: 0;">
-    <h1>Luscsenger <img src="https://res.cloudinary.com/drqbhj6ft/image/upload/v1736248592/learning-webdev-blog/portfolio/3_huctrt.jpg" alt="Luscsenger" height="26"></h1>
+    <h1>Luscsenger <img src="https://res.cloudinary.com/drqbhj6ft/image/upload/v1736248592/learning-webdev-blog/portfolio/3_huctrt.jpg" alt="Luscsenger" height="50"></h1>
 </div>
 
 [0. Accounts for Testing](#0-accounts-for-testing)
