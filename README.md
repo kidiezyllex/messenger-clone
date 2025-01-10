@@ -8,9 +8,8 @@
 [0. Accounts](#0-accounts)
 [1. Demo](#1-demo)
 [2. Tech Stack](#2-tech-stack)
-[3. API Document](#3-api-document)
-[4. Class Diagram](#4-class-diagram)
-[5. Run Project Locally](#5-run-project-locally)
+[3. Class Diagram](#3-class-diagram)
+[4. Run Project Locally](#4-run-project-locally)
 
 ### 0. Accounts
 
@@ -26,32 +25,52 @@
 - **Backend (API Routes)**: Next.js API Routes, TypeScript.
 - **ORM/class/Database GUI**: PostgreSQL, Prisma, AWS Neon Tech, Prisma Studio.
 
-### 3. API Document
-
-##### conversation:
-
-- `[GET] /api/conversations/user/${userId}`: Lấy tất cả conversation của 1 người dùng
-- `[POST] /api/conversations`: Tạo cuộc hội thoại mới hoặc tạo nhóm
-- `[PATCH] /api/conversations/${conversationId}`: Cập nhật tin nhắn được ghim
-
-##### friend-requests:
-
-- `[POST] /api/friend-requests/accept/ [Params:{ friendRequestId, userId }]`: Chấp nhận lời mời kết bạn
-- `[POST] /api/friend-requests/reject/ [Params:{ friendRequestId, userId }]`: Từ chối lời mời kết bạn
-- `[GET] /api/friend-requests/sent/${userId}`: Danh sách các yêu cầu kết bạn đã gửi
-- `[GET] /api/friend-requests/pending/${userId}`: Danh sách lời mời kết bạn
-
-### 4. Class Diagram
+### 3. Class Diagram
 
 ![](https://res.cloudinary.com/drqbhj6ft/image/upload/v1736512848/learning-webdev-blog/messenger/messenger-class-diagram_utzmza.png)
 
-### 5. Run Project Locally
+`User:`
+
+- User - Conversation (Many-to-many): Một người dùng có thể tham gia nhiều cuộc hội thoại, và một cuộc hội thoại có thể có nhiều người dùng.
+- User - Message (seenMessages) (Many-to-many): Một người dùng có thể xem nhiều tin nhắn, và một tin nhắn có thể được xem bởi nhiều người dùng.
+- User - Message (sentMessages) (One-to-many): Một người dùng có thể gửi nhiều tin nhắn, nhưng mỗi tin nhắn chỉ có một người gửi.
+- User - Conversation (groups) (One-to-many): Một người dùng có thể tạo nhiều nhóm hội thoại, nhưng mỗi nhóm chỉ có một người tạo.
+- User - Friend (One-to-many): Một người dùng có thể có nhiều bạn bè, nhưng mỗi quan hệ bạn bè chỉ liên kết với một người dùng.
+- User - FriendRequest (sentFriendRequests) (One-to-many): Một người dùng có thể gửi nhiều lời mời kết bạn, nhưng mỗi lời mời chỉ có một người gửi.
+- User - FriendRequest (receivedFriendRequests) (One-to-many): Một người dùng có thể nhận nhiều lời mời kết bạn, nhưng mỗi lời mời chỉ có một người nhận.
+
+`Conversation:`
+
+- Conversation - User (groupCreator) (Many-to-One): Nhiều cuộc hội thoại có thể có cùng một người tạo nhóm, nhưng mỗi cuộc hội thoại chỉ có một người tạo.
+- Conversation - User (users) (Many-to-many): Một cuộc hội thoại có thể có nhiều người dùng, và một người dùng có thể tham gia nhiều cuộc hội thoại.
+- Conversation - Message (pinnedMessages) (One-to-many): Một cuộc hội thoại có thể có nhiều tin nhắn được ghim, nhưng mỗi tin nhắn được ghim chỉ thuộc về một cuộc hội thoại.
+- Conversation - Message (messages) (One-to-many): Một cuộc hội thoại có thể có nhiều tin nhắn, nhưng mỗi tin nhắn chỉ thuộc về một cuộc hội thoại.
+
+`Message:`
+
+- Message - User (seen) (Many-to-many): Một tin nhắn có thể được xem bởi nhiều người dùng, và một người dùng có thể xem nhiều tin nhắn.
+- Message - Conversation (Many-to-One): Nhiều tin nhắn có thể thuộc về một cuộc hội thoại, nhưng mỗi tin nhắn chỉ nằm trong một cuộc hội thoại.
+- Message - Conversation (pinnedIn) (Many-to-One): Nhiều tin nhắn có thể được ghim trong một cuộc hội thoại, nhưng mỗi tin nhắn được ghim chỉ nằm trong một cuộc hội thoại.
+- Message - User (sender) (Many-to-One): Nhiều tin nhắn có thể được gửi bởi một người dùng, nhưng mỗi tin nhắn chỉ có một người gửi.
+- Message - Message (replyTo) (Many-to-One): Nhiều tin nhắn có thể là trả lời cho một tin nhắn, nhưng mỗi tin nhắn trả lời chỉ liên kết với một tin nhắn gốc.
+- Message - Message (replies) (One-to-many): Một tin nhắn có thể có nhiều tin nhắn trả lời, nhưng mỗi tin nhắn trả lời chỉ liên kết với một tin nhắn gốc.
+
+`Friend:`
+
+- Friend - User (Many-to-One): Nhiều mối quan hệ bạn bè có thể liên kết với một người dùng, nhưng mỗi mối quan hệ bạn bè chỉ giữa hai người dùng cụ thể.
+
+`FriendRequest:`
+
+- FriendRequest - User (sender) (Many-to-One): Nhiều lời mời kết bạn có thể được gửi bởi một người dùng, nhưng mỗi lời mời chỉ có một người gửi.
+- FriendRequest - User (receiver) (Many-to-One): Nhiều lời mời kết bạn có thể được nhận bởi một người dùng, nhưng mỗi lời mời chỉ có một người nhận.
+
+### 4. Run Project Locally
 
 1. Clone git
 
 ```
 git init
-git clone https://github.com/kidiezyllex/KLTN_FE.git
+git clone https://github.com/kidiezyllex/messenger-clone.git
 ```
 
 2. Install packages
