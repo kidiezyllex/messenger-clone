@@ -1,42 +1,37 @@
-<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; margin: 0;">
-    <h1>Luscsenger <img src="https://res.cloudinary.com/drqbhj6ft/image/upload/v1736248592/learning-webdev-blog/portfolio/3_huctrt.jpg" alt="Luscsenger" height="50"></h1>
-</div>
+<p align="center">
+  <picture>
+  <img src="https://res.cloudinary.com/drqbhj6ft/image/upload/v1736248592/learning-webdev-blog/portfolio/3_huctrt.jpg" height="100" alt="Logo for Luscsenger">
+</picture>
+</p>
+<h3 align="center">Luscsenger: A Real-time Calling & Texting Application</h3>
 
-[0. Accounts for Testing](#0-accounts-for-testing)
-[1. Features](#1-features)
+[0. Accounts](#0-accounts)
+[1. Demo](#1-demo)
 [2. Tech Stack](#2-tech-stack)
 [3. API Document](#3-api-document)
-[Database Diagram](#database-diagram)
-[Run Project](#run-project)
+[4. Class Diagram](#4-class-diagram)
+[5. Run Project Locally](#5-run-project-locally)
 
-### 0. Accounts for Testing
+### 0. Accounts
 
-- **email**: taikhoan1@gmail.com (taikhoan1 --> taikhoan10)
+- **email**: taikhoan1@gmail.com (taikhoan1 --> taikhoan12)
 
 - **password**: 1234567
 
-### 1. Features
+### 1. Demo
 
 ### 2. Tech Stack
-| **Technology**    | **Description**                                                                                                                   |
-| ----------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| **Next.js**       | Renders web pages and handles routing for the Front-End, while also supporting API Routes for the Back-End.                       |
-| **TypeScript**    | A strongly typed programming language that builds on JavaScript.                                                                  |
-| **Tailwind**      | A utility-first CSS library that supports dark mode and responsive design.                                                        |
-| **NextAuth**      | Provides authentication and authorization, manages login sessions, and supports Google and GitHub login.                          |
-| **Shadcn UI**     | A UI components library.                                                                                                          |
-| **Prisma**        | An ORM (Object-Relational Mapping) tool for automatically generating and managing database schemas, as well as executing queries. |
-| **PostgreSQL**    | A scalable and reliable database system.                                                                                          |
-| **AWS Neon Tech** | A serverless PostgreSQL hosting platform.                                                                                         |
-| **Pusher**        | Enables real-time messaging and manages user online/offline status.                                                               |
-| **Uploadthing**   | Handles file and image uploads and storage.                                                                                       |
-| **ZegoCloud**     | Supports 1-on-1 video calls and group video calls.                                                                                |
+
+- **Frontend**: Next.js, NextAuth.js, TypeScript, TailwindCSS, ShadCN/UI, Yet Another React Lightbox, Zustand, Pusher, Zegocloud, Uploadthing.
+- **Backend (API Routes)**: Next.js API Routes, TypeScript.
+- **ORM/class/Database GUI**: PostgreSQL, Prisma, AWS Neon Tech, Prisma Studio.
 
 ### 3. API Document
 
 ##### conversation:
 
 - `[GET] /api/conversations/user/${userId}`: Lấy tất cả conversation của 1 người dùng
+- `[POST] /api/conversations`: Tạo cuộc hội thoại mới hoặc tạo nhóm
 - `[PATCH] /api/conversations/${conversationId}`: Cập nhật tin nhắn được ghim
 
 ##### friend-requests:
@@ -46,9 +41,11 @@
 - `[GET] /api/friend-requests/sent/${userId}`: Danh sách các yêu cầu kết bạn đã gửi
 - `[GET] /api/friend-requests/pending/${userId}`: Danh sách lời mời kết bạn
 
-### Database Diagram
+### 4. Class Diagram
 
-### Run Project locally
+![](https://res.cloudinary.com/drqbhj6ft/image/upload/v1736512848/learning-webdev-blog/messenger/messenger-class-diagram_utzmza.png)
+
+### 5. Run Project Locally
 
 1. Clone git
 
