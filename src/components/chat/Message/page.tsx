@@ -223,7 +223,7 @@ export default function MessageCpn({
                 className="h-8 w-8 rounded-full hover:bg-primary-foreground"
                 onClick={() => handleReply(message)}
               >
-                <MessageCircleReply className="h-5 w-5 dark:text-slate-300 text-slate-600" />
+                <MessageCircleReply className="h-5 w-5 dark:text-slate-300 text-slate-600 flex-shrink-0" />
               </Button>
             </>
           )}

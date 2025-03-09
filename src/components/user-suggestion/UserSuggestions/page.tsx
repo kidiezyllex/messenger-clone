@@ -8,6 +8,8 @@ import { useSession } from "next-auth/react";
 import { useToast } from "@/hooks/use-toast";
 import Loading from "@/components/animation/Loading";
 import UserProfileDialog from "@/components/user/UserProfileDialog/page";
+import { Button as MuiButton } from "@mui/material";
+
 export default function UserSuggestions() {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
@@ -16,8 +18,8 @@ export default function UserSuggestions() {
   const { data: session, status } = useSession();
   const { toast } = useToast();
   const userId = (session?.user as any)?.id;
-  const fecthData = async () => {
-    setLoading(true);
+  const fecthData = async (showLoading = true) => {
+    if (showLoading) setLoading(true);
     // Lấy danh sách Id yêu cầu kết bạn
     const res = await axios.get(`/api/friend-requests/sent/${userId}`);
     const receiverIds = res.data.map((item: any) => item.id);
@@ -34,7 +36,7 @@ export default function UserSuggestions() {
         return item;
     });
     setUsers(users);
-    setLoading(false);
+    if (showLoading) setLoading(false);
   };
   useEffect(() => {
     if (status === "authenticated") {
@@ -56,7 +58,7 @@ export default function UserSuggestions() {
           title: "Thành công!",
           description: "Đã gửi lời mời kết bạn!",
         });
-        fecthData();
+        fecthData(false);
       }
     } catch (err) {
       toast({
@@ -78,7 +80,7 @@ export default function UserSuggestions() {
         {users.map((user, index) => (
           <div
             key={index + user.id}
-            className="border dark:bg-zinc-700 dark:hover:bg-zinc-700 bg-background flex items-center gap-3 p-4 rounded-md cursor-pointer flex-grow"
+            className="border dark:bg-zinc-700/20 dark:hover:bg-zinc-700 bg-background flex items-center gap-3 p-4 rounded-md cursor-pointer flex-grow"
           >
             <Avatar
               className="w-11 h-11 cursor-pointer"
@@ -88,22 +90,36 @@ export default function UserSuggestions() {
               }}
             >
               <AvatarImage src={user?.image} />
-              <AvatarFallback className="bg-blue-400 text-slate-600 dark:text-slate-300 border-2 border-blue-300 dark:border-secondary">
-                {user?.name[0]}
+              <AvatarFallback className="bg-gradient-to-r from-blue-400 to-purple-500 text-slate-600 dark:text-slate-300 border-2 border-blue-300 dark:border-secondary text-sm">
+                {user?.name[0].toUpperCase() + user?.name[1].toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <p className="font-semibold text-sm flex-grow text-slate-600 dark:text-slate-300" onClick={() => {
                 setSelectedUser(user);
                 setOpen(true);
               }}>
-              {user?.name}
+              {user?.name && user.name.length > 15 
+                ? `${user.name.substring(0, 15)}...` 
+                : user?.name}
             </p>
-            <Button
+            <MuiButton
+              className="flex-shrink-0 text-xs px-5"
               onClick={() => handleSendFriendRequest(userId, user?.id)}
-              className="bg-blue-400 hover:bg-blue-400 text-white border-2 border-blue-300 hover:border-blue-300 dark:border-secondary"
+              variant="contained"
+              color="primary"
+              sx={{
+                backgroundColor: '#60a5fa',
+                '&:hover': {
+                  backgroundColor: '#3b82f6',
+                },
+                color: 'white',
+                textTransform: 'none',
+                fontWeight: 500,
+                fontSize: '12px',
+              }}
             >
               Kết bạn
-            </Button>
+            </MuiButton>
           </div>
         ))}
         <UserProfileDialog

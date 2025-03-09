@@ -10,7 +10,7 @@ import axios from "axios";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import Loading from "@/components/animation/Loading";
 import { ConversationItem } from "@/components/conversation/ConversationItem";
-import { Button } from "@/components/ui/button";
+import Button from "@mui/material/Button";
 import useStore from "@/store/useStore";
 
 export function ForwardDialog({
@@ -96,10 +96,23 @@ export function ForwardDialog({
                   conversation={conversation}
                   lastMessage={undefined}
                   index={0}
+                  isForward={true}
                 ></ConversationItem>
                 <Button
+                 className="flex-shrink-0"
                   onClick={() => handleSendMessage(conversation?.id)}
-                  className="flex flex-row gap-2 bg-blue-400 hover:bg-blue-400 text-white border-2 border-blue-300 hover:border-blue-300 dark:border-secondary"
+                  variant="contained"
+                  color="primary"
+                  sx={{
+                    backgroundColor: '#60a5fa',
+                    '&:hover': {
+                      backgroundColor: '#3b82f6',
+                    },
+                    color: 'white',
+                    textTransform: 'none',
+                    fontWeight: 500,
+                    fontSize: '12px',
+                  }}
                 >
                   {isSending.val && isSending.id === conversation?.id ? (
                     <>

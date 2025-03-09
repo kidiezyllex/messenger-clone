@@ -32,10 +32,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const navItems = [
-  { icon: MessageCircle, label: "Đoạn chat" },
-  { icon: Store, label: "Marketplace" },
-  { icon: MessageCircleMore, label: "Tin nhắn đang chờ" },
-  { icon: Archive, label: "Kho lưu trữ" },
+  { icon: MessageCircle, label: "Đoạn chat", id: "conversation" },
+  { icon: Store, label: "Marketplace", id: "marketplace" },
+  { icon: MessageCircleMore, label: "Tin nhắn đang chờ", id: "pending-messages" },
+  { icon: Archive, label: "Kho lưu trữ", id: "archive" },
 ];
 
 export function Sidebar() {
@@ -73,6 +73,13 @@ export function Sidebar() {
 
   if (!session && status === "unauthenticated") router.push("/");
 
+  const handleNavItemClick = (id: string) => {
+    if (id === "conversation" && session?.user) {
+      router.push(`/t/${(session.user as any)?.lastConversationId}`);
+    }
+    // Có thể thêm xử lý cho các mục khác ở đây
+  };
+
   return (
     <div
       ref={sidebarRef}
@@ -83,8 +90,8 @@ export function Sidebar() {
     >
       <div className="space-y-3 mr-4">
         {navItems.map((item, index) => (
-          <TooltipProvider key={index}>
-            <Tooltip key={item.label} delayDuration={0}>
+          <TooltipProvider key={item.id}>
+            <Tooltip key={item.id} delayDuration={0}>
               <TooltipTrigger asChild>
                 <Button
                   size="icon"
@@ -93,6 +100,7 @@ export function Sidebar() {
                     !expanded &&
                       "px-0 justify-center items-center dark:bg-background"
                   )}
+                  onClick={() => handleNavItemClick(item.id)}
                 >
                   <item.icon className="h-5 w-5 dark:text-slate-300" />
                   {expanded && (

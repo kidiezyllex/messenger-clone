@@ -5,7 +5,6 @@ import { useSession } from "next-auth/react";
 import axios from "axios";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import { Conversation, Message, User } from "../../../lib/entity-types";
-import { pusherClient } from "@/lib/pusher";
 import ChatViewTop from "../chat/ChatViewTop";
 import MessageCpn from "../chat/Message/page";
 import ChatViewBottom from "../chat/ChatViewBottom";
@@ -15,6 +14,7 @@ import { usePathname } from "next/navigation";
 import useStore from "@/store/useStore";
 import FileSidebar from "../chat/FileSideBar/FileSideBar";
 import Loading from "../animation/Loading";
+import useMessageStore from "../../../store/useMessageStore";
 
 export function ChatView() {
   const conversationId = usePathname().split("/")[2];
@@ -31,6 +31,7 @@ export function ChatView() {
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
+  const { newMessage } = useMessageStore();
   const { showFileSideBar, setMember, triggerMessage } = useStore();
   const fetchData = async () => {
     try {
@@ -53,17 +54,15 @@ export function ChatView() {
       fetchData().then(() => {
         setTimeout(scrollToBottom, 0);
       });
-      pusherClient.subscribe(conversationId);
-      pusherClient.bind("message:new", (message: Message) => {
-        setMessages((current) => [...current, message]);
-        setTimeout(scrollToBottom, 0);
-      });
-      return () => {
-        pusherClient.unsubscribe(conversationId);
-        pusherClient.unbind("message:new");
-      };
     }
   }, [conversationId]);
+
+  useEffect(() => {
+    if (newMessage && messages.findIndex(m => m.id === newMessage.id) === -1) {
+      setMessages((current) => [...current, newMessage]);
+      setTimeout(scrollToBottom, 0);
+    }
+  }, [newMessage]);
 
   useEffect(() => {
     fetchData().then(() => {
@@ -92,7 +91,7 @@ export function ChatView() {
     };
   }, [handleInsideClick]);
   return (
-    <div className="flex gap-4 flex-1" ref={chatViewRef}>
+    <div className="flex gap-4 flex-1 h-full overflow-hidden" ref={chatViewRef}>
       <div className="flex h-full flex-col flex-grow bg-secondary rounded-xl ml-4 border">
         {loading ? (
           <Loading></Loading>
@@ -108,7 +107,7 @@ export function ChatView() {
               conversation?.pinnedMessages.length === 0 ||
               conversation?.pinnedMessages === undefined
             ) && <PinnedMessage></PinnedMessage>}
-            <ScrollArea className="h-full">
+            <ScrollArea className="flex-1 overflow-auto">
               <div className={`p-4 space-y-4`}>
                 {messages.map((message) => (
                   <MessageCpn

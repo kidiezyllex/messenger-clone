@@ -2,15 +2,16 @@ import React, { useState, useEffect, useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { MoreVertical, Phone, Video } from "lucide-react";
-import { Conversation, Message, User } from "../../../lib/entity-types";
+import { Conversation, User } from "../../../lib/entity-types";
 import VideoCall from "./VideoCallDialog/page";
 import { Dialog, DialogContent, DialogTitle } from "../ui/dialog";
-import { pusherClient } from "@/lib/pusher";
 import { usePathname } from "next/navigation";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useToast } from "@/hooks/use-toast";
 import { getLastName, renderBackgroundTheme } from "../../../lib/utils";
+import UserProfileDialog from "../user/UserProfileDialog/page";
+import useMessageStore from "../../../store/useMessageStore";
 
 export default function ChatViewTop({
   conversation,
@@ -24,13 +25,17 @@ export default function ChatViewTop({
   expanded: boolean;
 }) {
   const [isVideoCallActive, setIsVideoCallActive] = useState(false);
+  const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
   const pathname = usePathname();
   const conversationId = pathname.split("/")[2];
   const { data: session } = useSession();
-  const pusherInitialized = useRef(false);
   const { toast } = useToast();
   const toggleVideoCall = () => {
     setIsVideoCallActive(!isVideoCallActive);
+  };
+  const { newMessage } = useMessageStore();
+  const toggleProfileDialog = () => {
+    setIsProfileDialogOpen(!isProfileDialogOpen);
   };
 
   const initiateVideoCall = async () => {
@@ -57,22 +62,11 @@ export default function ChatViewTop({
   };
 
   useEffect(() => {
-    if (status === "authenticated") {
-      pusherClient.subscribe(conversationId);
-      pusherClient.bind("message:new", (message: Message) => {
-        if (message?.conversationId === conversationId) {
-          toggleVideoCall();
-        }
-      });
+    if ( newMessage?.type === "call" && newMessage?.conversationId === conversationId) {
+      toggleVideoCall();
     }
-    return () => {
-      if (pusherInitialized.current) {
-        pusherClient.unsubscribe(conversationId);
-        pusherClient.unbind("message:new");
-        pusherInitialized.current = false;
-      }
-    };
-  }, [conversationId]);
+  }, [newMessage, conversationId]);
+
   return (
     <>
       {conversation?.name || user2?.name ? (
@@ -80,7 +74,7 @@ export default function ChatViewTop({
           className={`flex items-center justify-between p-3 border-b dark:border-b-zinc-700 border-b-zinc-300 rounded-tl-xl rounded-tr-xl bg-background dark:bg-secondary`}
         >
           <div className={`flex items-center gap-3`}>
-            <Avatar className="w-11 h-11">
+            <Avatar className="w-11 h-11 cursor-pointer" onClick={toggleProfileDialog}>
               <AvatarImage
                 src={
                   conversation?.isGroup
@@ -147,6 +141,11 @@ export default function ChatViewTop({
           />
         </DialogContent>
       </Dialog>
+      <UserProfileDialog
+        user={user2}
+        open={isProfileDialogOpen}
+        setOpen={setIsProfileDialogOpen}
+      />
     </>
   );
 }

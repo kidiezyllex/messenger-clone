@@ -26,10 +26,12 @@ export function ConversationItem({
   conversation,
   lastMessage,
   index,
+  isForward = false,
 }: {
   conversation: Conversation;
   lastMessage: Message;
   index: number;
+  isForward?: boolean;
 }) {
   const { setSelectConversationId } = useStore();
   const [messages, setMessages] = useState<Message>(
@@ -71,13 +73,17 @@ export function ConversationItem({
   return (
     <div
       onClick={() => {
-        window.history.pushState(null, "", `/t/${conversation.id}`);
-        setSelectConversationId(conversation.id);
+        if (!isForward) {
+          window.history.pushState(null, "", `/t/${conversation.id}`);
+          setSelectConversationId(conversation.id);
+        }
       }}
       key={conversation.id}
       className={
-        conversationId === conversation?.id
+        conversationId === conversation?.id && !isForward
           ? "border dark:bg-zinc-700 dark:hover:bg-zinc-700 bg-background flex items-center gap-3 p-4 rounded-md cursor-pointer flex-grow"
+          : isForward
+          ? "flex items-center gap-3 p-4 rounded-lg flex-grow"
           : "dark:hover:bg-zinc-700 flex items-center gap-3 p-4 rounded-lg cursor-pointer flex-grow"
       }
     >
@@ -104,42 +110,44 @@ export function ConversationItem({
           {messages ? renderLatestMessage() : "(Chưa có tin nhắn)"}
         </p>
       </div>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <div
-            className="h-8 w-8 rounded-full hover:bg-background pointer-events-auto flex flex-row justify-center items-center"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <EllipsisVertical className="h-4 w-4" />
-          </div>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-64 bg-background dark:bg-zinc-900 dark:text-slate-300 text-slate-600">
-          <DropdownMenuItem className="p-2">
-            <MailCheck className="h-4 w-4" />
-            <span className="font-semibold text-sm">Đánh dấu là đã đọc</span>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem className="p-2">
-            <BellRing className="h-4 w-4" />
-            <span className="font-semibold text-sm ">Bật thông báo</span>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem className="p-2">
-            <PhoneCall className="h-4 w-4" />
-            <span className="font-semibold text-sm">Gọi thoại</span>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem className="p-2">
-            <Video className="h-4 w-4" />
-            <span className="font-semibold text-sm">Chat video</span>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem className="p-2">
-            <Ban className="h-4 w-4" />
-            <span className="font-semibold text-sm">Chặn người dùng</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      {!isForward && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <div
+              className="h-8 w-8 rounded-full hover:bg-background pointer-events-auto flex flex-row justify-center items-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <EllipsisVertical className="h-4 w-4" />
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-64 bg-background dark:bg-zinc-900 dark:text-slate-300 text-slate-600">
+            <DropdownMenuItem className="p-2">
+              <MailCheck className="h-4 w-4" />
+              <span className="font-semibold text-sm">Đánh dấu là đã đọc</span>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="p-2">
+              <BellRing className="h-4 w-4" />
+              <span className="font-semibold text-sm ">Bật thông báo</span>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="p-2">
+              <PhoneCall className="h-4 w-4" />
+              <span className="font-semibold text-sm">Gọi thoại</span>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="p-2">
+              <Video className="h-4 w-4" />
+              <span className="font-semibold text-sm">Chat video</span>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="p-2">
+              <Ban className="h-4 w-4" />
+              <span className="font-semibold text-sm">Chặn người dùng</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
     </div>
   );
 }

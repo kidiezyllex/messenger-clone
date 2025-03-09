@@ -10,6 +10,7 @@ import { MessageCircleMore } from "lucide-react";
 import { useRouter } from "next/navigation";
 import UserProfileDialog from "@/components/user/UserProfileDialog/page";
 import useStore from "@/store/useStore";
+import { Button as MuiButton } from "@mui/material";
 export default function FriendList() {
   const [open, setOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User>();
@@ -54,7 +55,7 @@ export default function FriendList() {
     <ScrollArea className={"rounded-md"}>
       <div
         className={
-          status === "loading" ? "hidden" : "flex flex-col gap-3 p-3 rounded-md"
+          status === "loading" ? "hidden" : "flex flex-col px-2 gap-2 rounded-md"
         }
       >
         {users.length === 0 ? (
@@ -68,18 +69,18 @@ export default function FriendList() {
           users.map((user, index) => (
             <div
               key={index + user.id}
-              className="border dark:bg-zinc-700 dark:hover:bg-zinc-700 bg-background flex items-center gap-3 p-4 rounded-md cursor-pointer flex-grow"
+              className="border dark:bg-zinc-700/20 dark:hover:bg-zinc-700 bg-background flex items-center gap-3 p-4 rounded-md cursor-pointer flex-grow"
             >
               <Avatar
-                className="w-11 h-11"
+                className="w-11 h-11 cursor-pointer"
                 onClick={() => {
                   setSelectedUser(user);
                   setOpen(true);
                 }}
               >
                 <AvatarImage src={user?.image} />
-                <AvatarFallback className="bg-blue-400 text-slate-600 dark:text-slate-300 border-2 border-blue-300 dark:border-secondary">
-                  {user?.name[0]}
+                <AvatarFallback className="bg-gradient-to-r from-blue-400 to-purple-500 text-slate-600 dark:text-slate-300 border-2 border-blue-300 dark:border-secondary text-sm">
+                  {user?.name[0].toUpperCase() + (user?.name[1] ? user?.name[1].toUpperCase() : '')}
                 </AvatarFallback>
               </Avatar>
               <p
@@ -89,15 +90,29 @@ export default function FriendList() {
                   setOpen(true);
                 }}
               >
-                {user?.name}
+                {user?.name && user.name.length > 15
+                  ? `${user.name.substring(0, 15)}...`
+                  : user?.name}
               </p>
-              <Button
+              <MuiButton
+                className="flex-shrink-0 text-xs px-5"
                 onClick={() => handleCreateConversation(user)}
-                className="flex flex-row gap-2 bg-blue-400 hover:bg-blue-400 text-white border-2 border-blue-300 hover:border-blue-300 dark:border-secondary"
+                variant="contained"
+                color="primary"
+                sx={{
+                  backgroundColor: '#60a5fa',
+                  '&:hover': {
+                    backgroundColor: '#3b82f6',
+                  },
+                  color: 'white',
+                  textTransform: 'none',
+                  fontWeight: 500,
+                  fontSize: '12px',
+                }}
               >
                 Nhắn tin
-                <MessageCircleMore className="h-4 w-4" />
-              </Button>
+                <MessageCircleMore className="ml-2 h-4 w-4" />
+              </MuiButton>
             </div>
           ))}
       </div>

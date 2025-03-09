@@ -397,4 +397,106 @@ export const stickers = [
       },
     ],
   },
+  {
+    id: "743df4e6c8a321fd78b2",
+    name: "Zapy Công Sở",
+    value: [
+      {
+          "id": "d063f44dc80821567819",
+          "url": "https://zalo-api.zadn.vn/api/emoticon/sticker/webpc?eid=50344&size=130&version=13"
+      },
+      {
+          "id": "a643836dbf2856760f39",
+          "url": "https://zalo-api.zadn.vn/api/emoticon/sticker/webpc?eid=50345&size=130&version=13"
+      },
+      {
+          "id": "7722510c6d498417dd58",
+          "url": "https://zalo-api.zadn.vn/api/emoticon/sticker/webpc?eid=50346&size=130&version=13"
+      },
+      {
+          "id": "fd81daafe6ea0fb456fb",
+          "url": "https://zalo-api.zadn.vn/api/emoticon/sticker/webpc?eid=50347&size=130&version=13"
+      },
+      {
+          "id": "7eb25e9c62d98b87d2c8",
+          "url": "https://zalo-api.zadn.vn/api/emoticon/sticker/webpc?eid=50348&size=130&version=13"
+      },
+      {
+          "id": "e136c018fc5d15034c4c",
+          "url": "https://zalo-api.zadn.vn/api/emoticon/sticker/webpc?eid=50349&size=130&version=13"
+      },
+      {
+          "id": "611743397f7c9622cf6d",
+          "url": "https://zalo-api.zadn.vn/api/emoticon/sticker/webpc?eid=50350&size=130&version=13"
+      },
+      {
+          "id": "095c2a721637ff69a626",
+          "url": "https://zalo-api.zadn.vn/api/emoticon/sticker/webpc?eid=50351&size=130&version=13"
+      },
+      {
+          "id": "98ffa4d1989471ca2885",
+          "url": "https://zalo-api.zadn.vn/api/emoticon/sticker/webpc?eid=50352&size=130&version=13"
+      },
+      {
+          "id": "7b31461f7a5a9304ca4b",
+          "url": "https://zalo-api.zadn.vn/api/emoticon/sticker/webpc?eid=50353&size=130&version=13"
+      },
+      {
+          "id": "34900abe36fbdfa586ea",
+          "url": "https://zalo-api.zadn.vn/api/emoticon/sticker/webpc?eid=50354&size=130&version=13"
+      },
+      {
+          "id": "64985bb667f38eadd7e2",
+          "url": "https://zalo-api.zadn.vn/api/emoticon/sticker/webpc?eid=50355&size=130&version=13"
+      },
+      {
+          "id": "c91bf135cd70242e7d61",
+          "url": "https://zalo-api.zadn.vn/api/emoticon/sticker/webpc?eid=50356&size=130&version=13"
+      },
+      {
+          "id": "c468fd46c103285d7112",
+          "url": "https://zalo-api.zadn.vn/api/emoticon/sticker/webpc?eid=50357&size=130&version=13"
+      },
+      {
+          "id": "ae05942ba86e4130187f",
+          "url": "https://zalo-api.zadn.vn/api/emoticon/sticker/webpc?eid=50358&size=130&version=13"
+      },
+      {
+          "id": "8fdbb4f588b061ee38a1",
+          "url": "https://zalo-api.zadn.vn/api/emoticon/sticker/webpc?eid=50359&size=130&version=13"
+      },
+      {
+          "id": "5d62694c5509bc57e518",
+          "url": "https://zalo-api.zadn.vn/api/emoticon/sticker/webpc?eid=50360&size=130&version=13"
+      },
+      {
+          "id": "8430b11e8d5b64053d4a",
+          "url": "https://zalo-api.zadn.vn/api/emoticon/sticker/webpc?eid=50361&size=130&version=13"
+      },
+      {
+          "id": "a4689246ae03475d1e12",
+          "url": "https://zalo-api.zadn.vn/api/emoticon/sticker/webpc?eid=50362&size=130&version=13"
+      },
+      {
+          "id": "0fcd38e304a6edf8b4b7",
+          "url": "https://zalo-api.zadn.vn/api/emoticon/sticker/webpc?eid=50363&size=130&version=13"
+      },
+      {
+          "id": "d1b2e19cddd934876dc8",
+          "url": "https://zalo-api.zadn.vn/api/emoticon/sticker/webpc?eid=50364&size=130&version=13"
+      },
+      {
+          "id": "528a63a45fe1b6bfeff0",
+          "url": "https://zalo-api.zadn.vn/api/emoticon/sticker/webpc?eid=50365&size=130&version=13"
+      },
+      {
+          "id": "0d1e3f300375ea2bb364",
+          "url": "https://zalo-api.zadn.vn/api/emoticon/sticker/webpc?eid=50366&size=130&version=13"
+      },
+      {
+          "id": "4fa37c8d40c8a996f0d9",
+          "url": "https://zalo-api.zadn.vn/api/emoticon/sticker/webpc?eid=50367&size=130&version=13"
+      }
+    ],
+  }
 ];

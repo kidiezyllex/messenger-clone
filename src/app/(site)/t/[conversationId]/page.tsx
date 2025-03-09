@@ -6,6 +6,12 @@ import { UserSuggestionList } from "@/components/layout/UserSuggestionList";
 import useStore from "@/store/useStore";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
+
 export default function ChatPage({
   params,
 }: {
@@ -21,10 +27,15 @@ export default function ChatPage({
       <Sidebar />
       {params.conversationId !== "user-suggested" &&
       selectConversationId !== "user-suggested" ? (
-        <>
-          <ConversationList />
-          <ChatView />
-        </>
+        <ResizablePanelGroup direction="horizontal" className="flex-1">
+          <ResizablePanel defaultSize={25} minSize={15} maxSize={40}>
+            <ConversationList />
+          </ResizablePanel>
+          <ResizableHandle withHandle />
+          <ResizablePanel defaultSize={75}>
+            <ChatView />
+          </ResizablePanel>
+        </ResizablePanelGroup>
       ) : (
         <UserSuggestionList />
       )}

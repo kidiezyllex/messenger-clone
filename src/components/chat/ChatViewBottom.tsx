@@ -7,11 +7,12 @@ import {
   ImageIcon,
   Send,
   SmilePlus,
-  Sticker,
   ThumbsUp,
   X,
+  Smile,
+  Sticker,
 } from "lucide-react";
-import { DropdownMenu, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import StickerBoard from "./StickerBoard/page";
 import { Input } from "../ui/input";
 import { Badge } from "../ui/badge";
@@ -52,6 +53,8 @@ export default function ChatViewBottom({
   const [filteredUsers, setFilteredUsers] = useState<User[]>(null);
   const [taggedUsers, setTaggedUsers] = useState<string[]>([]);
   const userListRef = useRef<HTMLDivElement>(null);
+  const [stickerOpen, setStickerOpen] = useState(false);
+
   useEffect(() => {
     if (replyMessage) {
       setIsReplying(true);
@@ -81,6 +84,7 @@ export default function ChatViewBottom({
       try {
         setTriggerMessage(false);
         setSending(true);
+        setStickerOpen(false);
         let imageUrl = "";
         let fileUrl = "";
         if (selectedImage) {
@@ -120,6 +124,7 @@ export default function ChatViewBottom({
         setShowUserList(false);
         setFilteredUsers(null);
         setTaggedUsers([]);
+        setStickerOpen(false);
       }
     }
   };
@@ -135,8 +140,20 @@ export default function ChatViewBottom({
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setSelectedFile(file);
-      setSelectedImage(null);
+      if (file.name.toLowerCase().endsWith('.txt')) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const content = event.target?.result as string;
+          const utf8Blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+          const utf8File = new File([utf8Blob], file.name, { type: 'text/plain;charset=utf-8' });
+          setSelectedFile(utf8File);
+          setSelectedImage(null);
+        };
+        reader.readAsText(file, 'UTF-8');
+      } else {
+        setSelectedFile(file);
+        setSelectedImage(null);
+      }
     }
   };
 
@@ -187,7 +204,6 @@ export default function ChatViewBottom({
           target: { value: newInput },
         } as React.ChangeEvent<HTMLInputElement>);
 
-        // Set cursor position after the inserted tag
         setTimeout(() => {
           if (inputRef.current) {
             const newCursorPosition = lastAtSymbol + userName.length + 2;
@@ -226,7 +242,9 @@ export default function ChatViewBottom({
               Trả lời tin nhắn
             </p>
             <p className="text-base text-slate-600 dark:text-slate-300 truncate">
-              {replyMessage?.text}
+              {replyMessage?.text && replyMessage.text.length > 100 
+                ? `${replyMessage.text.substring(0, 100)}...` 
+                : replyMessage?.text}
             </p>
           </div>
           <Button
@@ -302,23 +320,23 @@ export default function ChatViewBottom({
             accept=".txt,.mp4,.mov,.mp3,.wav,.pdf"
             className="hidden"
           />
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+          <Popover open={stickerOpen} onOpenChange={setStickerOpen}>
+            <PopoverTrigger asChild>
               <Button
-                size="icon"
-                variant="secondary"
                 className="hover:bg-primary-foreground rounded-full"
-              >
-                <Sticker className="h-5 w-5 text-blue-500 " />
+                variant="secondary" size="icon">
+                <Sticker className="h-5 w-5 text-blue-500" />
               </Button>
-            </DropdownMenuTrigger>
-            <StickerBoard
-              userId={userId}
-              conversationId={conversationId}
-              setSending={setSending}
-            ></StickerBoard>
-          </DropdownMenu>
+            </PopoverTrigger>
+            <PopoverContent className="p-0 border-none">
+              <StickerBoard
+                userId={userId}
+                conversationId={conversationId}
+                setSending={setSending}
+                setStickerOpen={setStickerOpen}
+              />
+            </PopoverContent>
+          </Popover>
         </div>
         <div className="flex gap-2 flex-grow relative px-1 bg-background rounded-full border mx-1">
           {taggedUsers.length > 0 && (
@@ -359,13 +377,42 @@ export default function ChatViewBottom({
             }}
             onKeyUp={handleKeyUp}
           />
-          <SmilePlus className="h-5 w-5 text-blue-500 absolute right-4 top-1/2 transform -translate-y-1/2" />
         </div>
         <Button
           size="icon"
           variant="secondary"
           className="hover:bg-primary-foreground rounded-full"
-          onClick={handleSendMessage}
+          onClick={inputMessage.trim() !== "" || selectedImage || selectedFile ?
+            handleSendMessage :
+            async () => {
+              try {
+                setTriggerMessage(false);
+                setSending(true);
+                await axios.post(`/api/messages`, {
+                  conversationId,
+                  content: "👍",
+                  senderId: userId,
+                  type: "text",
+                  replyMessageId: isReplying ? replyMessage?.id : "",
+                  replyText: isReplying ? replyMessage?.text : "",
+                  taggedUsers: [],
+                });
+              } catch (error) {
+                console.error(error);
+              } finally {
+                setTriggerMessage(true);
+                setInputMessage("");
+                setSelectedImage(null);
+                setSelectedFile(null);
+                setIsReplying(false);
+                setSending(false);
+                setShowUserList(false);
+                setFilteredUsers(null);
+                setTaggedUsers([]);
+                setStickerOpen(false);
+              }
+            }
+          }
         >
           {inputMessage.trim() !== "" || selectedImage || selectedFile ? (
             <Send className="h-5 w-5 text-blue-500" />

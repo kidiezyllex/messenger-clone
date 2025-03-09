@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Github, GithubIcon, Loader2, LogIn } from "lucide-react";
+import { Github, Loader2, LogIn, Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -19,9 +19,8 @@ export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [trigger, setTrigger] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const isHomePage = usePathname() === "/";
-  const { data: session } = useSession();
   const { setCurrentUserId } = useStore();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,24 +47,33 @@ export default function LoginForm() {
         toast({
           variant: "default",
           title: "Thành công!",
-          description: "Đăng nhập thành công. Chờ 1 xíu nhé!",
+          description: "Đăng nhập thành công!",
         });
-        setTrigger(true);
+        
+        try {
+          const userResponse = await fetch('/api/auth/session');
+          const userData = await userResponse.json();
+          if (userData?.user?.id) {
+            setCurrentUserId(userData.user.id);
+            if (userData.user.lastConversationId) {
+              router.push(`/t/${userData.user.lastConversationId}`);
+            } else {
+              router.push("/t/user-suggested");
+            }
+          } else {
+            router.push("/t/user-suggested");
+          }
+        } catch (error) {
+          console.error("Lỗi khi lấy thông tin người dùng:", error);
+          router.push("/t/user-suggested");
+        }
       }
     } catch (result: any) {
+      console.error("Lỗi đăng nhập:", result);
     } finally {
       setIsLoading(false);
     }
   };
-  useEffect(() => {
-    if (trigger) {
-      setCurrentUserId((session?.user as any)?.id);
-      if ((session?.user as any)?.lastConversationId) {
-        router.push(`/t/${(session?.user as any)?.lastConversationId}`);
-      } else router.push("/t/user-suggested");
-    }
-    setTrigger(false);
-  }, [trigger]);
 
   return isHomePage ? (
     <div className="w-full max-w-md mx-auto bg-primary-foreground border p-6 rounded-md h-fit flex flex-col gap-3 items-center">
@@ -98,13 +106,28 @@ export default function LoginForm() {
           <Label htmlFor="password" className="text-sm">
             Password
           </Label>
-          <Input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          <div className="relative">
+            <Input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? (
+                <EyeOff className="h-4 w-4 text-muted-foreground" />
+              ) : (
+                <Eye className="h-4 w-4 text-muted-foreground" />
+              )}
+            </Button>
+          </div>
         </div>
         <Button
           type="submit"

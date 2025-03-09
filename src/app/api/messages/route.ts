@@ -57,6 +57,7 @@ export async function POST(req: Request) {
         replyTo: true,
       },
     });
+    
     await prismadb.$transaction([
       prismadb.conversation.update({
         where: {
@@ -91,7 +92,6 @@ export async function POST(req: Request) {
 
     try {
       await pusherServer.trigger(conversationId, "message:new", message);
-      console.log("Pusher event triggered successfully");
     } catch (pusherError) {
       console.error("Error triggering Pusher event:", pusherError);
     }
