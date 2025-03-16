@@ -1,16 +1,17 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import {
-  MessageCircle,
-  Archive,
-  Store,
-  MessageCircleMore,
-  LogOut,
-  EllipsisVertical,
-  ContactRound,
-  Settings,
-} from "lucide-react";
+import Icon from '@mdi/react';
+import { 
+  mdiChat, 
+  mdiArchive, 
+  mdiStorefront, 
+  mdiChatProcessing, 
+  mdiLogout, 
+  mdiDotsVertical, 
+  mdiAccountCircle, 
+  mdiCog 
+} from '@mdi/js';
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -30,12 +31,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { motion } from "framer-motion";
 
 const navItems = [
-  { icon: MessageCircle, label: "Đoạn chat", id: "conversation" },
-  { icon: Store, label: "Marketplace", id: "marketplace" },
-  { icon: MessageCircleMore, label: "Tin nhắn đang chờ", id: "pending-messages" },
-  { icon: Archive, label: "Kho lưu trữ", id: "archive" },
+  { icon: mdiChat, label: "Đoạn chat", id: "conversation" },
+  { icon: mdiStorefront, label: "Marketplace", id: "marketplace" },
+  { icon: mdiChatProcessing, label: "Tin nhắn đang chờ", id: "pending-messages" },
+  { icon: mdiArchive, label: "Kho lưu trữ", id: "archive" },
 ];
 
 export function Sidebar() {
@@ -77,16 +79,35 @@ export function Sidebar() {
     if (id === "conversation" && session?.user) {
       router.push(`/t/${(session.user as any)?.lastConversationId}`);
     }
-    // Có thể thêm xử lý cho các mục khác ở đây
+  };
+
+  // Định nghĩa variants cho các animation
+  const sidebarVariants = {
+    expanded: { width: "18rem" }, // 72px = 18rem
+    collapsed: { width: "4rem" }  // 16px = 4rem
+  };
+
+  const navItemTextVariants = {
+    expanded: { opacity: 1, x: 0, display: "block" },
+    collapsed: { opacity: 0, x: -10, display: "none" }
+  };
+
+  const profileContentVariants = {
+    expanded: { opacity: 1, x: 0, y: 0, display: "flex" },
+    collapsed: { opacity: 0, x: -10, y: 10, display: "none" }
   };
 
   return (
-    <div
+    <motion.div
       ref={sidebarRef}
       className={cn(
-        "h-full flex flex-col justify-between transition-all duration-100",
-        expanded ? "w-72" : "w-16"
+        "h-full flex flex-col justify-between overflow-hidden",
+        expanded ? "w-[250px] max-w-[250px]" : "w-16"
       )}
+      initial="collapsed"
+      animate={expanded ? "expanded" : "collapsed"}
+      variants={sidebarVariants}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
     >
       <div className="space-y-3 mr-4">
         {navItems.map((item, index) => (
@@ -96,16 +117,33 @@ export function Sidebar() {
                 <Button
                   size="icon"
                   className={cn(
-                    "flex flex-row items-center justify-start gap-3 px-4 dark:bg-background bg-blue-400 text-white border-2 border-blue-300 hover:bg-blue-500 dark:text-slate-300 w-full dark:border dark:border-secondary",
+                    "flex flex-row items-center justify-start gap-3 px-4 dark:bg-background/50 bg-blue-400 text-white border-2 border-blue-300 hover:bg-blue-500 dark:text-slate-300 w-full dark:border dark:border-secondary relative",
                     !expanded &&
-                      "px-0 justify-center items-center dark:bg-background"
+                      "px-0 justify-center items-center dark:bg-background/50"
                   )}
                   onClick={() => handleNavItemClick(item.id)}
                 >
-                  <item.icon className="h-5 w-5 dark:text-slate-300" />
-                  {expanded && (
-                    <span className="font-semibold text-sm">{item.label}</span>
-                  )}
+                  <motion.div 
+                    className="flex justify-center items-center w-6 h-6 absolute left-2.5"
+                    variants={{
+                      expanded: { x: 0 },
+                      collapsed: { x: 0 }
+                    }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Icon path={item.icon} size={0.9} className="dark:text-slate-300" />
+                  </motion.div>
+                  
+                  <motion.span 
+                    className="font-semibold text-sm whitespace-nowrap overflow-hidden absolute left-14"
+                    variants={{
+                      expanded: { opacity: 1, width: "auto", display: "block" },
+                      collapsed: { opacity: 0, width: 0, display: "none" }
+                    }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {item.label}
+                  </motion.span>
                 </Button>
               </TooltipTrigger>
               {!expanded && (
@@ -128,57 +166,63 @@ export function Sidebar() {
             onClick={() => setExpanded(!expanded)}
           >
             <AvatarImage src={session?.user?.image} />
-            <AvatarFallback className="bg-blue-400 text-white border-2 border-blue-300 dark:border-secondary">
+            <AvatarFallback className="bg-gradient-to-r from-blue-300 to-blue-500 text-white border-2 border-blue-300 dark:border-secondary select-none">
               {session?.user?.name?.[0]}
             </AvatarFallback>
           </Avatar>
-          {expanded && (
-            <div className="ml-2 flex flex-row justify-between flex-grow transition-all">
-              <div>
-                <p className="text-sm font-medium">{session?.user?.name}</p>
-                <p className="text-xs text-muted-foreground">
-                  {session?.user?.email}
-                </p>
-              </div>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <div className="cursor-pointer h-8 w-8 rounded-full hover:bg-background pointer-events-auto flex flex-row justify-center items-center">
-                    <EllipsisVertical className="h-4 w-4" />
-                  </div>
-                </DropdownMenuTrigger>
+          <motion.div 
+            className="ml-2 flex flex-row justify-between flex-grow"
+            variants={profileContentVariants}
+            transition={{ duration: 0.2, delay: 0.1 }}
+          >
+            {expanded && (
+              <>
+                <div>
+                  <p className="text-sm font-medium">{session?.user?.name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {session?.user?.email}
+                  </p>
+                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <div className="cursor-pointer h-8 w-8 rounded-full hover:bg-background pointer-events-auto flex flex-row justify-center items-center">
+                      <Icon path={mdiDotsVertical} size={0.9} />
+                    </div>
+                  </DropdownMenuTrigger>
 
-                <DropdownMenuContent
-                  className="w-60 items-end mb-4 bg-background dark:bg-zinc-900 dark:text-slate-300 text-slate-600"
-                  align="end"
-                >
-                  <DropdownMenuItem className="p-2 flex justify-between">
-                    <span className="font-semibold text-sm">Cài đặt</span>
-                    <Settings className="h-4 w-4" />
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem className="p-2 flex justify-between">
-                    <span className="font-semibold text-sm">
-                      Cập nhật hồ sơ
-                    </span>
-                    <ContactRound className="h-4 w-4" />
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-
-                  <DropdownMenuItem
-                    className="p-2 flex justify-between"
-                    onClick={() => {
-                      signOut();
-                    }}
+                  <DropdownMenuContent
+                    className="w-60 items-end mb-4 bg-background dark:bg-zinc-900 dark:text-slate-300 text-slate-600"
+                    align="end"
                   >
-                    <span className="font-semibold text-sm">Đăng xuất</span>
-                    <LogOut className="h-4 w-4" />
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          )}
+                    <DropdownMenuItem className="p-2 flex justify-between">
+                      <span className="font-semibold text-sm">Cài đặt</span>
+                      <Icon path={mdiCog} size={0.9} />
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="p-2 flex justify-between">
+                      <span className="font-semibold text-sm">
+                        Cập nhật hồ sơ
+                      </span>
+                      <Icon path={mdiAccountCircle} size={0.9} />
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+
+                    <DropdownMenuItem
+                      className="p-2 flex justify-between"
+                      onClick={() => {
+                        signOut();
+                      }}
+                    >
+                      <span className="font-semibold text-sm">Đăng xuất</span>
+                      <Icon path={mdiLogout} size={0.9} />
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
+            )}
+          </motion.div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

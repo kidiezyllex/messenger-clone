@@ -270,7 +270,7 @@ export default function ChatViewBottom({
             >
               <Avatar className="w-9 h-9">
                 <AvatarImage src={user?.image} />
-                <AvatarFallback className="bg-blue-400 text-white border-2 border-blue-300 dark:border-secondary">
+                <AvatarFallback className="bg-gradient-to-r from-blue-300 to-blue-500 text-white border-2 border-blue-300 dark:border-secondary select-none">
                   {user?.name[0]}
                 </AvatarFallback>
               </Avatar>

@@ -8,9 +8,11 @@ interface TextMessageProps {
   text: string;
   replyText?: string;
   taggedUsers?: string[];
+  type?: string;
 }
 
 export function TextMessage({
+  type,
   text,
   replyText,
   taggedUsers,
@@ -29,7 +31,7 @@ export function TextMessage({
   }, [selectedTag]);
 
   return (
-    <div className="flex flex-col gap-2 relative">
+    <div className={`flex flex-col gap-2 relative ${type === "revoke" ? "opacity-50 select-none" : ""}`}>
       {replyText && (
         <div className="flex flex-row gap-2 items-center text-sm text-zinc-600 dark:text-zinc-300 p-2 rounded-md dark:bg-zinc-900 italic border bg-secondary">
           <Quote className="h-4 w-4 text-zinc-600 dark:text-zinc-300 italic flex-shrink-0" />
@@ -48,7 +50,7 @@ export function TextMessage({
             @{tag}
           </p>
         ))}
-      <p className="text-base text-zinc-600 dark:text-zinc-300">{text}</p>
+      <p className={`text-base text-zinc-600 dark:text-zinc-300 ${type === "revoke" ? "italic" : ""}`}>{text}</p>
       <UserProfileDialog
         user={selectedUser}
         open={open}

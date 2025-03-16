@@ -28,11 +28,11 @@ export default function ChatPage({
       {params.conversationId !== "user-suggested" &&
       selectConversationId !== "user-suggested" ? (
         <ResizablePanelGroup direction="horizontal" className="flex-1">
-          <ResizablePanel defaultSize={25} minSize={15} maxSize={40}>
+          <ResizablePanel defaultSize={29} minSize={27} maxSize={40}>
             <ConversationList />
           </ResizablePanel>
           <ResizableHandle withHandle />
-          <ResizablePanel defaultSize={75}>
+          <ResizablePanel defaultSize={71}>
             <ChatView />
           </ResizablePanel>
         </ResizablePanelGroup>

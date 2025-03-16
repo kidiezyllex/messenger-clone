@@ -110,7 +110,7 @@ export default function MessageCpn({
     >
       <Avatar className="h-10 w-10">
         <AvatarImage src={message?.sender?.image} />
-        <AvatarFallback className="bg-blue-400 text-white border-2 border-blue-300 dark:border-secondary">
+        <AvatarFallback className="bg-gradient-to-r from-blue-300 to-blue-500 text-white border-2 border-blue-300 dark:border-secondary select-none">
           {message?.sender?.name[0]}
         </AvatarFallback>
       </Avatar>
@@ -123,6 +123,7 @@ export default function MessageCpn({
       >
         {(revokedMessage || message)?.type === "revoke" && (
           <TextMessage
+            type={"revoke"}
             text={(revokedMessage || message)?.text}
             replyText={""}
           />

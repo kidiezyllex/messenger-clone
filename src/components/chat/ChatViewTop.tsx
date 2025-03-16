@@ -82,7 +82,7 @@ export default function ChatViewTop({
                     : user2?.image
                 }
               />
-              <AvatarFallback className="bg-blue-400 text-white border-2 border-blue-300 dark:border-secondary">
+               <AvatarFallback className="bg-gradient-to-r from-blue-300 to-blue-500 text-white border-2 border-blue-300 dark:border-secondary select-none">
                 {conversation?.isGroup
                   ? conversation?.name?.[0]
                   : user2?.name?.[0] || "?"}

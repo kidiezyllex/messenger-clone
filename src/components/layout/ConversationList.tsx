@@ -20,6 +20,7 @@ import { CreateGroupDialog } from "../group/CreateGroupDialog";
 import useStore from "@/store/useStore";
 import { pusherClient } from "@/lib/pusher";
 import useMessageStore from "../../../store/useMessageStore";
+import { motion, AnimatePresence } from "framer-motion";
 
 export function ConversationList() {
   const conversationListRef = useRef<HTMLDivElement>(null);
@@ -141,19 +142,33 @@ export function ConversationList() {
       p-2 py-4 bg-secondary rounded-xl gap-3 border"
     >
       <div className="flex flex-col mx-2 gap-2">
-        <h1 className="text-lg font-bold text-zinc-600 dark:text-zinc-300">
+        <motion.h1 
+          className="text-lg font-bold text-zinc-600 dark:text-zinc-300"
+          animate={{ opacity: 1 }}
+          initial={{ opacity: 0 }}
+          key={isSearchMode ? "search" : "chat"}
+        >
           {isSearchMode ? "Tìm kiếm người dùng" : "Đoạn chat"}
-        </h1>
+        </motion.h1>
         <div className="flex flex-row gap-1 justify-center items-center">
-          {isSearchMode && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleExitSearchMode}
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-          )}
+          <AnimatePresence>
+            {isSearchMode && (
+              <motion.div
+                initial={{ width: 0, opacity: 0 }}
+                animate={{ width: "auto", opacity: 1 }}
+                exit={{ width: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleExitSearchMode}
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </Button>
+              </motion.div>
+            )}
+          </AnimatePresence>
           <div className="relative rounded-full flex-grow">
             <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
@@ -166,61 +181,87 @@ export function ConversationList() {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          {!isSearchMode && (
-            <>
-              <Button
-                variant="outline"
-                size="icon"
-                className="dark:bg-primary-foreground dark:hover:bg-background flex-shrink-0"
-                onClick={handleNavigateToSuggested}
+          <AnimatePresence>
+            {!isSearchMode && (
+              <motion.div 
+                className="flex flex-row gap-1"
+                initial={{ width: 0, opacity: 0 }}
+                animate={{ width: "auto", opacity: 1 }}
+                exit={{ width: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
               >
-                <UserRoundPlus className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                className="dark:bg-primary-foreground dark:hover:bg-background flex-shrink-0"
-                onClick={() => setIsDialogOpen(true)}
-              >
-                <UsersRound className="h-4 w-4" />
-              </Button>
-            </>
-          )}
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="dark:bg-primary-foreground dark:hover:bg-background flex-shrink-0"
+                  onClick={handleNavigateToSuggested}
+                >
+                  <UserRoundPlus className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="dark:bg-primary-foreground dark:hover:bg-background flex-shrink-0"
+                  onClick={() => setIsDialogOpen(true)}
+                >
+                  <UsersRound className="h-4 w-4" />
+                </Button>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
       <ScrollArea className="rounded-md">
-        <div className="flex flex-col rounded-md px-2 gap-2">
-          {isSearchMode
-            ? filteredUsers.map((user, index) => (
-                <div
-                  key={user.id || index}
-                  className="flex items-center gap-3 p-4 rounded-md dark:hover:bg-zinc-700"
-                >
-                  <Avatar className="w-11 h-11">
-                    <AvatarImage src={user?.image} />
-                    <AvatarFallback className="bg-blue-400 text-white border-2 border-blue-300 dark:border-secondary">
-                      {user?.name?.[0] || '?'}
-                    </AvatarFallback>
-                  </Avatar>
-                  <p className="font-medium text-sm flex-grow">{user?.name}</p>
-                  <Button
-                    onClick={() => handleCreateConversation(user)}
-                    className="flex flex-row gap-2 bg-blue-400 hover:bg-blue-400 text-white border-2 border-blue-300 hover:border-blue-300 dark:border-secondary"
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={isSearchMode ? "search-results" : "conversations"}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="flex flex-col rounded-md px-2 gap-2"
+          >
+            {isSearchMode
+              ? filteredUsers.map((user, index) => (
+                  <motion.div
+                    key={user.id || index}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.1, delay: index * 0.05 }}
+                    className="flex items-center gap-3 p-4 rounded-md dark:hover:bg-zinc-700"
                   >
-                    Nhắn tin
-                    <MessageCircleMore className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))
-            : conversations.map((conversation, index) => (
-                <ConversationItem
-                  conversation={conversation}
-                  index={index}
-                  key={conversation.id || index}
-                  lastMessage={lastMessage}
-                />
-              ))}
-        </div>
+                    <Avatar className="w-11 h-11">
+                      <AvatarImage src={user?.image} />
+                      <AvatarFallback className="bg-gradient-to-r from-blue-300 to-blue-500 text-white border-2 border-blue-300 dark:border-secondary select-none">
+                        {user?.name?.[0] || '?'}
+                      </AvatarFallback>
+                    </Avatar>
+                    <p className="font-medium text-sm flex-grow">{user?.name}</p>
+                    <Button
+                      onClick={() => handleCreateConversation(user)}
+                      className="flex flex-row gap-2 bg-blue-400 hover:bg-blue-400 text-white border-2 border-blue-300 hover:border-blue-300 dark:border-secondary"
+                    >
+                      Nhắn tin
+                      <MessageCircleMore className="h-4 w-4" />
+                    </Button>
+                  </motion.div>
+                ))
+              : conversations.map((conversation, index) => (
+                  <motion.div
+                    key={conversation.id || index}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.1, delay: index * 0.05 }}
+                  >
+                    <ConversationItem
+                      conversation={conversation}
+                      index={index}
+                      lastMessage={lastMessage}
+                    />
+                  </motion.div>
+                ))}
+          </motion.div>
+        </AnimatePresence>
         <ScrollBar orientation="vertical" />
       </ScrollArea>
       <CreateGroupDialog
